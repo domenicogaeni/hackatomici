@@ -1,0 +1,79 @@
+version: "3.5"
+services:
+  lumen:
+    image: domenicogaeni/php:8.0-dev
+    container_name: lumen
+    user: "www-data:www-data"
+    volumes:
+      - .:/var/www/html:cached
+    ports:
+      - ${PHP_HOST_PORT}:80
+    command: bash -c "composer install &&
+      php artisan migrate --force &&
+      apache2-foreground"
+    networks:
+      backend:
+        aliases:
+          - lumen
+    depends_on:
+      database:
+        condition: service_healthy
+    links:
+        - database    
+    environment:
+      - XDEBUG_ENABLED= 1
+      - XDEBUG_REMOTE_AUTOSTART= 1
+      - XDEBUG_MAXNESTING_LEVEL= 1000
+      - XDEBUG_REMOTE_CONNECT_BACK= 1
+      - XDEBUG_REMOTE_HOST= host.docker.internal
+      - PHP_IDE_CONFIG= serverName=localhost
+      - XDEBUG_MODE=debug
+
+  database:
+    image: mysql:8
+    # Set DB_HOST variable in .env file to this value to use local environment
+    container_name: database
+    # needed as of mysql 8
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      # The db files are stored in this named volume
+      - database-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+    ports:
+      - ${MYSQL_HOST_PORT}:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+    networks:
+      backend:
+        aliases:
+          - database
+
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+      # The db files are stored in this named volume
+      - redis-data:/data
+    environment:
+      - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}
+      - REDIS_DATABASE=${REDIS_DATABASE}
+    ports:
+      - ${REDIS_HOST_PORT}:${REDIS_PORT}
+    networks:
+      backend:
+        aliases:
+          - redis
+
+volumes:
+  database-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  backend:
+    name: network
