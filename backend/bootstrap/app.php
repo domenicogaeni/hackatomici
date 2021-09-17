@@ -23,9 +23,8 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
-
-// $app->withEloquent();
+$app->withFacades();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -84,7 +83,7 @@ $app->middleware([
 ]);
 
 $app->routeMiddleware([
-     // 'auth' => App\Http\Middleware\Authenticate::class,
+     'auth' => App\Http\Middleware\Authenticate::class,
      'validation' => App\Http\Middleware\ValidationControllerMiddleware::class,
 ]);
 
@@ -99,8 +98,9 @@ $app->routeMiddleware([
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
+$app->register(Kreait\Laravel\Firebase\ServiceProvider::class);
+$app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 

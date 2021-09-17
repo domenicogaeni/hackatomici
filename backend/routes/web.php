@@ -17,3 +17,11 @@ $router->get('/', function () use ($router) {
     echo phpinfo();
     return ['status' => 'OK'];
 });
+
+$router->group(['middleware' => 'auth'], function () use ($router) {
+    $router->get('/test', function () use ($router) {
+        echo phpinfo();
+        return ['status' => 'OK'];
+    });
+    
+});
