@@ -2,32 +2,43 @@
 
 namespace App\Models;
 
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Lumen\Auth\Authorizable;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract
+class User extends Model
 {
-    use Authenticatable, Authorizable, HasFactory;
+    public const BASIC_FIELDS = ['id', 'name', 'surname', 'email', 'institution_place_id'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name', 'email',
-    ];
+    public function getBasicInfo()
+    {
+        $response = [];
+        foreach (self::BASIC_FIELDS as $value) {
+            $response[$value] = $this->{$value};
+        }
+        return $response;
+    }
 
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-    ];
+    public function ownedPlaces()
+    {
+        return $this->hasMany(OwnedPlace::class);
+    }
+
+    public function favouritePlaces()
+    {
+        return $this->hasMany(FavouritePlace::class);
+    }
+
+    public function trips()
+    {
+        return $this->hasMany(Trip::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
+    public function votes()
+    {
+        return $this->hasMany(UserVote::class);
+    }
 }

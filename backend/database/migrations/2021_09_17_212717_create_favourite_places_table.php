@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFavouritesPlacesTable extends Migration
+class CreateFavouritePlacesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateFavouritesPlacesTable extends Migration
      */
     public function up()
     {
-        Schema::create('favourites_places', function (Blueprint $table) {
+        Schema::create('favourite_places', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
             $table->string('place_id', 256);
@@ -28,6 +28,6 @@ class CreateFavouritesPlacesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('favourites_places');
+        Schema::dropIfExists('favourite_places');
     }
 }
