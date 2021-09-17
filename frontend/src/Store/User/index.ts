@@ -1,3 +1,4 @@
+import { User } from '@/Models/User'
 import { buildSlice } from '@thecodingmachine/redux-toolkit-wrapper'
 import FetchOne from './FetchOne'
 
@@ -9,9 +10,7 @@ const sliceInitialState = {
 export default buildSlice('user', [FetchOne], sliceInitialState).reducer
 
 export interface UserState {
-  item: {
-    name: string
-  }
+  item: User
   fetchOne: {
     loading: boolean
     error: any

@@ -4,9 +4,6 @@
 
 export default function () {
   return {
-    logo: {
-      uri:
-        'https://thecodingmachine.github.io/react-native-hackatomici2021/img/TOM-small.png',
-    },
+    logo: require('@/Assets/Images/icon.png'),
   }
 }

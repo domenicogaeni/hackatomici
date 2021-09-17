@@ -1,3 +1,6 @@
 export { default as IndexExampleContainer } from './Example/Index'
 export { default as IndexMapContainer } from './Map/Index'
-export { default as IndexStartupContainer } from './Startup/Index'
+export { default as Splash } from './Splash/Index'
+export { default as Login } from './Login/Index'
+export { default as Registration } from './Registration/Index'
+export { default as Onboarding } from './Onboarding/Index'

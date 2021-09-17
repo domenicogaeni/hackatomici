@@ -3,7 +3,7 @@ import { View } from 'react-native'
 import { useTheme } from '@/Theme'
 import { Box, HStack, VStack, Text, Pressable, Image } from 'native-base'
 
-const IndexExampleContainer = () => {
+const Login = () => {
   const { Gutters, Layout } = useTheme()
 
   return (
@@ -112,4 +112,4 @@ const IndexExampleContainer = () => {
   )
 }
 
-export default IndexExampleContainer
+export default Login

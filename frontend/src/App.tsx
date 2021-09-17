@@ -1,4 +1,4 @@
-import { ApplicationNavigator } from '@/Navigators'
+import { RootNavigator } from '@/Navigators'
 import { persistor, store } from '@/Store'
 import { NativeBaseProvider } from 'native-base'
 import React from 'react'
@@ -11,7 +11,7 @@ const App = () => (
   <NativeBaseProvider>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <ApplicationNavigator />
+        <RootNavigator />
       </PersistGate>
     </Provider>
   </NativeBaseProvider>
