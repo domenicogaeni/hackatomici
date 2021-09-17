@@ -4,7 +4,7 @@ import React from 'react'
 import { View } from 'react-native'
 import MapView from 'react-native-maps'
 
-const IndexMapContainer = () => {
+const Map = () => {
   const { Gutters, Layout } = useTheme()
 
   return (
@@ -74,4 +74,4 @@ const IndexMapContainer = () => {
   )
 }
 
-export default IndexMapContainer
+export default Map
