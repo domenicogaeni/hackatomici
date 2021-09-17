@@ -16,21 +16,13 @@ const HomeNavigator = () => {
           const iconName = (() => {
             switch (route.name) {
               case 'Map':
-                return focused
-                  ? 'ios-information-circle'
-                  : 'ios-information-circle-outline'
+                return focused ? 'map' : 'map-outline'
               case 'Trips':
-                return focused
-                  ? 'ios-information-circle'
-                  : 'ios-information-circle-outline'
+                return focused ? 'analytics' : 'analytics-outline'
               case 'Community':
-                return focused
-                  ? 'ios-information-circle'
-                  : 'ios-information-circle-outline'
+                return focused ? 'chatbubbles' : 'chatbubbles-outline'
               case 'Account':
-                return focused
-                  ? 'ios-information-circle'
-                  : 'ios-information-circle-outline'
+                return focused ? 'person' : 'person-outline'
               default:
                 return ''
             }
