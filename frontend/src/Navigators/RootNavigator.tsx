@@ -36,7 +36,6 @@ const RootNavigator = () => {
       <NavigationContainer ref={navigationRef}>
         <StatusBar barStyle={'dark-content'} />
         <Stack.Navigator headerMode={'none'}>
-          <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
           {applicationIsLoading ? (
             <Stack.Screen name="Splash" component={Splash} />
           ) : !user ? (
