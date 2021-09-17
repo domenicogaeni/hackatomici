@@ -21,6 +21,8 @@ class CreateReportsTable extends Migration
             $table->text('description')->nullable();
             $table->enum('level', ['white', 'yellow', 'orange', 'red']);
             $table->enum('type', ['community', 'verified']);
+            $table->date('from');
+            $table->date('to')->nullable();
             $table->timestamps();
         });
     }
