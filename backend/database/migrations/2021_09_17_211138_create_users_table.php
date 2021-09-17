@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('name', 64)->nullable();
             $table->string('surname', 64)->nullable();
             $table->string('email', 128)->nullable();
+            $table->string('device_id', 256)->nullable();
             $table->string('institution_code', 6)->nullable();
             $table->string('institution_place_id', 256)->nullable();
             $table->timestamps();
