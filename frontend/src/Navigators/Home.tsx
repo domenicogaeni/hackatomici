@@ -2,13 +2,11 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Account, Community, Map, Trips } from '@/Containers'
 import Icon from 'react-native-vector-icons/Ionicons'
-import { useTheme } from '@/Theme'
 
 const Tab = createBottomTabNavigator()
 
 // @refresh reset
 const HomeNavigator = () => {
-  const { Colors } = useTheme()
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -32,8 +30,8 @@ const HomeNavigator = () => {
         },
       })}
       tabBarOptions={{
-        activeTintColor: Colors.primary,
-        inactiveTintColor: Colors.text,
+        activeTintColor: '#14b8a6',
+        inactiveTintColor: '#27272a',
       }}
     >
       <Tab.Screen name="Map" component={Map} />
