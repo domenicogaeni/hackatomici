@@ -5,8 +5,8 @@ import { NavigationContainer } from '@react-navigation/native'
 import { navigationRef } from '@/Navigators/utils'
 import { SafeAreaView, StatusBar } from 'react-native'
 import { useTheme } from '@/Theme'
-import HomeNavigator from './Home'
-import LoginNavigator from './Login'
+import HomeNavigator from './HomeNavigator'
+import LoginNavigator from './LoginNavigator'
 import { useDispatch, useSelector } from 'react-redux'
 import { StartupState } from '@/Store/Startup'
 import InitStartup from '@/Store/Startup/Init'
@@ -36,6 +36,7 @@ const RootNavigator = () => {
       <NavigationContainer ref={navigationRef}>
         <StatusBar barStyle={'dark-content'} />
         <Stack.Navigator headerMode={'none'}>
+          <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
           {applicationIsLoading ? (
             <Stack.Screen name="Splash" component={Splash} />
           ) : !user ? (
