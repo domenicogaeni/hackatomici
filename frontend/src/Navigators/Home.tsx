@@ -1,6 +1,6 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { IndexExampleContainer, IndexMapContainer } from '@/Containers'
+import { Account, Community, Map, Trips } from '@/Containers'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useTheme } from '@/Theme'
 
@@ -36,10 +36,10 @@ const HomeNavigator = () => {
         inactiveTintColor: Colors.text,
       }}
     >
-      <Tab.Screen name="Map" component={IndexMapContainer} />
-      <Tab.Screen name="Trips" component={IndexExampleContainer} />
-      <Tab.Screen name="Community" component={IndexExampleContainer} />
-      <Tab.Screen name="Account" component={IndexExampleContainer} />
+      <Tab.Screen name="Map" component={Map} />
+      <Tab.Screen name="Trips" component={Trips} />
+      <Tab.Screen name="Community" component={Community} />
+      <Tab.Screen name="Account" component={Account} />
     </Tab.Navigator>
   )
 }
