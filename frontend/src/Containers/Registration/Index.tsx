@@ -1,14 +1,42 @@
-import React from 'react'
-import { View } from 'react-native'
-import { useTheme } from '@/Theme'
+import React, { useCallback } from 'react'
+import { goBack } from '@/Navigators/utils'
+import { Box, Button, Input, Text } from 'native-base'
 
 const Registration = () => {
-  const { Gutters, Layout } = useTheme()
+  const backToLogin = useCallback(() => goBack(), [])
 
   return (
-    <View style={[Layout.fill, Layout.colCenter, Gutters.smallHPadding]}>
-      <View style={[[Gutters.smallHPadding]]} />
-    </View>
+    <Box justifyContent="center" alignItems="center" flex={1} bg="white">
+      <Box borderRadius={8} width="100%" padding={8}>
+        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+          Registrazione
+        </Text>
+        <Text marginBottom={2}>Email:</Text>
+        <Input
+          marginBottom={4}
+          placeholder="bestemailever@example.com"
+          isFullWidth={true}
+        />
+        <Text marginBottom={2}>Password:</Text>
+        <Input
+          marginBottom={4}
+          secureTextEntry={true}
+          placeholder="Password123!"
+          isFullWidth={true}
+        />
+        <Text marginBottom={2}>Conferma password:</Text>
+        <Input
+          marginBottom={8}
+          secureTextEntry={true}
+          placeholder="Password123!"
+          isFullWidth={true}
+        />
+        <Button marginBottom={4}>Registrati</Button>
+        <Button variant="link" onPress={backToLogin}>
+          Torna al login
+        </Button>
+      </Box>
+    </Box>
   )
 }
 
