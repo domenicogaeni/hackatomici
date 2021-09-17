@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import { Splash } from '@/Containers'
+import { Onboarding, Splash } from '@/Containers'
 import { NavigationContainer } from '@react-navigation/native'
 import { navigationRef } from '@/Navigators/utils'
 import { SafeAreaView, StatusBar } from 'react-native'
@@ -20,6 +20,9 @@ const RootNavigator = () => {
   const dispatch = useDispatch()
 
   const user = useSelector((state: { user: UserState }) => state.user.item)
+  const shouldShowOnboarding = useSelector(
+    (state: { user: UserState }) => state.user.shouldShowOnboarding,
+  )
   const applicationIsLoading = useSelector(
     (state: { startup: StartupState }) => state.startup.loading,
   )
@@ -34,23 +37,13 @@ const RootNavigator = () => {
         <StatusBar barStyle={'dark-content'} />
         <Stack.Navigator headerMode={'none'}>
           {applicationIsLoading ? (
-            <Stack.Screen name="Startup" component={Splash} />
+            <Stack.Screen name="Splash" component={Splash} />
           ) : !user ? (
-            <Stack.Screen
-              name="LoginNavigator"
-              component={LoginNavigator}
-              options={{
-                animationEnabled: false,
-              }}
-            />
+            <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
+          ) : shouldShowOnboarding ? (
+            <Stack.Screen name="Onboarding" component={Onboarding} />
           ) : (
-            <Stack.Screen
-              name="MainNavigator"
-              component={HomeNavigator}
-              options={{
-                animationEnabled: false,
-              }}
-            />
+            <Stack.Screen name="HomeNavigator" component={HomeNavigator} />
           )}
         </Stack.Navigator>
       </NavigationContainer>

@@ -11,6 +11,7 @@ export default buildSlice('user', [FetchOne], sliceInitialState).reducer
 
 export interface UserState {
   item: User
+  shouldShowOnboarding: boolean
   fetchOne: {
     loading: boolean
     error: any
