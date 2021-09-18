@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class UserVote extends Model
+class UserVote extends BaseModel
 {
     protected $table = 'users_votes';
 

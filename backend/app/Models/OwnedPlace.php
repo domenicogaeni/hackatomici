@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class OwnedPlace extends Model
+class OwnedPlace extends BaseModel
 {
     public function user()
     {

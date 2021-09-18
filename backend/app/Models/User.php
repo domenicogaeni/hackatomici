@@ -2,11 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class User extends Model
+class User extends BaseModel
 {
-    public const BASIC_FIELDS = ['id', 'name', 'surname', 'email', 'institution_place_id'];
+    public const BASIC_FIELDS = [
+        'id',
+        'name',
+        'surname',
+        'email',
+        'institution_place_id'
+    ];
+
+    protected $fillable = [
+        'name',
+        'surname',
+        'email'
+    ];
 
     public function getBasicInfo()
     {
@@ -17,6 +27,7 @@ class User extends Model
         return $response;
     }
 
+    /** Relationships */
     public function ownedPlaces()
     {
         return $this->hasMany(OwnedPlace::class);
