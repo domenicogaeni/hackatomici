@@ -3,7 +3,7 @@ export type Trip = {
   name: string
   description: string | null
   // Format: YYYY-MM-DD
-  from_date: string
+  from: string
   // Format: YYYY-MM-DD
-  to_date: string
+  to: string
 }

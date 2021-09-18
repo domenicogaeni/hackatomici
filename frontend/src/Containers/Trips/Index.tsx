@@ -13,7 +13,23 @@ import { useIsFocused } from '@react-navigation/core'
 const Trips = () => {
   const isFocused = useIsFocused()
 
-  const [trips, setTrips] = useState<Trip[]>([])
+  const [trips, setTrips] = useState<Trip[]>([
+    {
+      id: 1,
+      description: null,
+      name: 'Test trip',
+      from: moment().add(1, 'days').format('YYYY-MM-DD'),
+      to: moment().add(2, 'days').format('YYYY-MM-DD'),
+    },
+    {
+      id: 2,
+      description:
+        'This trip is just a test bye bye hello hello, very long description breaking everything deheheh',
+      name: 'Test trip 2',
+      from: moment().add(1, 'days').format('YYYY-MM-DD'),
+      to: moment().add(2, 'days').format('YYYY-MM-DD'),
+    },
+  ])
 
   const fetchTrips = useCallback(async () => {
     try {
@@ -70,45 +86,58 @@ const Trips = () => {
     [fetchTrips],
   )
 
+  const openTrip = useCallback(
+    (trip: Trip) => navigate('TripDetail', { trip }),
+    [],
+  )
+
   const renderItem = useCallback(
     (item: Trip, index: number) => {
-      const formattedFromDate = item.from_date
-        ? moment(item.from_date, 'YYYY-MM-DD').format('DD/MM/YYYY')
+      const formattedFromDate = item.from
+        ? moment(item.from, 'YYYY-MM-DD').format('DD/MM/YYYY')
         : 'Oggi'
-      const formattedToDate = item.to_date
-        ? moment(item.to_date, 'YYYY-MM-DD').format('DD/MM/YYYY')
+      const formattedToDate = item.to
+        ? moment(item.to, 'YYYY-MM-DD').format('DD/MM/YYYY')
         : 'Oggi'
 
       return (
-        <Box
-          key={`${item.id}_${index}`}
-          borderRadius={8}
-          bg="primary"
-          padding={4}
-          marginBottom={4}
-        >
-          <HStack justifyContent="space-between" alignItems="center">
-            <VStack flex={1}>
-              <Text fontSize="xxs" color="white">
-                {`${formattedFromDate} -> ${formattedToDate}`}
-              </Text>
-              <Text color="white" marginTop={2}>
-                {item.name}
-              </Text>
-              {item.description && (
-                <Text fontSize="sm" color="white" marginTop={2}>
-                  {item.description}
+        <Pressable onPress={() => openTrip(item)}>
+          <Box
+            key={`${item.id}_${index}`}
+            borderRadius={8}
+            bg="primary.500"
+            padding={4}
+            marginBottom={4}
+          >
+            <HStack justifyContent="space-between" alignItems="center">
+              <VStack flex={1} marginRight={2}>
+                <Text fontSize="xxs" color="primary.50">
+                  {`${formattedFromDate} -> ${formattedToDate}`}
                 </Text>
-              )}
-            </VStack>
-            <Pressable onPress={() => removeTrip(item)}>
-              <Icon name="chevron-forward-outline" size={20} color="white" />
-            </Pressable>
-          </HStack>
-        </Box>
+                <Text color="white" marginTop={1}>
+                  {item.name}
+                </Text>
+                {item.description && (
+                  <Text
+                    fontSize="sm"
+                    color="primary.100"
+                    marginTop={1}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {item.description}
+                  </Text>
+                )}
+              </VStack>
+              <Pressable onPress={() => removeTrip(item)}>
+                <Icon name="chevron-forward-outline" size={20} color="white" />
+              </Pressable>
+            </HStack>
+          </Box>
+        </Pressable>
       )
     },
-    [removeTrip],
+    [openTrip, removeTrip],
   )
 
   return (
@@ -125,8 +154,8 @@ const Trips = () => {
           <Pressable onPress={addTrip}>
             <Icon name="add-circle" size={32} color="#14b8a6" />
           </Pressable>
-          {map(trips, (trip, index) => renderItem(trip, index))}
         </HStack>
+        {map(trips, (trip, index) => renderItem(trip, index))}
       </Box>
     </KeyboardAwareScrollView>
   )
