@@ -21,7 +21,7 @@ const AddTrip = () => {
   const addTrip = useCallback(async () => {
     Keyboard.dismiss()
 
-    if (!name || !description || !dateFrom || !dateTo) {
+    if (!name || !dateFrom || !dateTo) {
       setError('Per favore, riempi tutti i campi')
       return
     }
