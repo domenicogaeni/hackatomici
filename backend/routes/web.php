@@ -37,7 +37,10 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     });
 
     $router->group(['prefix' => 'reports'], function () use ($router) {
-        $router->post('/places/{placeId}', ReportController::class . '@new');
+        $router->group(['prefix' => 'places'], function () use ($router) {
+            $router->post('{placeId}', ReportController::class . '@new');
+            $router->get('{placeId}', ReportController::class . '@getForPlace');
+        });
 
         $router->post('/{reportId}/vote', ReportController::class . '@voteReport');
         $router->put('/{reportId}/vote', ReportController::class . '@voteReport');
