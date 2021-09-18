@@ -2,9 +2,9 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
+use App\Http\Controllers\FavouritePlaceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\FavouritePlaceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +37,6 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     });
 
     $router->group(['prefix' => 'reports'], function () use ($router) {
-        $router->post('/places/{place_id}', ReportController::class . '@new');        
+        $router->post('/places/{place_id}', ReportController::class . '@new');
     });
 });
