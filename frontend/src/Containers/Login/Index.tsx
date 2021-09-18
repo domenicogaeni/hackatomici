@@ -47,6 +47,9 @@ const Login = () => {
         // User is logged in now
         const userData = (await meResponse.json()).data as UserModel
         dispatch(SetUser.action({ user: userData }))
+      } else {
+        // There is the firebase user but not the user in the API
+        navigate('SetupNameAndSurname', { user: signInResult.user })
       }
       // eslint-disable-next-line no-catch-shadow
     } catch (signInError) {
@@ -113,7 +116,7 @@ const Login = () => {
               const userData = (await meResponse.json()).data as UserModel
               dispatch(SetUser.action({ user: userData }))
             } else {
-              setError('Errore')
+              setError('Errore durante la registrazione')
             }
           } catch (registerError) {
             setError((registerError as any).message)
