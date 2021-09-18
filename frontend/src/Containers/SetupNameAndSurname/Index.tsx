@@ -6,10 +6,14 @@ import { useDispatch } from 'react-redux'
 import SetUser from '@/Store/User/SetUser'
 import { User as UserModel } from '@/Models/User'
 import { goBack } from '@/Navigators/utils'
-import { FirebaseAuthTypes } from '@react-native-firebase/auth'
 import { Keyboard } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { FirebaseAuthTypes } from '@react-native-firebase/auth'
 
-const SetupNameAndSurname = ({ user }: { user: FirebaseAuthTypes.User }) => {
+const SetupNameAndSurname = ({ route }: any) => {
+  const { user } = route.params || {}
+  const typedUser = user as FirebaseAuthTypes.User
+
   const dispatch = useDispatch()
 
   const [name, setName] = useState<string | undefined>()
@@ -19,7 +23,8 @@ const SetupNameAndSurname = ({ user }: { user: FirebaseAuthTypes.User }) => {
   const registration = useCallback(async () => {
     Keyboard.dismiss()
 
-    const idToken = await user.getIdToken()
+    const idToken = await typedUser.getIdToken()
+    console.log(idToken)
 
     try {
       const registerResponse = await fetch(Config.API_URL + '/auth/register', {
@@ -28,14 +33,14 @@ const SetupNameAndSurname = ({ user }: { user: FirebaseAuthTypes.User }) => {
           Authorization: 'Bearer ' + idToken,
         },
         body: JSON.stringify({
-          firebase_uid: user.uid,
-          email: user.email,
+          firebase_uid: typedUser.uid,
+          email: typedUser.email,
           name,
           surname,
         }),
       })
 
-      console.log(registerResponse)
+      console.log('registerResponse', registerResponse)
 
       if (registerResponse.status === 200) {
         // User is logged in now
@@ -45,7 +50,7 @@ const SetupNameAndSurname = ({ user }: { user: FirebaseAuthTypes.User }) => {
     } catch (registrationError) {
       setError((registrationError as any).message)
     }
-  }, [dispatch, user, name, surname])
+  }, [dispatch, typedUser, name, surname])
 
   const onChangeName = useCallback(
     (text: string) => {
@@ -68,40 +73,42 @@ const SetupNameAndSurname = ({ user }: { user: FirebaseAuthTypes.User }) => {
   }, [])
 
   return (
-    <Box justifyContent="center" alignItems="center" flex={1} bg="white">
-      <Box borderRadius={8} width="100%" padding={8}>
-        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Dicci di più su di te!'}
-        </Text>
-        <Text marginBottom={2}>Nome:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="Pinco"
-          isFullWidth={true}
-          value={name}
-          onChangeText={onChangeName}
-        />
-        <Text marginBottom={2}>Cognome:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="Pallino"
-          isFullWidth={true}
-          value={surname}
-          onChangeText={onChangeSurname}
-        />
-        <Button marginBottom={4} onPress={registration}>
-          Continua
-        </Button>
-        {error && (
-          <Text color="red.500" marginBottom={4}>
-            {error}
+    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+      <Box justifyContent="center" alignItems="center" flex={1} bg="white">
+        <Box borderRadius={8} width="100%" padding={8}>
+          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+            {'Dicci di più su di te!'}
           </Text>
-        )}
-        <Button variant="link" onPress={back}>
-          Indietro
-        </Button>
+          <Text marginBottom={2}>Nome:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="Pinco"
+            isFullWidth={true}
+            value={name}
+            onChangeText={onChangeName}
+          />
+          <Text marginBottom={2}>Cognome:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="Pallino"
+            isFullWidth={true}
+            value={surname}
+            onChangeText={onChangeSurname}
+          />
+          <Button marginBottom={4} onPress={registration}>
+            Continua
+          </Button>
+          {error && (
+            <Text color="red.500" marginBottom={4}>
+              {error}
+            </Text>
+          )}
+          <Button variant="link" onPress={back}>
+            Indietro
+          </Button>
+        </Box>
       </Box>
-    </Box>
+    </KeyboardAwareScrollView>
   )
 }
 
