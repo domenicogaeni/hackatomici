@@ -153,10 +153,10 @@ const Map = () => {
           snapPoints={snapPoints}
         >
           <View style={{ padding: 16, alignItems: 'center' }}>
-            <Text fontSize="2xl" marginBottom={4}>
+            <Text fontSize="3xl" marginBottom={4} fontWeight={600}>
               Nome posto
             </Text>
-            <Text color="blueGray.600">Descrizione</Text>
+            <Text color="gray.600">Descrizione</Text>
           </View>
           <BottomSheetScrollView>
             <View style={{ padding: 16 }}>
@@ -195,25 +195,42 @@ const Report = ({
 }: ReportProps) => {
   return (
     <Box
-      bg={color !== 'white' ? `${color}.400` : 'gray.200'}
+      bg={color !== 'white' ? `${color}.400` : 'white'}
       py={4}
       px={3}
-      mb={1}
+      mb={4}
       rounded="md"
       alignSelf="center"
       width={375}
       maxWidth="100%"
+      borderColor="gray.100"
+      borderWidth={color === 'white' ? 1 : 0}
     >
       <HStack justifyContent="space-between">
         <Box justifyContent="space-between">
           <VStack space={2}>
-            <Text fontSize="xxs" color="black">
+            <Text
+              fontSize="xxs"
+              color={
+                color !== 'white' && color !== 'yellow' ? 'white' : 'gray.600'
+              }
+            >
               {dateFrom || ''} {'->'} {dateTo || 'now'}
             </Text>
-            <Text color="black" fontSize="xl">
+            <Text
+              color={
+                color !== 'white' && color !== 'yellow' ? 'white' : 'black'
+              }
+              fontSize="xl"
+            >
               {title}
             </Text>
-            <Text color="black" fontSize="sm">
+            <Text
+              color={
+                color !== 'white' && color !== 'yellow' ? 'white' : 'black'
+              }
+              fontSize="sm"
+            >
               {description}
             </Text>
           </VStack>
