@@ -61,7 +61,12 @@ const Score = ({ score, vote, reportId }: ScoreProps) => {
   }, [reportId])
 
   return (
-    <VStack alignItems="center" paddingX="1" bg="rgba(255, 255, 255, 0.2)">
+    <VStack
+      justifyContent="center"
+      alignItems="center"
+      paddingX="1"
+      bg="rgba(255, 255, 255, 0.2)"
+    >
       <Pressable
         onPress={() => (vote === 'up' ? removeVote() : sendVote('up'))}
       >
