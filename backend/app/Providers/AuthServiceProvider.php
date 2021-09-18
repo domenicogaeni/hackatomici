@@ -49,7 +49,9 @@ class AuthServiceProvider extends ServiceProvider
                     
                     $customUser = User::where('firebase_uid', $uid)->first();
                     $response = new stdClass();                                                
-                    $response = (object)$customUser->getBasicInfo();                    
+                    if (isset($customUser)) {
+                        $response = (object)$customUser->getBasicInfo();                    
+                    }                    
                     $response->uid = $user->uid;                
                 } catch (\InvalidArgumentException $e) {
                     $response = null;
