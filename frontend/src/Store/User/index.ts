@@ -4,7 +4,8 @@ import SetUser from './SetUser'
 
 // This state is common to all the "user" module, and can be modified by any "user" reducers
 const sliceInitialState = {
-  user: {},
+  user: undefined,
+  shouldShowOnboarding: false,
 }
 
 export default buildSlice('user', [SetUser], sliceInitialState).reducer

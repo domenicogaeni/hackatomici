@@ -45,7 +45,7 @@ const Login = () => {
 
       if (meResponse.status === 200) {
         // User is logged in now
-        const userData = (await meResponse.json()) as UserModel
+        const userData = (await meResponse.json()).data as UserModel
         dispatch(SetUser.action({ user: userData }))
       }
       // eslint-disable-next-line no-catch-shadow
@@ -81,42 +81,46 @@ const Login = () => {
           method: 'GET',
           headers: {
             Authorization: 'Bearer ' + idToken,
+            'Content-Type': 'application/json',
           },
         })
 
         if (meResponse.status === 200) {
           // User is logged in now
-          const userData = (await meResponse.json()) as UserModel
+          const userData = (await meResponse.json()).data as UserModel
           dispatch(SetUser.action({ user: userData }))
+        } else {
+          try {
+            const registerResponse = await fetch(
+              Config.API_URL + '/auth/register',
+              {
+                method: 'POST',
+                headers: {
+                  Authorization: 'Bearer ' + idToken,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  firebase_uid: user.user.uid,
+                  email: user.user.email,
+                  name: givenName,
+                  surname: familyName,
+                }),
+              },
+            )
+
+            if (registerResponse.status === 200) {
+              // User is logged in now
+              const userData = (await meResponse.json()).data as UserModel
+              dispatch(SetUser.action({ user: userData }))
+            } else {
+              setError('Errore')
+            }
+          } catch (registerError) {
+            setError((registerError as any).message)
+          }
         }
       } catch (meError) {
-        try {
-          const registerResponse = await fetch(
-            Config.API_URL + '/auth/register',
-            {
-              method: 'POST',
-              headers: {
-                Authorization: 'Bearer ' + idToken,
-              },
-              body: JSON.stringify({
-                firebase_uid: user.user.uid,
-                email: user.user.email,
-                name: givenName,
-                surname: familyName,
-              }),
-            },
-          )
-
-          console.log('registerResponse', registerResponse)
-
-          if (registerResponse.status === 200) {
-            // User is logged in now
-            const userData = (await registerResponse.json()) as UserModel
-            dispatch(SetUser.action({ user: userData }))
-          }
-        } catch (registerError) {
-          setError((registerError as any).message)
-        }
+        setError((meError as any).message)
       }
     } catch (googleSignInError) {
       // setError((googleSignInError as any).message)
