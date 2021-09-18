@@ -48,8 +48,8 @@ const AddTrip = () => {
         body: JSON.stringify({
           name,
           description,
-          from_date: moment(dateFrom).format('YYYY-MM-DD'),
-          to_date: moment(dateTo).format('YYYY-MM-DD'),
+          from: moment(dateFrom).format('YYYY-MM-DD'),
+          to: moment(dateTo).format('YYYY-MM-DD'),
         }),
       })
 

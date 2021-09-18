@@ -8,8 +8,11 @@ import { Config } from '@/Config'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { map } from 'lodash'
 import moment from 'moment'
+import { useIsFocused } from '@react-navigation/core'
 
 const Trips = () => {
+  const isFocused = useIsFocused()
+
   const [trips, setTrips] = useState<Trip[]>([])
 
   const fetchTrips = useCallback(async () => {
@@ -36,14 +39,12 @@ const Trips = () => {
   }, [setTrips])
 
   useEffect(() => {
-    fetchTrips()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (isFocused) {
+      fetchTrips()
+    }
+  }, [fetchTrips, isFocused])
 
-  const addTrip = useCallback(async () => {
-    await navigate('AddTrip', {})
-    fetchTrips()
-  }, [fetchTrips])
+  const addTrip = useCallback(() => navigate('AddTrip', {}), [])
 
   const removeTrip = useCallback(
     async (trip: Trip) => {
