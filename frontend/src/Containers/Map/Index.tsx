@@ -43,7 +43,15 @@ const Map = () => {
     }
   }, [location, nearbySearchAsync, mapRef])
 
-  console.log('ciao')
+  const onMapPress = useCallback(
+    event => {
+      setLocation({
+        lat: event.nativeEvent.coordinate.latitude,
+        lng: event.nativeEvent.coordinate.longitude,
+      })
+    },
+    [setLocation],
+  )
 
   return (
     <View style={[Layout.fill, Layout.colCenter]}>
@@ -52,16 +60,8 @@ const Map = () => {
         initialRegion={initialRegion}
         style={{ flex: 1, width: '100%' }}
         provider="google"
-        onPress={useCallback(
-          a => {
-            console.log('premuto la mappa')
-            setLocation({
-              lat: a.nativeEvent.coordinate.latitude,
-              lng: a.nativeEvent.coordinate.longitude,
-            })
-          },
-          [setLocation],
-        )}
+        onPress={onMapPress}
+        onPoiClick={onMapPress}
       >
         {location && (
           <Marker
