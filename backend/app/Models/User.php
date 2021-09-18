@@ -12,7 +12,7 @@ class User extends BaseModel
         'institution_place_id'
     ];
 
-    protected $fillable = [
+    protected array $fillable = [
         'name',
         'surname',
         'email'

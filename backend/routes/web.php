@@ -3,6 +3,8 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FavouritePlaceController;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -22,5 +24,13 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->group(['prefix' => 'auth'], function () use ($router) {
         $router->post('/register', UserController::class . '@register');
         $router->post('/device_id', UserController::class . '@setDeviceId');
-    });    
+    });
+
+    $router->group(['prefix' => 'users'], function () use ($router) {
+        $router->group(['prefix' => 'favourite_places'], function () use ($router) {
+            $router->get('', FavouritePlaceController::class . '@getList');
+            $router->post('', FavouritePlaceController::class . '@add');
+            $router->delete('{id}', FavouritePlaceController::class . '@delete');
+        });
+    });
 });
