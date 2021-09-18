@@ -1,7 +1,9 @@
 import {
   AutoCompleteResult,
+  GooglePlaceDetail,
   NearbySearch,
   NearbySearchResult,
+  PlaceDetailResult,
   PlaceType,
   Point,
   Prediction,
@@ -12,19 +14,15 @@ import { GOOGLE_API_KEY } from '@env'
 export const autocomplete = async (
   text: string,
   sessionToken: string,
-  location?: Point,
 ): Promise<Prediction[] | null> => {
   try {
-    const { lat, lng } = location || {}
-
     const url = (placeType: PlaceType) =>
       'https://maps.googleapis.com/maps/api/place/autocomplete/json' +
       `?input=${text}` +
       '&language=it' +
       `&key=${GOOGLE_API_KEY}` +
       `&types=${placeType}` +
-      `&sessiontoken=${sessionToken}` +
-      (location ? `&location=${lat},${lng}` : '')
+      `&sessiontoken=${sessionToken}`
 
     const rawEstablishments = await fetch(url('establishment'))
     const responseEstablishments: AutoCompleteResult = await rawEstablishments.json()
@@ -64,6 +62,31 @@ export const nearbySearch = async (
 
     if (response) {
       return response.results
+    }
+  } catch (error) {
+    console.log(error)
+  }
+
+  return null
+}
+
+export const placeDetails = async (
+  placeId: string,
+  sessionToken: string,
+): Promise<GooglePlaceDetail | null> => {
+  try {
+    const url =
+      'https://maps.googleapis.com/maps/api/place/details/json' +
+      `?place_id=${placeId}` +
+      '&language=it' +
+      `&key=${GOOGLE_API_KEY}` +
+      `&sessiontoken=${sessionToken}`
+
+    const raw = await fetch(url)
+    const response: PlaceDetailResult = await raw.json()
+
+    if (response) {
+      return response.result
     }
   } catch (error) {
     console.log(error)
