@@ -1,4 +1,4 @@
-import { Trip } from '@/Models/Trip'
+import { ShortTrip } from '@/Models/Trip'
 import { navigate } from '@/Navigators/utils'
 import { Box, HStack, Pressable, Text, VStack } from 'native-base'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -13,7 +13,7 @@ import { useIsFocused } from '@react-navigation/core'
 const Trips = () => {
   const isFocused = useIsFocused()
 
-  const [trips, setTrips] = useState<Trip[]>([
+  const [trips, setTrips] = useState<ShortTrip[]>([
     {
       id: 1,
       description: null,
@@ -63,7 +63,7 @@ const Trips = () => {
   const addTrip = useCallback(() => navigate('AddTrip', {}), [])
 
   const removeTrip = useCallback(
-    async (trip: Trip) => {
+    async (trip: ShortTrip) => {
       try {
         const currentUser = await auth().currentUser
         if (!currentUser) {
@@ -87,12 +87,12 @@ const Trips = () => {
   )
 
   const openTrip = useCallback(
-    (trip: Trip) => navigate('TripDetail', { trip }),
+    (trip: ShortTrip) => navigate('TripDetail', { tripId: trip.id }),
     [],
   )
 
   const renderItem = useCallback(
-    (item: Trip, index: number) => {
+    (item: ShortTrip, index: number) => {
       const formattedFromDate = item.from
         ? moment(item.from, 'YYYY-MM-DD').format('DD/MM/YYYY')
         : 'Oggi'
@@ -101,14 +101,8 @@ const Trips = () => {
         : 'Oggi'
 
       return (
-        <Pressable onPress={() => openTrip(item)}>
-          <Box
-            key={`${item.id}_${index}`}
-            borderRadius={8}
-            bg="primary.500"
-            padding={4}
-            marginBottom={4}
-          >
+        <Pressable key={`${item.id}_${index}`} onPress={() => openTrip(item)}>
+          <Box borderRadius={8} bg="primary.500" padding={4} marginBottom={4}>
             <HStack justifyContent="space-between" alignItems="center">
               <VStack flex={1} marginRight={2}>
                 <Text fontSize="xxs" color="primary.50">

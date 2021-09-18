@@ -4,7 +4,6 @@ import {
   NearbySearch,
   NearbySearchResult,
   PlaceDetailResult,
-  PlaceType,
   Point,
   Prediction,
 } from './googlePlacesTypings'
@@ -16,24 +15,17 @@ export const autocomplete = async (
   sessionToken: string,
 ): Promise<Prediction[] | null> => {
   try {
-    const url = (placeType: PlaceType) =>
+    const url =
       'https://maps.googleapis.com/maps/api/place/autocomplete/json' +
       `?input=${text}` +
       '&language=it' +
       `&key=${GOOGLE_API_KEY}` +
-      `&types=${placeType}` +
       `&sessiontoken=${sessionToken}`
 
-    const rawEstablishments = await fetch(url('establishment'))
-    const responseEstablishments: AutoCompleteResult = await rawEstablishments.json()
+    const raw = await fetch(url)
+    const response: AutoCompleteResult = await raw.json()
 
-    const rawAddresses = await fetch(url('address'))
-    const responseAddresses: AutoCompleteResult = await rawAddresses.json()
-
-    return [
-      ...(responseEstablishments?.predictions || []),
-      ...(responseAddresses?.predictions || []),
-    ]
+    return response?.predictions || []
   } catch (error) {
     console.log(error)
   }

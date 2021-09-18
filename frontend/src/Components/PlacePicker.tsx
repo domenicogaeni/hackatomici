@@ -7,10 +7,16 @@ import { debounce } from 'lodash'
 
 interface Props {
   sessionToken: string
+  // eslint-disable-next-line react/require-default-props
+  autoClean?: boolean
   onPlacePicked: (item: LocationPickerItem) => void
 }
 
-const InterestPlacePicker = ({ sessionToken, onPlacePicked }: Props) => {
+const PlacePicker = ({
+  sessionToken,
+  autoClean = true,
+  onPlacePicked,
+}: Props) => {
   const [query, setQuery] = useState<string>()
   const [items, setItems] = useState<LocationPickerItem[]>()
   const [showResults, setShowResults] = useState<boolean>(false)
@@ -62,7 +68,11 @@ const InterestPlacePicker = ({ sessionToken, onPlacePicked }: Props) => {
               key={element.place_id + index}
               element={element}
               onPress={() => {
-                setQuery(undefined)
+                if (autoClean) {
+                  setQuery(undefined)
+                } else {
+                  setQuery(element.description)
+                }
                 onPlacePicked(element)
                 Keyboard.dismiss()
                 setShowResults(false)
@@ -98,4 +108,4 @@ const SuggestedElement = ({ element, onPress }: SuggestedElementProps) => {
   )
 }
 
-export default InterestPlacePicker
+export default PlacePicker
