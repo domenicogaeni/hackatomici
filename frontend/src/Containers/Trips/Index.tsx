@@ -9,11 +9,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { map } from 'lodash'
 import moment from 'moment'
 import { useIsFocused } from '@react-navigation/core'
+import { ActivityIndicator } from 'react-native'
 
 const Trips = () => {
   const isFocused = useIsFocused()
 
   const [trips, setTrips] = useState<ShortTrip[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchTrips = useCallback(async () => {
     try {
@@ -40,7 +42,13 @@ const Trips = () => {
 
   useEffect(() => {
     if (isFocused) {
-      fetchTrips()
+      const fetchTripsAsync = async () => {
+        setIsLoading(true)
+        await fetchTrips()
+        setIsLoading(false)
+      }
+
+      fetchTripsAsync()
     }
   }, [fetchTrips, isFocused])
 
@@ -133,7 +141,11 @@ const Trips = () => {
             <Icon name="add-circle" size={32} color="#14b8a6" />
           </Pressable>
         </HStack>
-        {map(trips, (trip, index) => renderItem(trip, index))}
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          map(trips, (trip, index) => renderItem(trip, index))
+        )}
       </Box>
     </KeyboardAwareScrollView>
   )

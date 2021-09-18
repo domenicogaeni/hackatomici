@@ -1,6 +1,6 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Account, Community, Map, Trips } from '@/Containers'
+import { Account, Map, Trips } from '@/Containers'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const Tab = createBottomTabNavigator()
@@ -39,11 +39,6 @@ const TabNavigator = () => {
         name="Trips"
         options={{ title: 'Itinerari' }}
         component={Trips}
-      />
-      <Tab.Screen
-        name="Community"
-        options={{ title: 'Community' }}
-        component={Community}
       />
       <Tab.Screen
         name="Account"

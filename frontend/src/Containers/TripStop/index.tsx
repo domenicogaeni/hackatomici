@@ -131,6 +131,7 @@ const TripStop = ({ stop, openPlaceDetail }: ITripStopProps) => {
             <Box marginTop={4}>
               {map(stop.points, (point, index) => (
                 <TripPoint
+                  key={`${point.id}_${index}`}
                   isFirst={index === 0}
                   openPlaceDetail={openPlaceDetail}
                   point={point}
