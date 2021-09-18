@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Box, Button, HStack, Pressable, Text } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import InterestPlacePicker from '@/Components/InterestPlacePicker'
@@ -10,15 +10,16 @@ import SetUser from '@/Store/User/SetUser'
 import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
+import { FavoritePlace } from '@/Models/FavoritePlace'
 
 const FavoritePlaces = () => {
   const dispatch = useDispatch()
 
-  const [interestPoints, setInterestPoints] = React.useState<
-    LocationPickerItem[]
+  const [interestPoints, setInterestPoints] = useState<
+    (LocationPickerItem | FavoritePlace)[]
   >([])
-  const [dirty, setDirty] = React.useState<boolean>(false)
-  const [error, setError] = React.useState<string>()
+  const [dirty, setDirty] = useState<boolean>(false)
+  const [error, setError] = useState<string>()
 
   const sessionToken = useMemo(() => uuid.v4() as string, [])
 
@@ -52,50 +53,6 @@ const FavoritePlaces = () => {
     fetchFavoritePlacesAsync()
   }, [])
 
-  const onPlacePicked = useCallback(
-    (place: LocationPickerItem) => {
-      setInterestPoints(prev =>
-        some(prev, p => p.place_id === place.place_id)
-          ? prev
-          : [...prev, place],
-      )
-      setDirty(true)
-    },
-    [setInterestPoints, setDirty],
-  )
-
-  const removeItem = useCallback(
-    (item: LocationPickerItem) => {
-      setInterestPoints(prev =>
-        filter(prev, (i: LocationPickerItem) => i.place_id !== item.place_id),
-      )
-    },
-    [setInterestPoints],
-  )
-
-  const renderItem = useCallback(
-    (item: LocationPickerItem, index: number) => (
-      <Box
-        borderRadius={4}
-        borderWidth={1}
-        borderColor="primary.300"
-        padding={3}
-        marginTop={2}
-        key={`${item.place_id}_${index}`}
-      >
-        <HStack justifyContent="space-between" alignItems="center">
-          <Text flex={1} marginRight={2}>
-            {item.description}
-          </Text>
-          <Pressable onPress={() => removeItem(item)}>
-            <Icon name="close-circle" size={22} color="#ef4444" />
-          </Pressable>
-        </HStack>
-      </Box>
-    ),
-    [removeItem],
-  )
-
   const save = useCallback(async () => {
     try {
       const currentUser = await auth().currentUser
@@ -123,7 +80,58 @@ const FavoritePlaces = () => {
     } catch (signInError) {}
 
     dispatch(SetUser.action({ shouldShowOnboarding: false }))
+    setDirty(false)
   }, [dispatch, interestPoints, setError])
+
+  const onPlacePicked = useCallback(
+    (place: LocationPickerItem | FavoritePlace) => {
+      setInterestPoints(prev =>
+        some(prev, p => p.place_id === place.place_id)
+          ? prev
+          : [...prev, place],
+      )
+      setDirty(true)
+    },
+    [setInterestPoints, setDirty],
+  )
+
+  const removeItem = useCallback(
+    (item: LocationPickerItem | FavoritePlace) => {
+      setInterestPoints(prev =>
+        filter(
+          prev,
+          (i: LocationPickerItem | FavoritePlace) =>
+            i.place_id !== item.place_id,
+        ),
+      )
+      setDirty(true)
+    },
+    [setInterestPoints, setDirty],
+  )
+
+  const renderItem = useCallback(
+    (item: LocationPickerItem | FavoritePlace, index: number) => (
+      <Box
+        borderRadius={4}
+        borderWidth={1}
+        borderColor="primary.300"
+        padding={3}
+        marginTop={2}
+        key={`${item.place_id}_${index}`}
+      >
+        <HStack justifyContent="space-between" alignItems="center">
+          <Text flex={1} marginRight={2}>
+            {(item as LocationPickerItem).description ||
+              (item as FavoritePlace).name}
+          </Text>
+          <Pressable onPress={() => removeItem(item)}>
+            <Icon name="close-circle" size={22} color="#ef4444" />
+          </Pressable>
+        </HStack>
+      </Box>
+    ),
+    [removeItem],
+  )
 
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
