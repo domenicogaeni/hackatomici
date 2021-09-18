@@ -43,10 +43,9 @@ class AuthServiceProvider extends ServiceProvider
                         $uid = $idTokenString;
                     } else {
                         $verifiedIdToken = $auth->verifyIdToken($idTokenString);
-                        $uid = $verifiedIdToken->getClaim('sub');
+                        $uid = $verifiedIdToken->claims()->get('sub');
                     }                        
                     $user = $auth->getUser($uid);
-                    
                     $customUser = User::where('firebase_uid', $uid)->first();
                     $response = new stdClass();                                                
                     if (isset($customUser)) {
