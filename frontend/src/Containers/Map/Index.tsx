@@ -3,7 +3,7 @@ import { nearbySearch } from '@/Services/GooglePlaces/googlePlacesApi'
 import { Point } from '@/Services/GooglePlaces/googlePlacesTypings'
 import { useTheme } from '@/Theme'
 import { Box } from 'native-base'
-import React, { useState, useCallback, useEffect, useRef } from 'react'
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { View } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import uuid from 'react-native-uuid'
@@ -20,7 +20,8 @@ const Map = () => {
   const mapRef = useRef<MapView>(null)
 
   const [location, setLocation] = useState<Point>()
-  const sessionToken = uuid.v4() as string
+
+  const sessionToken = useMemo(() => uuid.v4() as string, [])
 
   const nearbySearchAsync = useCallback(async () => {
     if (location) {
