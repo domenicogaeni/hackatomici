@@ -23,6 +23,7 @@ const Login = () => {
   const login = useCallback(async () => {
     Keyboard.dismiss()
     if (!email || !password) {
+      setError('Per favore, riempi tutti i campi')
       return
     }
 
@@ -64,48 +65,61 @@ const Login = () => {
     try {
       await GoogleSignin.hasPlayServices()
       const user = await GoogleSignin.signIn()
-      const meResponse = await fetch(Config.API_URL + '/auth/me', {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer ' + user.idToken,
-        },
-      })
 
-      if (meResponse.status === 200) {
-        // User is logged in now
-        const userData = (await meResponse.json()) as UserModel
-        dispatch(SetUser.action({ user: userData }))
-      } else {
-        const registerResponse = await fetch(
-          Config.API_URL + '/auth/register',
-          {
-            method: 'POST',
-            headers: {
-              Authorization: 'Bearer ' + user.idToken,
-            },
-            body: JSON.stringify({
-              firebase_uid: user.user.id,
-              email: user.user.email,
-              name: user.user.givenName,
-              surname: user.user.familyName,
-            }),
+      try {
+        const meResponse = await fetch(Config.API_URL + '/auth/me', {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer ' + user.idToken,
           },
-        )
+        })
 
-        console.log(registerResponse)
-
-        if (registerResponse.status === 200) {
+        if (meResponse.status === 200) {
           // User is logged in now
-          const userData = (await registerResponse.json()) as UserModel
+          const userData = (await meResponse.json()) as UserModel
           dispatch(SetUser.action({ user: userData }))
         }
+      } catch (meError) {
+        try {
+          console.log('register', user.idToken, {
+            firebase_uid: user.user.id,
+            email: user.user.email,
+            name: user.user.givenName,
+            surname: user.user.familyName,
+          })
+          const registerResponse = await fetch(
+            Config.API_URL + '/auth/register',
+            {
+              method: 'POST',
+              headers: {
+                Authorization: 'Bearer ' + user.idToken,
+              },
+              body: JSON.stringify({
+                firebase_uid: user.user.id,
+                email: user.user.email,
+                name: user.user.givenName,
+                surname: user.user.familyName,
+              }),
+            },
+          )
+
+          console.log('registerResponse', registerResponse)
+
+          if (registerResponse.status === 200) {
+            // User is logged in now
+            const userData = (await registerResponse.json()) as UserModel
+            dispatch(SetUser.action({ user: userData }))
+          }
+        } catch (registerError) {
+          setError((registerError as any).message)
+        }
       }
-    } catch (error) {
-      console.log(error)
+    } catch (googleSignInError) {
+      setError((googleSignInError as any).message)
     }
 
     setSigningIn(false)
-  }, [setSigningIn, dispatch])
+  }, [dispatch])
 
   const onChangeEmail = useCallback(
     (text: string) => {
