@@ -23,6 +23,9 @@ class ReportHelper
 
         // Per i padri
         foreach (PlaceApiHelper::getAddressComponentsPlaceIds($placeId) as $componentPlaceId) {
+            if($componentPlaceId == $placeId) {
+                continue;
+            }
             $placeReports = Report::where('place_id', $componentPlaceId)
                 ->where('from', '<=', $dateFrom)
                 ->where(function (Builder $query) use ($dateTo) {
@@ -31,7 +34,7 @@ class ReportHelper
                 })
                 ->get()
                 ->toArray();
-            $reports = array_unique(array_merge($reports, $placeReports));
+            $reports = array_merge($reports, $placeReports);
         }
 
         return $reports;
