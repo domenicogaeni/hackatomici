@@ -15,57 +15,52 @@ import TripStopConnector from '../TripStopConnector'
 import TripCircleIcon from '../TripCircleIcon'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { ActivityIndicator } from 'react-native'
-import { useIsFocused } from '@react-navigation/native'
 
 const TripDetail = ({ route }: any) => {
   const { tripId } = route.params || {}
 
-  const isFocused = useIsFocused()
-
   const [trip, setTrip] = useState<Trip>()
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchTrip = useCallback(
-    async (id: number) => {
-      setIsLoading(true)
+  const fetchTrip = useCallback(async () => {
+    try {
+      const currentUser = await auth().currentUser
+      if (!currentUser) {
+        return
+      }
 
-      try {
-        const currentUser = await auth().currentUser
-        if (!currentUser) {
-          return
-        }
+      const idToken = await currentUser.getIdToken()
 
-        const idToken = await currentUser.getIdToken()
+      const getTripResponse = await fetch(`${Config.API_URL}/trips/${tripId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + idToken,
+          'Content-Type': 'application/json',
+        },
+      })
 
-        const getTripResponse = await fetch(`${Config.API_URL}/trips/${id}`, {
-          method: 'GET',
-          headers: {
-            Authorization: 'Bearer ' + idToken,
-            'Content-Type': 'application/json',
-          },
-        })
-
-        if (getTripResponse.status === 200) {
-          setTrip((await getTripResponse.json()).data)
-        }
-      } catch (readTripError) {}
-
-      setIsLoading(false)
-    },
-    [setTrip, setIsLoading],
-  )
+      if (getTripResponse.status === 200) {
+        setTrip((await getTripResponse.json()).data)
+      }
+    } catch (readTripError) {}
+  }, [tripId, setTrip])
 
   useEffect(() => {
-    if (isFocused && tripId) {
-      fetchTrip(tripId)
+    const fetchTripAsync = async () => {
+      setIsLoading(true)
+      await fetchTrip()
+      setIsLoading(false)
     }
-  }, [fetchTrip, isFocused, tripId])
+
+    fetchTripAsync()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const addTripStop = useCallback(() => {
     if (trip) {
-      navigate('AddTripStop', { tripId: trip.id })
+      navigate('AddTripStop', { tripId: trip.id, onTripStopAdded: fetchTrip })
     }
-  }, [trip])
+  }, [fetchTrip, trip])
 
   const openPlaceDetail = useCallback((placeId: string) => {
     // TODO: open place detail

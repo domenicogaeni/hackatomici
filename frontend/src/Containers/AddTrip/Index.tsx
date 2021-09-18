@@ -9,7 +9,9 @@ import moment from 'moment'
 import { Config } from '@/Config'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
-const AddTrip = () => {
+const AddTrip = ({ route }: any) => {
+  const { onTripAdded } = route.params || {}
+
   const [name, setName] = useState<string | undefined>()
   const [description, setDescription] = useState<string | undefined>()
   const [dateFrom, setDateFrom] = useState<Date>(moment().toDate())
@@ -54,10 +56,11 @@ const AddTrip = () => {
       })
 
       if (addTripResponse.status === 200) {
+        onTripAdded?.()
         goBack()
       }
     } catch (addTripError) {}
-  }, [name, description, dateFrom, dateTo])
+  }, [name, dateFrom, dateTo, description, onTripAdded])
 
   const onChangeName = useCallback(
     (text: string) => {

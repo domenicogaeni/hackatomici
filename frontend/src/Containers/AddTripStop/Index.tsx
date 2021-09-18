@@ -15,7 +15,7 @@ import { filter, map, some } from 'lodash'
 import PlacePicker from '@/Components/PlacePicker'
 
 const AddTripStop = ({ route }: any) => {
-  const { tripId } = route.params || {}
+  const { tripId, onTripStopAdded } = route.params || {}
 
   const [place, setPlace] = useState<LocationPickerItem>()
   const [dateFrom, setDateFrom] = useState<Date>(moment().toDate())
@@ -67,10 +67,11 @@ const AddTripStop = ({ route }: any) => {
       )
 
       if (addStopResponse.status === 200) {
+        onTripStopAdded?.()
         goBack()
       }
     } catch (addStopError) {}
-  }, [place, dateFrom, dateTo, tripId, points])
+  }, [place, dateFrom, dateTo, tripId, points, onTripStopAdded])
 
   const onChangePlace = useCallback(
     (item: LocationPickerItem) => {
