@@ -19,7 +19,7 @@ const RootNavigator = () => {
   const { Layout } = useTheme()
   const dispatch = useDispatch()
 
-  const user = useSelector((state: { user: UserState }) => state.user.item)
+  const user = useSelector((state: { user: UserState }) => state.user.user)
   const shouldShowOnboarding = useSelector(
     (state: { user: UserState }) => state.user.shouldShowOnboarding,
   )

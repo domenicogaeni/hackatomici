@@ -1,19 +1,15 @@
 import { User } from '@/Models/User'
 import { buildSlice } from '@thecodingmachine/redux-toolkit-wrapper'
-import FetchOne from './FetchOne'
+import SetUser from './SetUser'
 
 // This state is common to all the "user" module, and can be modified by any "user" reducers
 const sliceInitialState = {
-  item: {},
+  user: {},
 }
 
-export default buildSlice('user', [FetchOne], sliceInitialState).reducer
+export default buildSlice('user', [SetUser], sliceInitialState).reducer
 
 export interface UserState {
-  item: User
+  user: User
   shouldShowOnboarding: boolean
-  fetchOne: {
-    loading: boolean
-    error: any
-  }
 }
