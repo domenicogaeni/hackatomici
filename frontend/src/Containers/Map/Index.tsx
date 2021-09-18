@@ -7,11 +7,24 @@ import {
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet'
-import { Box, HStack, Text, VStack } from 'native-base'
+import {
+  Box,
+  Button,
+  HStack,
+  Text,
+  VStack,
+  View as RBView,
+  Pressable,
+} from 'native-base'
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { View } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import uuid from 'react-native-uuid'
+import Icon from 'react-native-vector-icons/Ionicons'
+import auth from '@react-native-firebase/auth'
+import { useDispatch } from 'react-redux'
+import SetUser from '@/Store/User/SetUser'
+import { Config } from '@/Config'
 
 const initialRegion = {
   latitude: 45.7314,
@@ -34,6 +47,8 @@ const test = {
       to: null,
       created_at: '2021-09-18 15:31:45',
       updated_at: '2021-09-18 15:31:45',
+      score: 1,
+      vote: null,
     },
     {
       id: 2,
@@ -42,11 +57,13 @@ const test = {
       title: 'Obbligo delle mutande',
       description: 'Tenerlo dentro',
       level: 'white',
-      type: 'community',
+      type: 'verified',
       from: '2021-09-18',
       to: null,
       created_at: '2021-09-18 16:13:28',
       updated_at: '2021-09-18 16:13:28',
+      score: 2,
+      vote: 'up',
     },
     {
       id: 3,
@@ -60,6 +77,8 @@ const test = {
       to: null,
       created_at: '2021-09-18 15:31:45',
       updated_at: '2021-09-18 15:31:45',
+      score: 4,
+      vote: 'up',
     },
     {
       id: 4,
@@ -73,6 +92,8 @@ const test = {
       to: null,
       created_at: '2021-09-18 16:13:28',
       updated_at: '2021-09-18 16:13:28',
+      score: -3,
+      vote: 'down',
     },
   ],
 }
@@ -168,10 +189,16 @@ const Map = () => {
                   color={content.level}
                   dateFrom={content.from}
                   dateTo={content.to}
+                  score={content.score}
+                  vote={content.vote}
+                  type={content.type}
                 />
               ))}
             </View>
           </BottomSheetScrollView>
+          <RBView p={4} bg="primary.50">
+            <Button onPress={() => {}}>+ Aggiungi segnalazione</Button>
+          </RBView>
         </BottomSheetModal>
       </View>
     </BottomSheetModalProvider>
@@ -184,6 +211,10 @@ interface ReportProps {
   color: string
   dateFrom: string
   dateTo: string
+  score: number
+  vote: 'up' | 'down' | null
+  id: string
+  type: 'community' | 'verified'
 }
 
 const Report = ({
@@ -192,6 +223,10 @@ const Report = ({
   color,
   dateFrom,
   dateTo,
+  score,
+  vote,
+  id,
+  type,
 }: ReportProps) => {
   return (
     <Box
@@ -235,8 +270,91 @@ const Report = ({
             </Text>
           </VStack>
         </Box>
+        {type === 'community' ? (
+          <Score score={score} vote={vote} reportId={id} />
+        ) : (
+          <Icon name="shield-checkmark" size={22} color={'black'} />
+        )}
       </HStack>
     </Box>
+  )
+}
+
+interface ScoreProps {
+  score: number
+  vote: 'up' | 'down' | null
+  reportId: string
+}
+
+const Score = ({ score, vote, reportId }: ScoreProps) => {
+  const dispatch = useDispatch()
+  const sendVote = useCallback(
+    async value => {
+      try {
+        const currentUser = await auth().currentUser
+        if (!currentUser) {
+          dispatch(SetUser.action({ shouldShowOnboarding: false }))
+          return
+        }
+
+        const idToken = await currentUser.getIdToken()
+
+        await fetch(`${Config.API_URL}/reports/${reportId}/vote`, {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + idToken,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            vote: value,
+          }),
+        })
+      } catch (signInError) {}
+    },
+    [dispatch, reportId],
+  )
+
+  const removeVote = useCallback(async () => {
+    try {
+      const currentUser = await auth().currentUser
+      if (!currentUser) {
+        return
+      }
+
+      const idToken = await currentUser.getIdToken()
+
+      await fetch(`${Config.API_URL}/reports/${reportId}/vote`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: 'Bearer ' + idToken,
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (signInError) {}
+  }, [reportId])
+
+  return (
+    <VStack alignItems="center" paddingX="1" bg="rgba(255, 255, 255, 0.2)">
+      <Pressable
+        onPress={() => (vote === 'up' ? removeVote() : sendVote('up'))}
+      >
+        <Icon
+          name="caret-up-outline"
+          size={22}
+          color={vote === 'up' ? 'black' : 'grey'}
+        />
+      </Pressable>
+      <Text>{score}</Text>
+      <Pressable
+        onPress={() => (vote === 'down' ? removeVote() : sendVote('down'))}
+      >
+        <Icon
+          name="caret-down-outline"
+          size={22}
+          color={vote === 'down' ? 'black' : 'grey'}
+        />
+      </Pressable>
+    </VStack>
   )
 }
 
