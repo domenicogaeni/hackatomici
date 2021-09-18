@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,5 +43,14 @@ class UserController extends BaseController
         $currentUser->device_id = $request->input('device_id');
 
         $currentUser->save();
+    }
+
+    public function me()
+    {
+        if (!isset(Auth::user()->id)) {
+            throw new Exception('user not register.', 500);
+        }
+
+        return User::find(Auth::user()->id);
     }
 }
