@@ -74,39 +74,37 @@ const SetupNameAndSurname = ({ route }: any) => {
 
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <Box justifyContent="center" alignItems="center" flex={1} bg="white">
-        <Box borderRadius={8} width="100%" padding={8}>
-          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-            {'Dicci di più su di te!'}
+      <Box height="100%" width="100%" bg="white" padding={8}>
+        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+          {'Dicci di più su di te!'}
+        </Text>
+        <Text marginBottom={2}>Nome:</Text>
+        <Input
+          marginBottom={4}
+          placeholder="Pinco"
+          isFullWidth={true}
+          value={name}
+          onChangeText={onChangeName}
+        />
+        <Text marginBottom={2}>Cognome:</Text>
+        <Input
+          marginBottom={4}
+          placeholder="Pallino"
+          isFullWidth={true}
+          value={surname}
+          onChangeText={onChangeSurname}
+        />
+        <Button marginBottom={4} onPress={registration}>
+          Continua
+        </Button>
+        {error && (
+          <Text color="red.500" marginBottom={4}>
+            {error}
           </Text>
-          <Text marginBottom={2}>Nome:</Text>
-          <Input
-            marginBottom={4}
-            placeholder="Pinco"
-            isFullWidth={true}
-            value={name}
-            onChangeText={onChangeName}
-          />
-          <Text marginBottom={2}>Cognome:</Text>
-          <Input
-            marginBottom={4}
-            placeholder="Pallino"
-            isFullWidth={true}
-            value={surname}
-            onChangeText={onChangeSurname}
-          />
-          <Button marginBottom={4} onPress={registration}>
-            Continua
-          </Button>
-          {error && (
-            <Text color="red.500" marginBottom={4}>
-              {error}
-            </Text>
-          )}
-          <Button variant="link" onPress={back}>
-            Indietro
-          </Button>
-        </Box>
+        )}
+        <Button variant="link" onPress={back}>
+          Indietro
+        </Button>
       </Box>
     </KeyboardAwareScrollView>
   )

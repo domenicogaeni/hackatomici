@@ -67,50 +67,48 @@ const Registration = () => {
 
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <Box justifyContent="center" alignItems="center" flex={1} bg="white">
-        <Box borderRadius={8} width="100%" padding={8}>
-          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-            Registrazione
+      <Box height="100%" width="100%" bg="white" padding={8}>
+        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+          Registrazione
+        </Text>
+        <Text marginBottom={2}>Email:</Text>
+        <Input
+          marginBottom={4}
+          placeholder="bestemailever@example.com"
+          autoCapitalize="none"
+          isFullWidth={true}
+          value={email}
+          onChangeText={onChangeEmail}
+        />
+        <Text marginBottom={2}>Password:</Text>
+        <Input
+          marginBottom={4}
+          secureTextEntry={true}
+          placeholder="Password123!"
+          isFullWidth={true}
+          value={password}
+          onChangeText={onChangePassword}
+        />
+        <Text marginBottom={2}>Conferma password:</Text>
+        <Input
+          marginBottom={8}
+          secureTextEntry={true}
+          placeholder="Password123!"
+          isFullWidth={true}
+          value={confirm}
+          onChangeText={onChangeConfirm}
+        />
+        <Button marginBottom={4} onPress={register}>
+          Registrati
+        </Button>
+        {error && (
+          <Text color="red.500" marginBottom={4}>
+            {error}
           </Text>
-          <Text marginBottom={2}>Email:</Text>
-          <Input
-            marginBottom={4}
-            placeholder="bestemailever@example.com"
-            autoCapitalize="none"
-            isFullWidth={true}
-            value={email}
-            onChangeText={onChangeEmail}
-          />
-          <Text marginBottom={2}>Password:</Text>
-          <Input
-            marginBottom={4}
-            secureTextEntry={true}
-            placeholder="Password123!"
-            isFullWidth={true}
-            value={password}
-            onChangeText={onChangePassword}
-          />
-          <Text marginBottom={2}>Conferma password:</Text>
-          <Input
-            marginBottom={8}
-            secureTextEntry={true}
-            placeholder="Password123!"
-            isFullWidth={true}
-            value={confirm}
-            onChangeText={onChangeConfirm}
-          />
-          <Button marginBottom={4} onPress={register}>
-            Registrati
-          </Button>
-          {error && (
-            <Text color="red.500" marginBottom={4}>
-              {error}
-            </Text>
-          )}
-          <Button variant="link" onPress={backToLogin}>
-            Torna al login
-          </Button>
-        </Box>
+        )}
+        <Button variant="link" onPress={backToLogin}>
+          Torna al login
+        </Button>
       </Box>
     </KeyboardAwareScrollView>
   )

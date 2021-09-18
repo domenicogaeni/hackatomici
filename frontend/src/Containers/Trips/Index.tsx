@@ -32,7 +32,7 @@ const Trips = () => {
       if (getTripsResponse.status === 200) {
         setTrips((await getTripsResponse.json()).data)
       }
-    } catch (signInError) {}
+    } catch (readTripError) {}
   }, [setTrips])
 
   useEffect(() => {
