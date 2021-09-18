@@ -12,7 +12,7 @@ class Report extends BaseModel
     public const COMMUNITY = 'community';
     public const VERIFIED = 'verified';
 
-    protected array $fillable = [
+    protected $fillable = [
         'title',
         'description',
         'level',

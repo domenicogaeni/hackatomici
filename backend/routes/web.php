@@ -37,6 +37,6 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     });
 
     $router->group(['prefix' => 'reports'], function () use ($router) {
-        $router->post('/places/{place_id}', ReportController::class . '@new');
+        $router->post('/places/{placeId}', ReportController::class . '@new');
     });
 });
