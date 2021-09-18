@@ -14,6 +14,7 @@ class Trip extends BaseModel
     ];
 
     protected $appends = ['level'];
+    protected $hidden = ['user_id'];
 
     public function getLevelAttribute()
     {

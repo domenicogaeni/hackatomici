@@ -132,4 +132,31 @@ class TripController extends BaseController
         TripPoint::where('trip_id', $tripId)->where('parent_id', $stopId)->delete();
         $tripPoint->delete();       
     }
+
+    public function get($tripId)
+    {
+        $currentUser = Auth::user();
+        $trip = Trip::where('user_id', $currentUser->id)->findOrFail($tripId);
+        $stops = TripPoint::where('trip_id', $tripId)
+            ->whereNull('parent_id')
+            ->orderBy('from')
+            ->orderBy('to')
+            ->get();
+
+        $response = $trip->toArray();
+        
+
+        foreach ($stops as $item) {
+            $tmp = $item->toArray();
+            $points = TripPoint::where('trip_id', $tripId)
+                ->where('parent_id', $item->id)
+                ->orderBy('from')
+                ->orderBy('to')
+                ->get();
+            $tmp['points'] = $points->toArray();
+            $response['stops'][] = $tmp;
+        }
+
+        return $response;
+    }
 }
