@@ -4,6 +4,7 @@ import TabNavigator from './TabNavigator'
 import FavoritePlaces from '@/Containers/FavoritePlaces/Index'
 import AddTrip from '@/Containers/AddTrip/Index'
 import TripDetail from '@/Containers/TripDetail/Index'
+import AddTripStop from '@/Containers/AddTripStop/Index'
 
 const Stack = createStackNavigator()
 
@@ -14,6 +15,7 @@ const HomeNavigator = () => {
       <Stack.Screen name="TabNavigator" component={TabNavigator} />
       <Stack.Screen name="AddTrip" component={AddTrip} />
       <Stack.Screen name="TripDetail" component={TripDetail} />
+      <Stack.Screen name="AddTripStop" component={AddTripStop} />
       <Stack.Screen name="FavoritePlaces" component={FavoritePlaces} />
     </Stack.Navigator>
   )

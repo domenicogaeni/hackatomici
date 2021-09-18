@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Box, Button, HStack, Pressable, Text } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import InterestPlacePicker from '@/Components/InterestPlacePicker'
+import PlacePicker from '@/Components/PlacePicker'
 import uuid from 'react-native-uuid'
 import { LocationPickerItem } from '@/Services/GooglePlaces/googlePlacesTypings'
 import { filter, map, some } from 'lodash'
@@ -142,7 +142,7 @@ const FavoritePlaces = () => {
         <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
           {"Luoghi d'interesse"}
         </Text>
-        <InterestPlacePicker
+        <PlacePicker
           sessionToken={sessionToken}
           onPlacePicked={onPlacePicked}
         />

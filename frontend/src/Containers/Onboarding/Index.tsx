@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { Box, Button, HStack, Pressable, Text } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import InterestPlacePicker from '@/Components/InterestPlacePicker'
+import PlacePicker from '@/Components/PlacePicker'
 import uuid from 'react-native-uuid'
 import { LocationPickerItem } from '@/Services/GooglePlaces/googlePlacesTypings'
 import { filter, map } from 'lodash'
@@ -91,7 +91,7 @@ const Onboarding = () => {
         <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
           {'Imposta i tuoi\nluoghi di interesse!'}
         </Text>
-        <InterestPlacePicker
+        <PlacePicker
           sessionToken={sessionToken}
           onPlacePicked={onPlacePicked}
         />
