@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Report extends Model
+class Report extends BaseModel
 {
     public function user()
     {

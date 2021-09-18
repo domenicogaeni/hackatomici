@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class User extends Model
+class User extends BaseModel
 {
     public const BASIC_FIELDS = ['id', 'name', 'surname', 'email', 'institution_place_id'];
 

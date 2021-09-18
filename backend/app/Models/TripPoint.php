@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class TripPoint extends Model
+class TripPoint extends BaseModel
 {
     public function trip()
     {

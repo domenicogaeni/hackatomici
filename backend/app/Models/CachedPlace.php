@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class CachedPlace extends Model
+class CachedPlace extends BaseModel
 {
     protected $primaryKey = 'place_id';
 }
