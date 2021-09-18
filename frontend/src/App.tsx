@@ -1,11 +1,14 @@
 import { RootNavigator } from '@/Navigators'
 import { persistor, store } from '@/Store'
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { extendTheme, NativeBaseProvider } from 'native-base'
 import React from 'react'
 import 'react-native-gesture-handler'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/lib/integration/react'
 import './Translations'
+
+GoogleSignin.configure()
 
 const theme = extendTheme({
   colors: {
