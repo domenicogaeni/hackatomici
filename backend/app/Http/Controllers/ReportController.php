@@ -14,22 +14,33 @@ class ReportController extends BaseController
     {
         return array_merge(parent::getValidationRules(), [
             'new' => [
-                'place_id' => 'required|string',
                 'title' => 'required|string',
-                'descriprion' => 'required|string',
+                'description' => 'required|string',
                 'level' => ['required', Rule::in([
                     Report::WHITE,
                     Report::YELLOW,
                     Report::ORANGE,
                     Report::RED
                 ])],
-                'from' => 'required|datetime',
-                'to' => 'fillable|datetime',
+                'from' => 'required|date',
+                'to' => 'filled|date',
             ],
         ]);
     }
 
-    public function new(Request $request)
-    {        
+    public function new(Request $request, $placeId)
+    {
+        $fillable = $request->only(['title', 'description', 'level', 'from', 'to']);
+        $currentUser = Auth::user();
+        $report = new Report();
+        $report->fill($fillable);
+        $report->place_id = $placeId;
+        $report->user_id = $currentUser->id;
+        $report->type = $currentUser->institution_place_id ? Report::VERIFIED : Report::COMMUNITY;
+        
+        $report->save();
+        $report->refresh();
+
+        // TODO: Mandare le notifiche alle persone coinvolte in questa comunicazione. 
     }
 }

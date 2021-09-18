@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Helpers\PlaceApiHelper;
 use App\Models\FavouritePlace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,8 +21,15 @@ class FavouritePlaceController extends BaseController
 
     public function getList()
     {
-        return FavouritePlace::where('user_id', Auth::user()->id)
-            ->get();
+        $placesIds = FavouritePlace::where('user_id', Auth::user()->id)
+            ->pluck('place_id');
+
+        $list = [];
+        foreach ($placesIds as $placeId) {
+            $list[] = PlaceApiHelper::placeDetails($placeId);
+        }
+
+        return $list;
     }
 
     public function add(Request $request)

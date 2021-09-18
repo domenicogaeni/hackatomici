@@ -8,7 +8,10 @@ import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/lib/integration/react'
 import './Translations'
 
-GoogleSignin.configure()
+GoogleSignin.configure({
+  webClientId:
+    '715853110467-libj1el5svon3ig9tvh3nhredme6cm35.apps.googleusercontent.com',
+})
 
 const theme = extendTheme({
   colors: {
