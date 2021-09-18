@@ -11,6 +11,8 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
 import { FavoritePlace } from '@/Models/FavoritePlace'
+import { HeaderBackButton } from '@react-navigation/stack'
+import { goBack } from '@/Navigators/utils'
 
 const FavoritePlaces = () => {
   const dispatch = useDispatch()
@@ -47,7 +49,7 @@ const FavoritePlaces = () => {
         if (getFavoritePlacesResponse.status === 200) {
           setInterestPoints((await getFavoritePlacesResponse.json()).data)
         }
-      } catch (signInError) {}
+      } catch (signInError) { }
     }
 
     fetchFavoritePlacesAsync()
@@ -77,7 +79,7 @@ const FavoritePlaces = () => {
       if (result.status !== 200) {
         setError('Errore durante il salvataggio dei luoghi di interesse')
       }
-    } catch (signInError) {}
+    } catch (signInError) { }
 
     dispatch(SetUser.action({ shouldShowOnboarding: false }))
     setDirty(false)
@@ -135,9 +137,10 @@ const FavoritePlaces = () => {
 
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+      <HeaderBackButton onPress={goBack} label="Indietro" />
       <Box height="100%" width="100%" bg="white" padding={8}>
         <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Luoghi di interesse'}
+          {"Luoghi d'interesse"}
         </Text>
         <InterestPlacePicker
           sessionToken={sessionToken}

@@ -27,10 +27,12 @@ const Account = () => {
       <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
         {`Ciao ${displayName}`}
       </Text>
-      <Button variant="outline" onPress={favoritePlaces} marginBottom={8}>
+      <Button onPress={favoritePlaces} marginBottom={8}>
         Luoghi d'interesse
       </Button>
-      <Button onPress={logout}>Logout</Button>
+      <Button variant="outline" colorScheme="red" onPress={logout}>
+        Logout
+      </Button>
     </Box>
   )
 }
