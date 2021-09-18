@@ -43,7 +43,7 @@ const SetupNameAndSurname = ({ route }: any) => {
       if (registerResponse.status === 200) {
         // User is logged in now
         const userData = (await registerResponse.json()).data as UserModel
-        dispatch(SetUser.action({ user: userData }))
+        dispatch(SetUser.action({ user: userData, shouldShowOnboarding: true }))
       } else {
         setError('Errore durante la registrazione')
       }
