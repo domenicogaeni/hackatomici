@@ -10,15 +10,14 @@ import SetUser from '@/Store/User/SetUser'
 import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
-import { FavoritePlace } from '@/Models/FavoritePlace'
+import { Place } from '@/Models/Place'
 import { HeaderBackButton } from '@react-navigation/stack'
 import { goBack } from '@/Navigators/utils'
 
 const FavoritePlaces = () => {
   const dispatch = useDispatch()
 
-  const [interestPoints, setInterestPoints] = useState<
-    (LocationPickerItem | FavoritePlace)[]
+  const [interestPoints, setInterestPoints] = useState<(LocationPickerItem | Place)[]
   >([])
   const [dirty, setDirty] = useState<boolean>(false)
   const [error, setError] = useState<string>()
@@ -86,7 +85,7 @@ const FavoritePlaces = () => {
   }, [dispatch, interestPoints, setError])
 
   const onPlacePicked = useCallback(
-    (place: LocationPickerItem | FavoritePlace) => {
+    (place: LocationPickerItem | Place) => {
       setInterestPoints(prev =>
         some(prev, p => p.place_id === place.place_id)
           ? prev
@@ -98,12 +97,11 @@ const FavoritePlaces = () => {
   )
 
   const removeItem = useCallback(
-    (item: LocationPickerItem | FavoritePlace) => {
+    (item: LocationPickerItem | Place) => {
       setInterestPoints(prev =>
         filter(
           prev,
-          (i: LocationPickerItem | FavoritePlace) =>
-            i.place_id !== item.place_id,
+          (i: LocationPickerItem | Place) => i.place_id !== item.place_id,
         ),
       )
       setDirty(true)
@@ -112,7 +110,7 @@ const FavoritePlaces = () => {
   )
 
   const renderItem = useCallback(
-    (item: LocationPickerItem | FavoritePlace, index: number) => (
+    (item: LocationPickerItem | Place, index: number) => (
       <Box
         borderRadius={4}
         borderWidth={1}
@@ -123,8 +121,7 @@ const FavoritePlaces = () => {
       >
         <HStack justifyContent="space-between" alignItems="center">
           <Text flex={1} marginRight={2}>
-            {(item as LocationPickerItem).description ||
-              (item as FavoritePlace).name}
+            {(item as LocationPickerItem).description || (item as Place).name}
           </Text>
           <Pressable onPress={() => removeItem(item)}>
             <Icon name="close-circle" size={22} color="#ef4444" />

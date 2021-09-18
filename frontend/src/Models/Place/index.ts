@@ -1,4 +1,4 @@
-export type FavoritePlace = {
+export type Place = {
   name: string
   place_id: string
   type:

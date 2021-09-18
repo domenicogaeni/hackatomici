@@ -25,6 +25,8 @@ import auth from '@react-native-firebase/auth'
 import { useDispatch } from 'react-redux'
 import SetUser from '@/Store/User/SetUser'
 import { Config } from '@/Config'
+import { Place } from '@/Models/Place'
+import { navigate } from '@/Navigators/utils'
 
 const initialRegion = {
   latitude: 45.7314,
@@ -33,69 +35,20 @@ const initialRegion = {
   longitudeDelta: 0.0421,
 }
 
-const test = {
-  data: [
-    {
-      id: 1,
-      user_id: 1,
-      place_id: 'ChIJFdPdCFtUgUcR-aSIb382exY',
-      title: 'Obbligo della mascherina',
-      description: 'Metti sta cazzo di mascherina',
-      level: 'yellow',
-      type: 'community',
-      from: '2021-09-18',
-      to: null,
-      created_at: '2021-09-18 15:31:45',
-      updated_at: '2021-09-18 15:31:45',
-      score: 1,
-      vote: null,
-    },
-    {
-      id: 2,
-      user_id: 1,
-      place_id: 'ChIJf4M-GsNEgUcR1JMVKCIm8qY',
-      title: 'Obbligo delle mutande',
-      description: 'Tenerlo dentro',
-      level: 'white',
-      type: 'verified',
-      from: '2021-09-18',
-      to: null,
-      created_at: '2021-09-18 16:13:28',
-      updated_at: '2021-09-18 16:13:28',
-      score: 2,
-      vote: 'up',
-    },
-    {
-      id: 3,
-      user_id: 1,
-      place_id: 'ChIJFdPdCFtUgUcR-aSIb382exY',
-      title: 'Obbligo della mascherina',
-      description: 'Metti sta cazzo di mascherina',
-      level: 'orange',
-      type: 'community',
-      from: '2021-09-18',
-      to: null,
-      created_at: '2021-09-18 15:31:45',
-      updated_at: '2021-09-18 15:31:45',
-      score: 4,
-      vote: 'up',
-    },
-    {
-      id: 4,
-      user_id: 1,
-      place_id: 'ChIJf4M-GsNEgUcR1JMVKCIm8qY',
-      title: 'Obbligo delle mutande',
-      description: 'Tenerlo dentro',
-      level: 'red',
-      type: 'community',
-      from: '2021-09-18',
-      to: null,
-      created_at: '2021-09-18 16:13:28',
-      updated_at: '2021-09-18 16:13:28',
-      score: -3,
-      vote: 'down',
-    },
-  ],
+interface Report {
+  id: number
+  user_id: number
+  place_id: string
+  title: string
+  description: string
+  level: 'white' | 'yellow' | 'orange' | 'red'
+  type: 'community' | 'verified'
+  from: string
+  to: string | null
+  created_at: string
+  updated_at: string
+  score: number
+  vote: 'down' | 'up' | null
 }
 
 const Map = () => {
@@ -113,15 +66,86 @@ const Map = () => {
 
   const sessionToken = useMemo(() => uuid.v4() as string, [])
 
+  const [currentInfo, setCurrentInfo] = useState<Place>()
+  const [currentReports, setCurrentReports] = useState<Report[]>()
+  const [placeId, setPlaceId] = useState<string>()
+
+  const getInfo = useCallback(
+    (placeId: string) => {
+      const fetchReportsAsync = async () => {
+        try {
+          const currentUser = await auth().currentUser
+          if (!currentUser) {
+            return
+          }
+
+          const idToken = await currentUser.getIdToken()
+
+          const getReportsResponse = await fetch(
+            Config.API_URL + `/places/${placeId}`,
+            {
+              method: 'GET',
+              headers: {
+                Authorization: 'Bearer ' + idToken,
+                'Content-Type': 'application/json',
+              },
+            },
+          )
+
+          if (getReportsResponse.status === 200) {
+            setCurrentInfo((await getReportsResponse.json()).data)
+            handlePresentModalPress()
+          }
+        } catch (signInError) {}
+      }
+
+      fetchReportsAsync()
+    },
+    [handlePresentModalPress],
+  )
+
+  console.log(currentInfo)
+
+  const getReports = useCallback((placeId: string) => {
+    const fetchReportsAsync = async () => {
+      try {
+        const currentUser = await auth().currentUser
+        if (!currentUser) {
+          return
+        }
+
+        const idToken = await currentUser.getIdToken()
+
+        const getReportsResponse = await fetch(
+          Config.API_URL + `/reports/places/${placeId}`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: 'Bearer ' + idToken,
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+
+        if (getReportsResponse.status === 200) {
+          setCurrentReports((await getReportsResponse.json()).data)
+        }
+      } catch (signInError) {}
+    }
+
+    fetchReportsAsync()
+  }, [])
+
   const nearbySearchAsync = useCallback(async () => {
     if (location) {
       const results = await nearbySearch(location, sessionToken)
       const resultPlaceId =
         results?.length && results.length > 0 && results[0].place_id
-      // richiesta a backend con placeId ed eventuale apertura bottom sheet
-      handlePresentModalPress()
+      resultPlaceId && setPlaceId(resultPlaceId)
+      resultPlaceId && getInfo(resultPlaceId)
+      resultPlaceId && getReports(resultPlaceId)
     }
-  }, [location, sessionToken, handlePresentModalPress])
+  }, [location, sessionToken, getReports, getInfo])
 
   useEffect(() => {
     if (location) {
@@ -144,6 +168,10 @@ const Map = () => {
     },
     [setLocation],
   )
+
+  const addReport = useCallback(() => navigate('AddReport', { placeId }), [
+    placeId,
+  ])
 
   return (
     <BottomSheetModalProvider>
@@ -175,13 +203,25 @@ const Map = () => {
         >
           <View style={{ padding: 16, alignItems: 'center' }}>
             <Text fontSize="3xl" marginBottom={4} fontWeight={600}>
-              Nome posto
+              {currentInfo?.name}
             </Text>
-            <Text color="gray.600">Descrizione</Text>
+            <Text color="gray.600">
+              {currentInfo
+                ? `${
+                    currentInfo.administrative_area_level_2
+                      ? currentInfo.administrative_area_level_2 + ', '
+                      : ''
+                  }${
+                    currentInfo.administrative_area_level_1
+                      ? currentInfo.administrative_area_level_1 + ', '
+                      : ''
+                  }${currentInfo.country}`
+                : ''}
+            </Text>
           </View>
           <BottomSheetScrollView>
             <View style={{ padding: 16 }}>
-              {test.data?.map((content, index) => (
+              {currentReports?.map((content, index) => (
                 <Report
                   key={index}
                   title={content.title}
@@ -192,12 +232,13 @@ const Map = () => {
                   score={content.score}
                   vote={content.vote}
                   type={content.type}
+                  id={content.id}
                 />
               ))}
             </View>
           </BottomSheetScrollView>
           <RBView p={4} bg="primary.50">
-            <Button onPress={() => {}}>+ Aggiungi segnalazione</Button>
+            <Button onPress={addReport}>+ Aggiungi segnalazione</Button>
           </RBView>
         </BottomSheetModal>
       </View>
@@ -213,7 +254,7 @@ interface ReportProps {
   dateTo: string
   score: number
   vote: 'up' | 'down' | null
-  id: string
+  id: number
   type: 'community' | 'verified'
 }
 
@@ -283,7 +324,7 @@ const Report = ({
 interface ScoreProps {
   score: number
   vote: 'up' | 'down' | null
-  reportId: string
+  reportId: number
 }
 
 const Score = ({ score, vote, reportId }: ScoreProps) => {
