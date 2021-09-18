@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Report extends BaseModel
@@ -14,7 +15,7 @@ class Report extends BaseModel
     public const COMMUNITY = 'community';
     public const VERIFIED = 'verified';
 
-    protected $appends = ['vote'];
+    protected $appends = ['score', 'vote'];
 
     protected $fillable = [
         'title',
@@ -24,11 +25,29 @@ class Report extends BaseModel
         'to',
     ];
 
-    public function getVoteAttribute()
+    public function getScoreAttribute()
     {
-        return DB::table('users_votes')
+        return (int)DB::table('users_votes')
             ->where('report_id', $this->id)
             ->sum('vote');
+    }
+
+    public function getVoteAttribute()
+    {
+        $myVote = DB::table('users_votes')
+            ->where('report_id', $this->id)
+            ->where('user_id', Auth::user()->id)
+            ->first();
+
+        if (!$myVote) {
+            return null;
+        }
+
+        return match ($myVote->vote) {
+            1 => 'up',
+            -1 => 'down',
+            default => null,
+        };
     }
 
     public function user()
