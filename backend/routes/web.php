@@ -2,6 +2,7 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -14,14 +15,12 @@
 */
 
 $router->get('/', function () use ($router) {
-    echo phpinfo();
     return ['status' => 'OK'];
 });
 
 $router->group(['middleware' => 'auth'], function () use ($router) {
-    $router->get('/test', function () use ($router) {
-        echo phpinfo();
-        return ['status' => 'OK'];
-    });
-    
+    $router->group(['prefix' => 'auth'], function () use ($router) {
+        $router->post('/register', UserController::class . '@register');
+        $router->post('/device_id', UserController::class . '@setDeviceId');
+    });    
 });
