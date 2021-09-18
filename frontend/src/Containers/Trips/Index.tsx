@@ -1,12 +1,12 @@
 import { ShortTrip } from '@/Models/Trip'
 import { navigate } from '@/Navigators/utils'
 import { Box, HStack, Pressable, Text, VStack } from 'native-base'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { map } from 'lodash'
+import { filter, map } from 'lodash'
 import moment from 'moment'
 import { ActivityIndicator } from 'react-native'
 
@@ -125,6 +125,33 @@ const Trips = () => {
     [openTrip, removeTrip],
   )
 
+  const ongoingTrips = useMemo(
+    () =>
+      filter(
+        trips,
+        trip =>
+          moment(trip.from, 'YYYY-MM-DD').isSameOrBefore(moment(), 'date') &&
+          moment(trip.to, 'YYYY-MM-DD').isSameOrAfter(moment(), 'date'),
+      ),
+    [trips],
+  )
+
+  const pastTrips = useMemo(
+    () =>
+      filter(trips, trip =>
+        moment(trip.to, 'YYYY-MM-DD').isBefore(moment(), 'date'),
+      ),
+    [trips],
+  )
+
+  const futureTrips = useMemo(
+    () =>
+      filter(trips, trip =>
+        moment(trip.from, 'YYYY-MM-DD').isAfter(moment(), 'date'),
+      ),
+    [trips],
+  )
+
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
       <Box height="100%" flex={1} bg="white" padding={8}>
@@ -143,7 +170,32 @@ const Trips = () => {
         {isLoading ? (
           <ActivityIndicator />
         ) : (
-          map(trips, (trip, index) => renderItem(trip, index))
+          <>
+            {ongoingTrips.length > 0 && (
+              <>
+                <Text color="gray.500" marginBottom={2}>
+                  In corso
+                </Text>
+                {map(ongoingTrips, (trip, index) => renderItem(trip, index))}
+              </>
+            )}
+            {futureTrips.length > 0 && (
+              <>
+                <Text color="gray.500" marginBottom={2}>
+                  Programmati
+                </Text>
+                {map(futureTrips, (trip, index) => renderItem(trip, index))}
+              </>
+            )}
+            {pastTrips.length > 0 && (
+              <>
+                <Text color="gray.500" marginBottom={2}>
+                  Passati
+                </Text>
+                {map(pastTrips, (trip, index) => renderItem(trip, index))}
+              </>
+            )}
+          </>
         )}
       </Box>
     </KeyboardAwareScrollView>
