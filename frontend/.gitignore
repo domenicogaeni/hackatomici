@@ -102,3 +102,4 @@ google-services.json
 
 ## Environment variables
 .env
+key.properties
