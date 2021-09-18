@@ -122,7 +122,6 @@ class ReportController extends BaseController
             $reports = array_merge($reports, $placeReports);
         }
 
-        // TODO: Inserire i voti, e se c'è il mio voto e se è up o down
         return $reports;
     }
 }
