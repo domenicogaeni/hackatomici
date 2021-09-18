@@ -7,8 +7,9 @@ import {
   Point,
 } from '@/Services/GooglePlaces/googlePlacesTypings'
 import { Box, Divider, Input, Text } from 'native-base'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Keyboard, Pressable } from 'react-native'
+import { debounce } from 'lodash'
 
 interface Props {
   sessionToken: string
@@ -34,9 +35,13 @@ const Autocomplete = ({ sessionToken, setLocation }: Props) => {
     [sessionToken, setItems],
   )
 
+  const debouncedAutocomplete = useRef(
+    debounce((text: string) => autocompleteAsync(text), 400),
+  )
+
   useEffect(() => {
     if (query) {
-      autocompleteAsync(query)
+      debouncedAutocomplete.current(query)
     } else {
       setItems(undefined)
     }
