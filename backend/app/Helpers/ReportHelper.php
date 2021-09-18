@@ -31,7 +31,7 @@ class ReportHelper
                 })
                 ->get()
                 ->toArray();
-            $reports = array_merge($reports, $placeReports);
+            $reports = array_unique(array_merge($reports, $placeReports));
         }
 
         return $reports;
