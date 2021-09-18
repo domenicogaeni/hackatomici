@@ -7,26 +7,17 @@ import {
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet'
-import {
-  Box,
-  Button,
-  HStack,
-  Text,
-  VStack,
-  View as RBView,
-  Pressable,
-} from 'native-base'
+import { Box, Button, Text, View as RBView } from 'native-base'
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { View } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import uuid from 'react-native-uuid'
-import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
-import { useDispatch } from 'react-redux'
-import SetUser from '@/Store/User/SetUser'
 import { Config } from '@/Config'
 import { Place } from '@/Models/Place'
 import { navigate } from '@/Navigators/utils'
+import Report from '@/Components/Report'
+import { WarningLevel } from '@/Models/Trip'
 
 const initialRegion = {
   latitude: 45.7314,
@@ -41,7 +32,7 @@ interface Report {
   place_id: string
   title: string
   description: string
-  level: 'white' | 'yellow' | 'orange' | 'red'
+  level: WarningLevel
   type: 'community' | 'verified'
   from: string
   to: string | null
@@ -243,159 +234,6 @@ const Map = () => {
         </BottomSheetModal>
       </View>
     </BottomSheetModalProvider>
-  )
-}
-
-interface ReportProps {
-  title: string
-  description: string
-  color: string
-  dateFrom: string
-  dateTo: string
-  score: number
-  vote: 'up' | 'down' | null
-  id: number
-  type: 'community' | 'verified'
-}
-
-const Report = ({
-  title,
-  description,
-  color,
-  dateFrom,
-  dateTo,
-  score,
-  vote,
-  id,
-  type,
-}: ReportProps) => {
-  return (
-    <Box
-      bg={color !== 'white' ? `${color}.400` : 'white'}
-      py={4}
-      px={3}
-      mb={4}
-      rounded="md"
-      alignSelf="center"
-      width={375}
-      maxWidth="100%"
-      borderColor="gray.100"
-      borderWidth={color === 'white' ? 1 : 0}
-    >
-      <HStack justifyContent="space-between">
-        <Box justifyContent="space-between">
-          <VStack space={2}>
-            <Text
-              fontSize="xxs"
-              color={
-                color !== 'white' && color !== 'yellow' ? 'white' : 'gray.600'
-              }
-            >
-              {dateFrom || ''} {'->'} {dateTo || 'now'}
-            </Text>
-            <Text
-              color={
-                color !== 'white' && color !== 'yellow' ? 'white' : 'black'
-              }
-              fontSize="xl"
-            >
-              {title}
-            </Text>
-            <Text
-              color={
-                color !== 'white' && color !== 'yellow' ? 'white' : 'black'
-              }
-              fontSize="sm"
-            >
-              {description}
-            </Text>
-          </VStack>
-        </Box>
-        {type === 'community' ? (
-          <Score score={score} vote={vote} reportId={id} />
-        ) : (
-          <Icon name="shield-checkmark" size={22} color={'black'} />
-        )}
-      </HStack>
-    </Box>
-  )
-}
-
-interface ScoreProps {
-  score: number
-  vote: 'up' | 'down' | null
-  reportId: number
-}
-
-const Score = ({ score, vote, reportId }: ScoreProps) => {
-  const dispatch = useDispatch()
-  const sendVote = useCallback(
-    async value => {
-      try {
-        const currentUser = await auth().currentUser
-        if (!currentUser) {
-          dispatch(SetUser.action({ shouldShowOnboarding: false }))
-          return
-        }
-
-        const idToken = await currentUser.getIdToken()
-
-        await fetch(`${Config.API_URL}/reports/${reportId}/vote`, {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer ' + idToken,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            vote: value,
-          }),
-        })
-      } catch (signInError) {}
-    },
-    [dispatch, reportId],
-  )
-
-  const removeVote = useCallback(async () => {
-    try {
-      const currentUser = await auth().currentUser
-      if (!currentUser) {
-        return
-      }
-
-      const idToken = await currentUser.getIdToken()
-
-      await fetch(`${Config.API_URL}/reports/${reportId}/vote`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: 'Bearer ' + idToken,
-          'Content-Type': 'application/json',
-        },
-      })
-    } catch (signInError) {}
-  }, [reportId])
-
-  return (
-    <VStack alignItems="center" paddingX="1" bg="rgba(255, 255, 255, 0.2)">
-      <Pressable
-        onPress={() => (vote === 'up' ? removeVote() : sendVote('up'))}
-      >
-        <Icon
-          name="caret-up-outline"
-          size={22}
-          color={vote === 'up' ? 'black' : 'grey'}
-        />
-      </Pressable>
-      <Text>{score}</Text>
-      <Pressable
-        onPress={() => (vote === 'down' ? removeVote() : sendVote('down'))}
-      >
-        <Icon
-          name="caret-down-outline"
-          size={22}
-          color={vote === 'down' ? 'black' : 'grey'}
-        />
-      </Pressable>
-    </VStack>
   )
 }
 
