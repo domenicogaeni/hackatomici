@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
+
 class Report extends BaseModel
 {
     public const WHITE = 'white';
@@ -12,6 +14,8 @@ class Report extends BaseModel
     public const COMMUNITY = 'community';
     public const VERIFIED = 'verified';
 
+    protected $appends = ['vote'];
+
     protected $fillable = [
         'title',
         'description',
@@ -19,6 +23,13 @@ class Report extends BaseModel
         'from',
         'to',
     ];
+
+    public function getVoteAttribute()
+    {
+        return DB::table('users_votes')
+            ->where('report_id', $this->id)
+            ->sum('vote');
+    }
 
     public function user()
     {
