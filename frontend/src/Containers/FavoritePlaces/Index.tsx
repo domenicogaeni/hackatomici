@@ -49,7 +49,7 @@ const FavoritePlaces = () => {
         if (getFavoritePlacesResponse.status === 200) {
           setInterestPoints((await getFavoritePlacesResponse.json()).data)
         }
-      } catch (signInError) { }
+      } catch (signInError) {}
     }
 
     fetchFavoritePlacesAsync()
@@ -79,7 +79,7 @@ const FavoritePlaces = () => {
       if (result.status !== 200) {
         setError('Errore durante il salvataggio dei luoghi di interesse')
       }
-    } catch (signInError) { }
+    } catch (signInError) {}
 
     dispatch(SetUser.action({ shouldShowOnboarding: false }))
     setDirty(false)

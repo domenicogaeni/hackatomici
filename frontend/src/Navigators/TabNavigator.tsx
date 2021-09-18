@@ -34,10 +34,22 @@ const TabNavigator = () => {
         inactiveTintColor: '#27272a',
       }}
     >
-      <Tab.Screen name="Map" component={Map} />
-      <Tab.Screen name="Trips" component={Trips} />
-      <Tab.Screen name="Community" component={Community} />
-      <Tab.Screen name="Account" component={Account} />
+      <Tab.Screen name="Map" options={{ title: 'Mappa' }} component={Map} />
+      <Tab.Screen
+        name="Trips"
+        options={{ title: 'Itinerari' }}
+        component={Trips}
+      />
+      <Tab.Screen
+        name="Community"
+        options={{ title: 'Community' }}
+        component={Community}
+      />
+      <Tab.Screen
+        name="Account"
+        options={{ title: 'Profilo' }}
+        component={Account}
+      />
     </Tab.Navigator>
   )
 }
