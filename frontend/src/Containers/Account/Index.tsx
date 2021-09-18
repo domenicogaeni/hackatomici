@@ -4,11 +4,14 @@ import auth from '@react-native-firebase/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import Logout from '@/Store/User/Logout'
 import { UserState } from '@/Store/User'
+import { navigate } from '@/Navigators/utils'
 
 const Account = () => {
   const dispatch = useDispatch()
 
   const user = useSelector((state: { user: UserState }) => state.user.user)
+
+  const favoritePlaces = useCallback(() => navigate('FavoritePlaces', {}), [])
 
   const logout = useCallback(() => {
     auth().signOut()
@@ -24,6 +27,9 @@ const Account = () => {
       <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
         {`Ciao ${displayName}`}
       </Text>
+      <Button variant="outline" onPress={favoritePlaces} marginBottom={8}>
+        Luoghi d'interesse
+      </Button>
       <Button onPress={logout}>Logout</Button>
     </Box>
   )

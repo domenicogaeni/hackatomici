@@ -5,12 +5,12 @@ import { NavigationContainer } from '@react-navigation/native'
 import { navigationRef } from '@/Navigators/utils'
 import { SafeAreaView, StatusBar } from 'react-native'
 import { useTheme } from '@/Theme'
-import HomeNavigator from './HomeNavigator'
 import LoginNavigator from './LoginNavigator'
 import { useDispatch, useSelector } from 'react-redux'
 import { StartupState } from '@/Store/Startup'
 import InitStartup from '@/Store/Startup/Init'
 import { UserState } from '@/Store/User'
+import HomeNavigator from './HomeNavigator'
 
 const Stack = createStackNavigator()
 
