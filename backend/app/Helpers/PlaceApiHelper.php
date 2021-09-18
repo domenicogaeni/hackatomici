@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\CachedPlace;
+use Illuminate\Support\Facades\DB;
 use SKAgarwal\GoogleApi\PlacesApi;
 
 class PlaceApiHelper
@@ -14,7 +15,7 @@ class PlaceApiHelper
         'country'
     ];
 
-    public static function getPlacesApiInstance()
+    public static function placesApiInstance()
     {
         return new PlacesApi(env('GOOGLE_API_TOKEN'));
     }
@@ -24,7 +25,9 @@ class PlaceApiHelper
         $place = CachedPlace::find($placeId);
 
         if (!$place) {
-            $response = self::getPlacesApiInstance()->placeDetails($placeId);
+            $response = self::placesApiInstance()->placeDetails($placeId, ['language' => 'it']);
+            // TODO: Se non trovo niente?
+
             $place = new CachedPlace();
             $place->place_id = $placeId;
             $place->type = self::getType($response['result']['types']);
@@ -39,6 +42,37 @@ class PlaceApiHelper
         }
 
         return $place;
+    }
+
+    public static function findPlace($input)
+    {
+        DB::enableQueryLog();
+        $place = CachedPlace::whereRaw("LOWER(name) LIKE '%" . addslashes(strtolower($input)) . "%'")
+            ->first();
+
+        if (!$place) {
+            $response = self::placesApiInstance()->findPlace($input, 'textquery', ['language' => 'it']);
+            // TODO: Se non trovo niente? O se ne trovo più di uno?
+
+            $place = self::placeDetails($response['candidates'][0]['place_id']);
+        }
+
+        return $place;
+    }
+
+    public static function getAddressComponentsPlaceIds($placeId)
+    {
+        $placeDetail = self::placeDetails($placeId);
+        $addressComponents = [];
+
+        foreach (self::RECOGNIZED_TYPES as $type) {
+            if ($placeDetail->{$type}) {
+                $place = self::findPlace($placeDetail->{$type});
+                $addressComponents[] = $place->place_id;
+            }
+        }
+
+        return $addressComponents;
     }
 
     private static function getType($types)

@@ -1,44 +1,17 @@
 import React from 'react'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Account, Community, Map, Trips } from '@/Containers'
-import Icon from 'react-native-vector-icons/Ionicons'
+import { createStackNavigator } from '@react-navigation/stack'
+import TabNavigator from './TabNavigator'
+import FavoritePlaces from '@/Containers/FavoritePlaces/Index'
 
-const Tab = createBottomTabNavigator()
+const Stack = createStackNavigator()
 
 // @refresh reset
 const HomeNavigator = () => {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          const iconName = (() => {
-            switch (route.name) {
-              case 'Map':
-                return focused ? 'map' : 'map-outline'
-              case 'Trips':
-                return focused ? 'analytics' : 'analytics-outline'
-              case 'Community':
-                return focused ? 'chatbubbles' : 'chatbubbles-outline'
-              case 'Account':
-                return focused ? 'person' : 'person-outline'
-              default:
-                return ''
-            }
-          })()
-
-          return <Icon name={iconName} size={size} color={color} />
-        },
-      })}
-      tabBarOptions={{
-        activeTintColor: '#14b8a6',
-        inactiveTintColor: '#27272a',
-      }}
-    >
-      <Tab.Screen name="Map" component={Map} />
-      <Tab.Screen name="Trips" component={Trips} />
-      <Tab.Screen name="Community" component={Community} />
-      <Tab.Screen name="Account" component={Account} />
-    </Tab.Navigator>
+    <Stack.Navigator headerMode="none">
+      <Stack.Screen name="TabNavigator" component={TabNavigator} />
+      <Stack.Screen name="FavoritePlaces" component={FavoritePlaces} />
+    </Stack.Navigator>
   )
 }
 

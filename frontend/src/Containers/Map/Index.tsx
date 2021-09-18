@@ -89,7 +89,8 @@ const Map = () => {
   }, [])
 
   const [location, setLocation] = useState<Point>()
-  const sessionToken = uuid.v4() as string
+
+  const sessionToken = useMemo(() => uuid.v4() as string, [])
 
   const nearbySearchAsync = useCallback(async () => {
     if (location) {

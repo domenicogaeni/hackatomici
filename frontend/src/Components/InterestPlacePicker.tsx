@@ -1,11 +1,5 @@
-import {
-  autocomplete,
-  placeDetails,
-} from '@/Services/GooglePlaces/googlePlacesApi'
-import {
-  LocationPickerItem,
-  Point,
-} from '@/Services/GooglePlaces/googlePlacesTypings'
+import { autocomplete } from '@/Services/GooglePlaces/googlePlacesApi'
+import { LocationPickerItem } from '@/Services/GooglePlaces/googlePlacesTypings'
 import { Box, Divider, Input, Text } from 'native-base'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Keyboard, Pressable } from 'react-native'
@@ -13,10 +7,10 @@ import { debounce } from 'lodash'
 
 interface Props {
   sessionToken: string
-  setLocation: (location: Point) => void
+  onPlacePicked: (item: LocationPickerItem) => void
 }
 
-const Autocomplete = ({ sessionToken, setLocation }: Props) => {
+const InterestPlacePicker = ({ sessionToken, onPlacePicked }: Props) => {
   const [query, setQuery] = useState<string>()
   const [items, setItems] = useState<LocationPickerItem[]>()
   const [showResults, setShowResults] = useState<boolean>(false)
@@ -49,23 +43,9 @@ const Autocomplete = ({ sessionToken, setLocation }: Props) => {
 
   const onSearch = useCallback(text => setQuery(text), [setQuery])
 
-  const placeDetailsAsync = useCallback(
-    async (placeId: string) => {
-      const placeDetail = await placeDetails(placeId, sessionToken)
-      if (placeDetail) {
-        setLocation({
-          lat: placeDetail.geometry?.location.lat as number,
-          lng: placeDetail.geometry?.location.lng as number,
-        })
-      }
-    },
-    [sessionToken, setLocation],
-  )
-
   return (
     <Box bg="transparent">
       <Input
-        mx={3}
         placeholder="Cerca"
         _light={{
           placeholderTextColor: 'blueGray.400',
@@ -82,8 +62,8 @@ const Autocomplete = ({ sessionToken, setLocation }: Props) => {
               key={element.place_id + index}
               element={element}
               onPress={() => {
-                setQuery(element.description)
-                placeDetailsAsync(element.place_id)
+                setQuery(undefined)
+                onPlacePicked(element)
                 Keyboard.dismiss()
                 setShowResults(false)
               }}
@@ -118,4 +98,4 @@ const SuggestedElement = ({ element, onPress }: SuggestedElementProps) => {
   )
 }
 
-export default Autocomplete
+export default InterestPlacePicker

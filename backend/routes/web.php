@@ -3,6 +3,7 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 use App\Http\Controllers\FavouritePlaceController;
+use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 
@@ -28,6 +29,10 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
         $router->get('/me', UserController::class . '@me');
     });
 
+    $router->group(['prefix' => 'places'], function () use ($router) {
+        $router->get('{placeId}', PlaceController::class . '@get');
+    });
+
     $router->group(['prefix' => 'users'], function () use ($router) {
         $router->group(['prefix' => 'favourite_places'], function () use ($router) {
             $router->get('', FavouritePlaceController::class . '@getList');
@@ -37,6 +42,13 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     });
 
     $router->group(['prefix' => 'reports'], function () use ($router) {
-        $router->post('/places/{placeId}', ReportController::class . '@new');
+        $router->group(['prefix' => 'places'], function () use ($router) {
+            $router->post('{placeId}', ReportController::class . '@new');
+            $router->get('{placeId}', ReportController::class . '@getForPlace');
+        });
+
+        $router->post('/{reportId}/vote', ReportController::class . '@voteReport');
+        $router->put('/{reportId}/vote', ReportController::class . '@voteReport');
+        $router->delete('/{reportId}/vote', ReportController::class . '@deleteVote');
     });
 });

@@ -40,13 +40,17 @@ const Login = () => {
         method: 'GET',
         headers: {
           Authorization: 'Bearer ' + idToken,
+          'Content-Type': 'application/json',
         },
       })
 
       if (meResponse.status === 200) {
         // User is logged in now
-        const userData = (await meResponse.json()) as UserModel
+        const userData = (await meResponse.json()).data as UserModel
         dispatch(SetUser.action({ user: userData }))
+      } else {
+        // There is the firebase user but not the user in the API
+        navigate('SetupNameAndSurname', { user: signInResult.user })
       }
       // eslint-disable-next-line no-catch-shadow
     } catch (signInError) {
@@ -81,42 +85,48 @@ const Login = () => {
           method: 'GET',
           headers: {
             Authorization: 'Bearer ' + idToken,
+            'Content-Type': 'application/json',
           },
         })
 
         if (meResponse.status === 200) {
           // User is logged in now
-          const userData = (await meResponse.json()) as UserModel
+          const userData = (await meResponse.json()).data as UserModel
           dispatch(SetUser.action({ user: userData }))
+        } else {
+          try {
+            const registerResponse = await fetch(
+              Config.API_URL + '/auth/register',
+              {
+                method: 'POST',
+                headers: {
+                  Authorization: 'Bearer ' + idToken,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  firebase_uid: user.user.uid,
+                  email: user.user.email,
+                  name: givenName,
+                  surname: familyName,
+                }),
+              },
+            )
+
+            if (registerResponse.status === 200) {
+              // User is logged in now
+              const userData = (await meResponse.json()).data as UserModel
+              dispatch(
+                SetUser.action({ user: userData, shouldShowOnboarding: true }),
+              )
+            } else {
+              setError('Errore durante la registrazione')
+            }
+          } catch (registerError) {
+            setError((registerError as any).message)
+          }
         }
       } catch (meError) {
-        try {
-          const registerResponse = await fetch(
-            Config.API_URL + '/auth/register',
-            {
-              method: 'POST',
-              headers: {
-                Authorization: 'Bearer ' + idToken,
-              },
-              body: JSON.stringify({
-                firebase_uid: user.user.uid,
-                email: user.user.email,
-                name: givenName,
-                surname: familyName,
-              }),
-            },
-          )
-
-          console.log('registerResponse', registerResponse)
-
-          if (registerResponse.status === 200) {
-            // User is logged in now
-            const userData = (await registerResponse.json()) as UserModel
-            dispatch(SetUser.action({ user: userData }))
-          }
-        } catch (registerError) {
-          setError((registerError as any).message)
-        }
+        setError((meError as any).message)
       }
     } catch (googleSignInError) {
       // setError((googleSignInError as any).message)
@@ -143,55 +153,47 @@ const Login = () => {
 
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <Box
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-        flex={1}
-        bg="white"
-      >
-        <Box borderRadius={8} height="100%" width="100%" padding={8}>
-          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-            {'Benvenuto su\nSafeTravel!'}
+      <Box height="100%" width="100%" bg="white" padding={8}>
+        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+          {'Benvenuto su\nSafeTravel!'}
+        </Text>
+        <Text marginBottom={2}>Email:</Text>
+        <Input
+          marginBottom={4}
+          placeholder="bestemailever@example.com"
+          autoCapitalize="none"
+          isFullWidth={true}
+          value={email}
+          onChangeText={onChangeEmail}
+        />
+        <Text marginBottom={2}>Password:</Text>
+        <Input
+          marginBottom={8}
+          secureTextEntry={true}
+          placeholder="Password123!"
+          isFullWidth={true}
+          value={password}
+          onChangeText={onChangePassword}
+        />
+        <Button marginBottom={4} onPress={login}>
+          Accedi
+        </Button>
+        {error && (
+          <Text color="red.500" marginBottom={4}>
+            {error}
           </Text>
-          <Text marginBottom={2}>Email:</Text>
-          <Input
-            marginBottom={4}
-            placeholder="bestemailever@example.com"
-            autoCapitalize="none"
-            isFullWidth={true}
-            value={email}
-            onChangeText={onChangeEmail}
+        )}
+        <Button variant="link" onPress={registration}>
+          Registrati
+        </Button>
+        <Box justifyContent="center" alignItems="center" marginTop={4}>
+          <GoogleSigninButton
+            style={{ width: 192, height: 48 }}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
+            onPress={googleSignIn}
+            disabled={isSigningIn}
           />
-          <Text marginBottom={2}>Password:</Text>
-          <Input
-            marginBottom={8}
-            secureTextEntry={true}
-            placeholder="Password123!"
-            isFullWidth={true}
-            value={password}
-            onChangeText={onChangePassword}
-          />
-          <Button marginBottom={4} onPress={login}>
-            Accedi
-          </Button>
-          {error && (
-            <Text color="red.500" marginBottom={4}>
-              {error}
-            </Text>
-          )}
-          <Button variant="link" onPress={registration}>
-            Registrati
-          </Button>
-          <Box justifyContent="center" alignItems="center" marginTop={4}>
-            <GoogleSigninButton
-              style={{ width: 192, height: 48 }}
-              size={GoogleSigninButton.Size.Wide}
-              color={GoogleSigninButton.Color.Dark}
-              onPress={googleSignIn}
-              disabled={isSigningIn}
-            />
-          </Box>
         </Box>
       </Box>
     </KeyboardAwareScrollView>
