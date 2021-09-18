@@ -14,18 +14,18 @@ const plugins = [
       verbose: false,
     },
   ],
-]
-
-plugins.push([
-  'module-resolver',
-  {
-    root: ['./src'],
-    extensions: ['.js', '.json'],
-    alias: {
-      '@': './src',
+  [
+    'module-resolver',
+    {
+      root: ['./src'],
+      extensions: ['.js', '.json'],
+      alias: {
+        '@': './src',
+      },
     },
-  },
-])
+  ],
+  'react-native-reanimated/plugin',
+]
 
 module.exports = {
   presets,
