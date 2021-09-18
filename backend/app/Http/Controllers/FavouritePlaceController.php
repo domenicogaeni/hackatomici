@@ -37,10 +37,12 @@ class FavouritePlaceController extends BaseController
         $placesIds = $request->get('places_ids');
 
         foreach ($placesIds as $placeId) {
-            $favouritePlace = new FavouritePlace();
-            $favouritePlace->user_id = Auth::user()->id;
-            $favouritePlace->place_id = $placeId;
-            $favouritePlace->save();
+            if (!FavouritePlace::where('user_id', Auth::user()->id)->where('place_id', $placeId)->exists()) {
+                $favouritePlace = new FavouritePlace();
+                $favouritePlace->user_id = Auth::user()->id;
+                $favouritePlace->place_id = $placeId;
+                $favouritePlace->save();
+            }
         }
 
         return [];
