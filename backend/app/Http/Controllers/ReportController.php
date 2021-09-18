@@ -29,7 +29,7 @@ class ReportController extends BaseController
                     Report::RED
                 ])],
                 'from' => 'required|date',
-                'to' => 'filled|date',
+                'to' => 'date|nullable',
             ],
             'voteReport' => [
                 'vote' => ['required', Rule::in([
