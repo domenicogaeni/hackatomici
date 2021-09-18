@@ -6,6 +6,7 @@ use App\Http\Controllers\FavouritePlaceController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TripController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +49,12 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
         });
 
         $router->post('/{reportId}/vote', ReportController::class . '@voteReport');
-        $router->put('/{reportId}/vote', ReportController::class . '@voteReport');
         $router->delete('/{reportId}/vote', ReportController::class . '@deleteVote');
+    });
+
+    $router->group(['prefix' => 'trips'], function () use ($router) {
+        $router->post('/', TripController::class . '@new');
+        $router->put('/{tripId}', TripController::class . '@edit');
+        $router->delete('/{tripId}', TripController::class . '@delete');
     });
 });
