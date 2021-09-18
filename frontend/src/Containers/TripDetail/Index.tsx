@@ -22,74 +22,7 @@ const TripDetail = ({ route }: any) => {
 
   const isFocused = useIsFocused()
 
-  const [trip, setTrip] = useState<Trip>({
-    id: 2,
-    description:
-      'This trip is just a test bye bye hello hello, very long description breaking everything deheheh',
-    name: 'Test trip 2',
-    from: moment().add(1, 'days').format('YYYY-MM-DD'),
-    to: moment().add(2, 'days').format('YYYY-MM-DD'),
-    stops: [
-      {
-        id: 1,
-        name: 'Test stop 1',
-        place_id: '12345',
-        from: moment().add(1, 'days').format('YYYY-MM-DD'),
-        to: moment().add(2, 'days').format('YYYY-MM-DD'),
-        level: 'orange',
-        points: null,
-      },
-      {
-        id: 2,
-        name: 'Test stop 2',
-        place_id: '12345',
-        from: moment().add(1, 'days').format('YYYY-MM-DD'),
-        to: moment().add(2, 'days').format('YYYY-MM-DD'),
-        level: 'yellow',
-        points: null,
-      },
-      {
-        id: 2,
-        name: 'Test stop 3',
-        place_id: '12345',
-        from: moment().add(1, 'days').format('YYYY-MM-DD'),
-        to: moment().add(2, 'days').format('YYYY-MM-DD'),
-        level: 'white',
-        points: null,
-      },
-      {
-        id: 2,
-        name: 'Test stop 4',
-        place_id: '12345',
-        from: moment().add(1, 'days').format('YYYY-MM-DD'),
-        to: moment().add(2, 'days').format('YYYY-MM-DD'),
-        level: 'red',
-        points: null,
-      },
-      {
-        id: 2,
-        name: 'Test stop 4',
-        place_id: '12345',
-        from: moment().add(1, 'days').format('YYYY-MM-DD'),
-        to: moment().add(2, 'days').format('YYYY-MM-DD'),
-        level: 'yellow',
-        points: [
-          {
-            id: 1,
-            level: 'white',
-            name: 'Hotel blocco',
-            place_id: '12345',
-          },
-          {
-            id: 2,
-            level: 'yellow',
-            name: 'Hotel dai no',
-            place_id: '12345',
-          },
-        ],
-      },
-    ],
-  })
+  const [trip, setTrip] = useState<Trip>()
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchTrip = useCallback(
@@ -129,8 +62,10 @@ const TripDetail = ({ route }: any) => {
   }, [fetchTrip, isFocused, tripId])
 
   const addTripStop = useCallback(() => {
-    navigate('AddTripStop', {})
-  }, [])
+    if (trip) {
+      navigate('AddTripStop', { tripId: trip.id })
+    }
+  }, [trip])
 
   const openPlaceDetail = useCallback((placeId: string) => {
     // TODO: open place detail
@@ -148,10 +83,10 @@ const TripDetail = ({ route }: any) => {
     [openPlaceDetail],
   )
 
-  const formattedFromDate = trip.from
+  const formattedFromDate = trip?.from
     ? moment(trip.from, 'YYYY-MM-DD').format('DD/MM/YYYY')
     : 'Oggi'
-  const formattedToDate = trip.to
+  const formattedToDate = trip?.to
     ? moment(trip.to, 'YYYY-MM-DD').format('DD/MM/YYYY')
     : 'Oggi'
 
@@ -192,7 +127,7 @@ const TripDetail = ({ route }: any) => {
                   <Text>Inizio itinerario</Text>
                 </VStack>
               </HStack>
-              {trip.stops.length > 0 ? (
+              {(trip.stops?.length || 0) > 0 ? (
                 map(trip.stops, (stop, index) => renderStop(stop, index))
               ) : (
                 <TripStopPlaceHolder onAddStop={addTripStop} />

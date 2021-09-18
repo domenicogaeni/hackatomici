@@ -28,5 +28,5 @@ export type Stop = {
 }
 
 export type Trip = ShortTrip & {
-  stops: Stop[]
+  stops?: Stop[]
 }

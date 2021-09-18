@@ -13,23 +13,7 @@ import { useIsFocused } from '@react-navigation/core'
 const Trips = () => {
   const isFocused = useIsFocused()
 
-  const [trips, setTrips] = useState<ShortTrip[]>([
-    {
-      id: 1,
-      description: null,
-      name: 'Test trip',
-      from: moment().add(1, 'days').format('YYYY-MM-DD'),
-      to: moment().add(2, 'days').format('YYYY-MM-DD'),
-    },
-    {
-      id: 2,
-      description:
-        'This trip is just a test bye bye hello hello, very long description breaking everything deheheh',
-      name: 'Test trip 2',
-      from: moment().add(1, 'days').format('YYYY-MM-DD'),
-      to: moment().add(2, 'days').format('YYYY-MM-DD'),
-    },
-  ])
+  const [trips, setTrips] = useState<ShortTrip[]>([])
 
   const fetchTrips = useCallback(async () => {
     try {

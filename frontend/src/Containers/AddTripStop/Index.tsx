@@ -69,7 +69,7 @@ const AddTripStop = ({ route }: any) => {
       if (addStopResponse.status === 200) {
         goBack()
       }
-    } catch (addStopError) { }
+    } catch (addStopError) {}
   }, [place, dateFrom, dateTo, tripId, points])
 
   const onChangePlace = useCallback(

@@ -67,7 +67,7 @@ function getTextColor(level: WarningLevel) {
   switch (level) {
     case 'white':
     case 'yellow':
-      return 'gray.700'
+      return '#3f3f46'
     case 'orange':
     case 'red':
       return 'white'
@@ -106,7 +106,7 @@ const TripStop = ({ stop, openPlaceDetail }: ITripStopProps) => {
     stop,
   ])
 
-  if (stop.points) {
+  if ((stop.points?.length || 0) > 0) {
     return (
       <>
         <TripStopConnector />
