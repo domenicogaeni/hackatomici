@@ -37,7 +37,7 @@ function getBorderWidth(level: WarningLevel) {
 function getBorderColor(level: WarningLevel) {
   switch (level) {
     case 'white':
-      return '#d6d3d1'
+      return '#14b8a6'
     case 'yellow':
       return '#fde047'
     case 'orange':

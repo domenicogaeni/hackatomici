@@ -29,7 +29,7 @@ function getBackgroundColor(level: WarningLevel) {
 function getSoftBackgroundColor(level: WarningLevel) {
   switch (level) {
     case 'white':
-      return undefined
+      return '#f0fdfa'
     case 'yellow':
       return '#fef9c3'
     case 'orange':
@@ -53,7 +53,7 @@ function getBorderWidth(level: WarningLevel) {
 function getBorderColor(level: WarningLevel) {
   switch (level) {
     case 'white':
-      return '#d6d3d1'
+      return '#14b8a6'
     case 'yellow':
       return '#fde047'
     case 'orange':
