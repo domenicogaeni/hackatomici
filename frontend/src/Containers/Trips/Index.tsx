@@ -101,14 +101,8 @@ const Trips = () => {
         : 'Oggi'
 
       return (
-        <Pressable onPress={() => openTrip(item)}>
-          <Box
-            key={`${item.id}_${index}`}
-            borderRadius={8}
-            bg="primary.500"
-            padding={4}
-            marginBottom={4}
-          >
+        <Pressable key={`${item.id}_${index}`} onPress={() => openTrip(item)}>
+          <Box borderRadius={8} bg="primary.500" padding={4} marginBottom={4}>
             <HStack justifyContent="space-between" alignItems="center">
               <VStack flex={1} marginRight={2}>
                 <Text fontSize="xxs" color="primary.50">

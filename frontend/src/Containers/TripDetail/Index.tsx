@@ -15,9 +15,12 @@ import TripStopConnector from '../TripStopConnector'
 import TripCircleIcon from '../TripCircleIcon'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { ActivityIndicator } from 'react-native'
+import { useIsFocused } from '@react-navigation/native'
 
 const TripDetail = ({ route }: any) => {
   const { tripId } = route.params || {}
+
+  const isFocused = useIsFocused()
 
   const [trip, setTrip] = useState<Trip>({
     id: 2,
@@ -120,10 +123,10 @@ const TripDetail = ({ route }: any) => {
   )
 
   useEffect(() => {
-    if (tripId) {
+    if (isFocused && tripId) {
       fetchTrip(tripId)
     }
-  }, [fetchTrip, tripId])
+  }, [fetchTrip, isFocused, tripId])
 
   const addTripStop = useCallback(() => {
     navigate('AddTripStop', {})
