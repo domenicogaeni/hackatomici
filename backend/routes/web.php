@@ -53,8 +53,14 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     });
 
     $router->group(['prefix' => 'trips'], function () use ($router) {
+        $router->get('', TripController::class . '@getList');
         $router->post('/', TripController::class . '@new');
+        $router->get('/{tripId}', TripController::class . '@get');
         $router->put('/{tripId}', TripController::class . '@edit');
         $router->delete('/{tripId}', TripController::class . '@delete');
+
+        $router->post('/{tripId}/stops', TripController::class . '@addStop');
+        $router->put('/{tripId}/stops/{stopId}', TripController::class . '@editStop');
+        $router->delete('/{tripId}/stops/{stopId}', TripController::class . '@deleteStop');
     });
 });
