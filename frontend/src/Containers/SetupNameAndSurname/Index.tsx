@@ -24,13 +24,13 @@ const SetupNameAndSurname = ({ route }: any) => {
     Keyboard.dismiss()
 
     const idToken = await typedUser.getIdToken()
-    console.log(idToken)
 
     try {
       const registerResponse = await fetch(Config.API_URL + '/auth/register', {
         method: 'POST',
         headers: {
           Authorization: 'Bearer ' + idToken,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           firebase_uid: typedUser.uid,
@@ -40,12 +40,12 @@ const SetupNameAndSurname = ({ route }: any) => {
         }),
       })
 
-      console.log('registerResponse', registerResponse)
-
       if (registerResponse.status === 200) {
         // User is logged in now
-        const userData = (await registerResponse.json()) as UserModel
+        const userData = (await registerResponse.json()).data as UserModel
         dispatch(SetUser.action({ user: userData }))
+      } else {
+        setError('Errore durante la registrazione')
       }
     } catch (registrationError) {
       setError((registrationError as any).message)
