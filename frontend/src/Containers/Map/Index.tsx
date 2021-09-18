@@ -1,17 +1,12 @@
+import { Autocomplete } from '@/Components'
 import { useTheme } from '@/Theme'
-import { Box, Input } from 'native-base'
-import React, { useEffect, useState } from 'react'
+import { Box } from 'native-base'
+import React from 'react'
 import { View } from 'react-native'
 import MapView from 'react-native-maps'
 
 const Map = () => {
   const { Layout } = useTheme()
-
-  const [searchText, setSearchText] = useState<string>()
-
-  useEffect(() => {
-    // api ricerca
-  }, [searchText])
 
   return (
     <View style={[Layout.fill, Layout.colCenter, { position: 'relative' }]}>
@@ -27,16 +22,7 @@ const Map = () => {
         onPress={a => console.log('ao', a.nativeEvent.coordinate)}
       />
       <Box w="100%" position="absolute" top="8">
-        <Input
-          mx={3}
-          placeholder="Cerca"
-          _light={{
-            placeholderTextColor: 'blueGray.400',
-          }}
-          bg="white"
-          onChangeText={setSearchText}
-          value={searchText}
-        />
+        <Autocomplete />
       </Box>
     </View>
   )
