@@ -12,6 +12,13 @@ class Report extends BaseModel
     public const ORANGE = 'orange';
     public const RED = 'red';
 
+    public const LEVEL_MAPPING = [
+        self::WHITE => 0,
+        self::YELLOW => 1,
+        self::ORANGE => 2,
+        self::RED => 3,
+    ];
+
     public const COMMUNITY = 'community';
     public const VERIFIED = 'verified';
 

@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Trip;
 use App\Models\TripPoint;
-use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,8 +35,10 @@ class TripController extends BaseController
         $trip = new Trip();
         $trip->user_id = $currentUser->id;
         $trip->fill($fillable);
-        
+
         $trip->save();
+
+        return [];
     }
 
     public function edit(Request $request, $tripId)
@@ -48,17 +48,26 @@ class TripController extends BaseController
 
         $trip = Trip::where('user_id', $currentUser->id)->findOrFail($tripId);
         $trip->fill($fillable);
-        
+
         $trip->save();
+
+        return [];
     }
 
     public function delete($tripId)
     {
-        $currentUser = Auth::user();        
+        $currentUser = Auth::user();
 
         $trip = Trip::where('user_id', $currentUser->id)->findOrFail($tripId);
-        
+
         TripPoint::where('trip_id', $trip->id)->delete();
         $trip->delete();
+
+        return [];
+    }
+
+    public function getList()
+    {
+        return Trip::where('user_id', Auth::user()->id)->get();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\PlaceApiHelper;
+use App\Helpers\ReportHelper;
 use App\Models\Report;
 use App\Models\UserVote;
 use App\Utils\DateUtils;
@@ -101,32 +102,7 @@ class ReportController extends BaseController
     {
         $dateFrom = $request->get('from') ?: DateUtils::today();
         $dateTo = $request->get('to') ?: $dateFrom;
-        $reports = [];
 
-        // Per il singolo posto
-        $placeReports = Report::where('place_id', $placeId)
-            ->where('from', '<=', $dateFrom)
-            ->where(function (Builder $query) use ($dateTo) {
-                $query->where('to', '>=', $dateTo)
-                    ->orWhereNull('to');
-            })
-            ->get()
-            ->toArray();
-        $reports = array_merge($reports, $placeReports);
-
-        // Per i padri
-        foreach (PlaceApiHelper::getAddressComponentsPlaceIds($placeId) as $componentPlaceId) {
-            $placeReports = Report::where('place_id', $componentPlaceId)
-                ->where('from', '<=', $dateFrom)
-                ->where(function (Builder $query) use ($dateTo) {
-                    $query->where('to', '>=', $dateTo)
-                        ->orWhereNull('to');
-                })
-                ->get()
-                ->toArray();
-            $reports = array_merge($reports, $placeReports);
-        }
-
-        return $reports;
+        return ReportHelper::getReportsForPlaceId($placeId, $dateFrom, $dateTo);
     }
 }
