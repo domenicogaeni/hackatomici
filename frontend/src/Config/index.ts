@@ -1,4 +1,4 @@
-import { API_URL } from 'react-native-dotenv'
+import { API_URL } from '@env'
 
 export const Config = {
   API_URL,
