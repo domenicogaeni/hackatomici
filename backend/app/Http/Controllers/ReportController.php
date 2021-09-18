@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class ReportController extends BaseController
@@ -53,9 +54,13 @@ class ReportController extends BaseController
         $report->type = $currentUser->institution_place_id ? Report::VERIFIED : Report::COMMUNITY;
 
         $report->save();
-        $report->refresh();
 
-        // TODO: Mandare le notifiche alle persone coinvolte in questa comunicazione.
+        if ($report->type == Report::VERIFIED) {
+            // TODO: Notifiche alle persone che hanno questo place nei preferiti
+
+            // TODO: Notifiche alle persone che hanno i sotto-luoghi di questo place nei preferiti
+
+        }
     }
 
     public function voteReport(Request $request, $reportId)
