@@ -12,9 +12,12 @@ export default {
   initialState: buildAsyncState(),
   action: buildAsyncActions('startup/init', async (args, { dispatch }) => {
     const currentUser = auth().currentUser
+
     if (currentUser) {
       const idToken = await currentUser.getIdToken()
-      const meResponse = await fetch(Config.API_URL + '/auth/me', {
+
+      // Get user data
+      const meResponse = await fetch(`${Config.API_URL}/auth/me`, {
         method: 'GET',
         headers: {
           Authorization: 'Bearer ' + idToken,

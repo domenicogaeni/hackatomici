@@ -11,6 +11,7 @@ import { StartupState } from '@/Store/Startup'
 import InitStartup from '@/Store/Startup/Init'
 import { UserState } from '@/Store/User'
 import HomeNavigator from './HomeNavigator'
+import SendDeviceId from '@/Store/DeviceId/SendDeviceId'
 
 const Stack = createStackNavigator()
 
@@ -30,6 +31,12 @@ const RootNavigator = () => {
   useEffect(() => {
     dispatch(InitStartup.action())
   }, [dispatch])
+
+  useEffect(() => {
+    if (user) {
+      dispatch(SendDeviceId.action())
+    }
+  }, [dispatch, user])
 
   return (
     <SafeAreaView style={Layout.fill}>

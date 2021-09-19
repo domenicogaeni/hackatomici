@@ -12,6 +12,6 @@ const sliceInitialState = {
 export default buildSlice('user', [SetUser, Logout], sliceInitialState).reducer
 
 export interface UserState {
-  user: User | undefined
+  user?: User
   shouldShowOnboarding: boolean
 }
