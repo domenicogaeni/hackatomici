@@ -16,13 +16,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: ./backend
-        run: composer install --ignore-platform-reqs
-
-      - name: Run Migrations
-        working-directory: ./backend
-        run: php artisan migrate
-        env:
-          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+        run: composer install --ignore-platform-reqs      
           
   deploy:
     runs-on: ubuntu-latest
