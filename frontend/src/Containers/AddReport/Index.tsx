@@ -74,10 +74,10 @@ const AddReport = ({ route }: any) => {
       )
 
       if (addReportResponse.status === 200) {
+        onReportAdded?.()
         goBack()
-        onReportAdded && onReportAdded()
       }
-    } catch (addTripError) {}
+    } catch (addReportError) {}
   }, [title, description, dateFrom, dateTo, placeId, level, onReportAdded])
 
   const onChangeTitle = useCallback(

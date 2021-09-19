@@ -67,14 +67,14 @@ const Onboarding = () => {
 
       const idToken = await currentUser.getIdToken()
 
-      await fetch(Config.API_URL + '/users/favourite_places', {
+      await fetch(`${Config.API_URL}/users/favourite_places`, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer ' + idToken,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          place_ids: map(interestPoints, 'place_id'),
+          places_ids: map(interestPoints, 'place_id'),
         }),
       })
     } catch (signInError) {}
