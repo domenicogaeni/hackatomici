@@ -38,7 +38,7 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
         $router->group(['prefix' => 'favourite_places'], function () use ($router) {
             $router->get('', FavouritePlaceController::class . '@getList');
             $router->post('', FavouritePlaceController::class . '@add');
-            $router->delete('{id}', FavouritePlaceController::class . '@delete');
+            $router->delete('{placeId}', FavouritePlaceController::class . '@delete');
         });
     });
 

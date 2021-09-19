@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 
+use App\Helpers\NotificationHelper;
 use App\Helpers\PlaceApiHelper;
 use App\Models\FavouritePlace;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,17 +44,25 @@ class FavouritePlaceController extends BaseController
                 $favouritePlace->user_id = Auth::user()->id;
                 $favouritePlace->place_id = $placeId;
                 $favouritePlace->save();
+                $favouritePlace->refresh();
+
+                NotificationHelper::subscribeToPlaceAndHisParents(Auth::user()->id, $placeId, $favouritePlace->id);
             }
         }
 
         return [];
     }
 
-    public function delete(Request $request, $id)
+    public function delete(Request $request, $placeId)
     {
         $favouritePlace = FavouritePlace::where('user_id', Auth::user()->id)
-            ->findOrFail($id);
+            ->where('place_id', $placeId)
+            ->first();
+        if (!$favouritePlace) {
+            throw new Exception('place_id not found in favourites');
+        }
 
+        NotificationHelper::unsubscribeFromPlaceAndHisParents(Auth::user()->id, $favouritePlace->place_id, $favouritePlace->id);
         $favouritePlace->delete();
 
         return [];

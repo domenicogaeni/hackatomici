@@ -18,11 +18,13 @@ class TripPoint extends BaseModel
     public function getLevelAttribute()
     {
         $level = Report::WHITE;
-        
+
         $reports = ReportHelper::getReportsForPlaceId($this->place_id, $this->from, $this->to);
         foreach ($reports as $report) {
-            if (Report::LEVEL_MAPPING[$report['level']] > Report::LEVEL_MAPPING[$level]) {
-                $level = $report['level'];
+            if ($report['type'] == Report::VERIFIED || ($report['type'] == Report::COMMUNITY && $report['score'] > 0)) {
+                if (Report::LEVEL_MAPPING[$report['level']] > Report::LEVEL_MAPPING[$level]) {
+                    $level = $report['level'];
+                }
             }
             if ($level == Report::RED) {
                 break;

@@ -24,8 +24,10 @@ class Trip extends BaseModel
         foreach ($tripPoints as $tripPoint) {
             $reports = ReportHelper::getReportsForPlaceId($tripPoint->place_id, $tripPoint->from, $tripPoint->to);
             foreach ($reports as $report) {
-                if (Report::LEVEL_MAPPING[$report['level']] > Report::LEVEL_MAPPING[$level]) {
-                    $level = $report['level'];
+                if ($report['type'] == Report::VERIFIED || ($report['type'] == Report::COMMUNITY && $report['score'] > 0)) {
+                    if (Report::LEVEL_MAPPING[$report['level']] > Report::LEVEL_MAPPING[$level]) {
+                        $level = $report['level'];
+                    }
                 }
                 if ($level == Report::RED) {
                     break;

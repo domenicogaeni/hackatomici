@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NotificationHelper;
 use App\Models\Trip;
 use App\Models\TripPoint;
 use Illuminate\Http\Request;
@@ -28,14 +29,14 @@ class TripController extends BaseController
                 'place_id' => 'required|string',
                 'from' => 'required|date',
                 'to' => 'required|date',
-                'points' => 'array',                                                
-            ],            
+                'points' => 'array',
+            ],
             'editStop' => [
                 'place_id' => 'required|string',
                 'from' => 'required|date',
                 'to' => 'required|date',
-                'points' => 'array',                                                  
-            ],                    
+                'points' => 'array',
+            ],
         ]);
     }
 
@@ -87,7 +88,7 @@ class TripController extends BaseController
     {
         $stop = $request->all();
         $currentUser = Auth::user();
-     
+
         Trip::where('user_id', $currentUser->id)->findOrFail($tripId);
 
         $singleStop = new TripPoint();
@@ -97,9 +98,10 @@ class TripController extends BaseController
         $singleStop->to = $stop['to'];
         $singleStop->save();
         $singleStop->refresh();
+        NotificationHelper::subscribeToPlaceAndHisParents($currentUser->id, $singleStop->place_id, null, $singleStop->id);
 
         if (isset($stop['points'])) {
-            array_map(function ($point) use($tripId, $singleStop) {
+            array_map(function ($point) use ($tripId, $singleStop, $currentUser) {
                 $singlePoint = new TripPoint();
                 $singlePoint->trip_id = $tripId;
                 $singlePoint->place_id = $point;
@@ -107,30 +109,43 @@ class TripController extends BaseController
                 $singlePoint->from = $singleStop->from;
                 $singlePoint->to = $singleStop->to;
                 $singlePoint->save();
+                $singlePoint->refresh();
+                NotificationHelper::subscribeToPlaceAndHisParents($currentUser->id, $singlePoint->place_id, null, $singlePoint->id);
             }, $stop['points']);
-        }   
+        }
+
+        return [];
     }
 
     public function editStop(Request $request, $tripId, $stopId)
     {
         $currentUser = Auth::user();
-     
+
         Trip::where('user_id', $currentUser->id)->findOrFail($tripId);
         TripPoint::where('trip_id', $tripId)->whereNull('parent_id')->findOrFail($stopId);
-        
+
         $this->deleteStop($tripId, $stopId);
-        $this->addStop($request, $tripId);        
+        $this->addStop($request, $tripId);
+
+        return [];
     }
 
     public function deleteStop($tripId, $stopId)
     {
         $currentUser = Auth::user();
-     
+
         Trip::where('user_id', $currentUser->id)->findOrFail($tripId);
-        $tripPoint = TripPoint::where('trip_id', $tripId)->findOrFail($stopId);
-        
-        TripPoint::where('trip_id', $tripId)->where('parent_id', $stopId)->delete();
-        $tripPoint->delete();       
+        $tripStop = TripPoint::where('trip_id', $tripId)->findOrFail($stopId);
+
+        $tripPoints = TripPoint::where('trip_id', $tripId)->where('parent_id', $stopId)->get();
+        foreach ($tripPoints as $point) {
+            NotificationHelper::unsubscribeFromPlaceAndHisParents($currentUser->id, $point->place_id, null, $point->id);
+            $point->delete();
+        }
+        NotificationHelper::unsubscribeFromPlaceAndHisParents($currentUser->id, $tripStop->place_id, null, $tripStop->id);
+        $tripStop->delete();
+
+        return [];
     }
 
     public function get($tripId)
@@ -144,7 +159,7 @@ class TripController extends BaseController
             ->get();
 
         $response = $trip->toArray();
-        
+
 
         foreach ($stops as $item) {
             $tmp = $item->toArray();
