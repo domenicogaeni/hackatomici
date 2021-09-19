@@ -38,7 +38,7 @@ const RootNavigator = () => {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      <StatusBar barStyle={'dark-content'} />
+      <StatusBar barStyle={'dark-content'} translucent={true} />
       <Stack.Navigator headerMode={'none'}>
         {applicationIsLoading ? (
           <Stack.Screen name="Splash" component={Splash} />
