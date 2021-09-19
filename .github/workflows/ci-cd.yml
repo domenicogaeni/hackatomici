@@ -13,7 +13,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate Firebase credentials file
-        run: echo ${{secrets.FIREBASE_CREDENTIALS}} > ./backend/firebaseCredentials.json
+        run: echo $FIREBASE_CREDENTIALS > ./backend/firebaseCredentials.json
+        env:
+          FIREBASE_CREDENTIALS: ${{secrets.FIREBASE_CREDENTIALS}}
 
       - name: Copy production Dockerfile
         run: cp ./backend/environments/prod/Dockerfile Dockerfile
