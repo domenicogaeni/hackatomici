@@ -5,12 +5,13 @@ import { NavigationContainer } from '@react-navigation/native'
 import { navigationRef } from '@/Navigators/utils'
 import { SafeAreaView, StatusBar } from 'react-native'
 import { useTheme } from '@/Theme'
-import HomeNavigator from './Home'
-import LoginNavigator from './Login'
+import LoginNavigator from './LoginNavigator'
 import { useDispatch, useSelector } from 'react-redux'
 import { StartupState } from '@/Store/Startup'
 import InitStartup from '@/Store/Startup/Init'
 import { UserState } from '@/Store/User'
+import HomeNavigator from './HomeNavigator'
+import SendDeviceId from '@/Store/DeviceId/SendDeviceId'
 
 const Stack = createStackNavigator()
 
@@ -19,7 +20,7 @@ const RootNavigator = () => {
   const { Layout } = useTheme()
   const dispatch = useDispatch()
 
-  const user = useSelector((state: { user: UserState }) => state.user.item)
+  const user = useSelector((state: { user: UserState }) => state.user.user)
   const shouldShowOnboarding = useSelector(
     (state: { user: UserState }) => state.user.shouldShowOnboarding,
   )
@@ -30,6 +31,12 @@ const RootNavigator = () => {
   useEffect(() => {
     dispatch(InitStartup.action())
   }, [dispatch])
+
+  useEffect(() => {
+    if (user) {
+      dispatch(SendDeviceId.action())
+    }
+  }, [dispatch, user])
 
   return (
     <SafeAreaView style={Layout.fill}>
