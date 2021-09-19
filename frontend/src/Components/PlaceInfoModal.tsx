@@ -19,7 +19,7 @@ interface IPlaceInfoModalProps {
 
 const PlaceInfoModal = ({
   placeId,
-  canToggleFavourite,
+  canToggleFavourite = true,
 }: IPlaceInfoModalProps) => {
   const [currentInfo, setCurrentInfo] = useState<Place>()
   const [currentReports, setCurrentReports] = useState<ReportModel[]>()
