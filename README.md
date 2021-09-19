@@ -9,14 +9,46 @@
 
 ## 💡 Idea
 
-Abbiamo creato un app mobile (Android/IOS) che permette di consultare le normative vigenti sul Covid 19 in giro per il mondo. Le funzionalità sono le seguenti:
+Abbiamo creato un'app mobile (Android/IOS) che permette di consultare le normative vigenti sull'emergenza sanitaria. Con questa applicazione l'utente ha la possibilità di creare e organizzare viaggi/spostamenti di qualsiasi natura, monitorando da un'unica interfaccia le normative vigenti sui territori interessati da questo itinerario. Si prenderà visione sia delle regole dettate da enti pubblici sia segnalazioni da parte della community, votabili per confermarne la veridicità.
+
+Le funzionalità sono le seguenti:
+
+- Possibilità di registrarsi tramite Google:
+
+<img src="assets/LoginGoogle.gif" alt="google-login" width="200px">
+
+- Possibilità di registrarsi tramite email e password:
+
+<img src="assets/LoginEmailPassword.gif" alt="email-login" width="200px">
+
+- Possibilità di impostare dei luoghi preferiti in modo da ricevere una notifica in caso di inserimento di una nuova normativa.
+
+<img src="assets/SetLuoghiPreferiti.gif" alt="email-login" width="200px">
+
+- Possibilità di inserire un itinerario per rimanere aggiornati sulle normative in vigore durante il viaggio.
+
+<img src="assets/InserimentoItinerario.gif" alt="email-login" width="200px">
+
+
 - Possibilità di cercare per ogni singolo luogo le normative vigenti.
-- Aggiungere dei luoghi preferiti in modo da ricevere una notifica in caso di inserimento di una nuova normativa.
+
+<img src="assets/RicercaPerLuogo.gif" alt="email-login" width="200px">
+
 - Possibilità di aggiungere una nuova segnalazione per informare la community.
+
+<img src="assets/InserireSegnalazione.gif" alt="email-login" width="200px">
+
 - Possibilità di votare le segnalazioni inserite dalla community.
-- Possibilità di inserire un itinerario in giro per il modo per rimanere aggiornati sulle normative in vigore durante il viaggio.
+
+<img src="assets/VotareSegnalazione.gif" alt="email-login" width="200px">
+
+- Possibilità di ricevere aggiornamenti riguardo i propri itinerari e luoghi preferiti (notifiche push).
+
+<img src="assets/ricezioneNotifiche.gif" alt="email-login" width="200px">
 
 
+
+---
 ## 🏗️ Infrastruttura
 
 Il progetto è composto da due parti, un'app mobile (Android e iOS) scritta in [React Native](https://reactnative.dev/) ed un backend PHP basato sul framework [Lumen](https://lumen.laravel.com/). 
