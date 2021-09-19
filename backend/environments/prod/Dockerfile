@@ -18,7 +18,7 @@ ENV GOOGLE_API_TOKEN=$GOOGLE_API_TOKEN
 # Copy source and install dependencies
 COPY backend $APP_HOME
 RUN cd $APP_HOME
-RUN composer install
+RUN composer install --ignore-platform-reqs
 COPY backend/environments/prod/.env.example .env
 
 # Clean
