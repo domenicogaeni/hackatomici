@@ -55,7 +55,7 @@ Il progetto è composto da due parti, un'app mobile (Android e iOS) scritta in [
 
 Abbiamo utilizzato [Firebase](https://firebase.google.com/) per gestire il login (tramite email/password oppure tramite Google) e le notifiche push.
 
-Abbiamo utilizato [Native Base](https://nativebase.io/) come libreria per stilare i componenti uniformemente e [Redux](https://redux.js.org/) per gestire lo stato interno dell'app. 
+Abbiamo utilizzato [Native Base](https://nativebase.io/) come libreria per stilare i componenti uniformemente e [Redux](https://redux.js.org/) per gestire lo stato interno dell'app. 
 
 Abbiamo utillizato [Google Places API](https://developers.google.com/maps/documentation/places/web-service/overview) per la geolocalizzazione dei posti, usando il <b>place_id</b> di ogni singolo luogo come punto di riferimento. Inoltre abbiamo cacheato nel nostro database le varie chiamate che vengono effettuate a Google in modo da essere più veloci nella riposta e per risparmiare chiamate.
 
