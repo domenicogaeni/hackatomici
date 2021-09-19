@@ -95,8 +95,8 @@ Per lanciare l'app su iOS eseguire il comando:
 ---
 
 ## 👨‍💻 Autori
-- ### Giorgio Berolotti
-- ### Domenico Gaeni
+- ### [Giorgio Berolotti](https://bertolotti.dev/)
+- ### [Domenico Gaeni](https://domenicogaeni.dev/)
 - ### Stefano Zanini
 - ### Lorenzo Milesi
 
