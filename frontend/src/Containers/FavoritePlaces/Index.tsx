@@ -11,13 +11,18 @@ import { Config } from '@/Config'
 import { Place } from '@/Models/Place'
 import { HeaderBackButton } from '@react-navigation/stack'
 import { goBack } from '@/Navigators/utils'
-import { ActivityIndicator, TouchableOpacity } from 'react-native'
+import {
+  ActivityIndicator,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native'
 
 const FavoritePlaces = () => {
-  const [isLoading, setLoading] = useState(false)
   const [places, setPlaces] = useState<Place[]>([])
   const [error, setError] = useState<string>()
   const [shouldShowPointPicker, setShouldShowPointPicker] = useState(false)
+  const [isLoading, setLoading] = useState(false)
+  const [isRefreshing, setRefreshing] = useState(false)
 
   const sessionToken = useMemo(() => uuid.v4() as string, [])
 
@@ -140,6 +145,12 @@ const FavoritePlaces = () => {
     setShouldShowPointPicker,
   ])
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await fetchFavoritePlaces()
+    setRefreshing(false)
+  }, [fetchFavoritePlaces, setRefreshing])
+
   const renderItem = useCallback(
     (item: Place, index: number) => (
       <Box
@@ -164,7 +175,12 @@ const FavoritePlaces = () => {
   )
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+    <KeyboardAwareScrollView
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+      }
+      style={{ backgroundColor: 'white' }}
+    >
       <HeaderBackButton onPress={goBack} label="Indietro" />
       <Box height="100%" width="100%" bg="white" paddingX={8}>
         <HStack
