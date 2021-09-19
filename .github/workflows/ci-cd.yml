@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate Firebase credentials file
-        run: echo ${{secrets.FIREBASE_CREDENTIALS}} > hackatomici-2021-firebase.json
+        run: echo ${{secrets.FIREBASE_CREDENTIALS}} > firebaseCredentials.json
 
       - name: Copy production Dockerfile
         run: cp ./backend/environments/prod/Dockerfile Dockerfile
