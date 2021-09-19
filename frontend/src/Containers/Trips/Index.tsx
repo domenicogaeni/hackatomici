@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Trips = () => {
   const [trips, setTrips] = useState<ShortTrip[]>([])
+  const [isEditMode, setEditMode] = useState(false)
   const [isLoading, setLoading] = useState(true)
   const [isRefreshing, setRefreshing] = useState(false)
 
@@ -59,29 +60,24 @@ const Trips = () => {
     [fetchTrips],
   )
 
-  const removeTrip = useCallback(
-    async (trip: ShortTrip) => {
-      try {
-        const currentUser = await auth().currentUser
-        if (!currentUser) {
-          return
-        }
+  const removeTrip = useCallback(async (trip: ShortTrip) => {
+    try {
+      const currentUser = await auth().currentUser
+      if (!currentUser) {
+        return
+      }
 
-        const idToken = await currentUser.getIdToken()
+      const idToken = await currentUser.getIdToken()
 
-        await fetch(`${Config.API_URL}/trips/${trip.id}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: 'Bearer ' + idToken,
-            'Content-Type': 'application/json',
-          },
-        })
-      } catch (signInError) {}
-
-      fetchTrips()
-    },
-    [fetchTrips],
-  )
+      await fetch(`${Config.API_URL}/trips/${trip.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: 'Bearer ' + idToken,
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (signInError) {}
+  }, [])
 
   const openTrip = useCallback(
     (trip: ShortTrip) => navigate('TripDetail', { tripId: trip.id }),
@@ -101,6 +97,7 @@ const Trips = () => {
         <TouchableOpacity
           key={`${item.id}_${index}`}
           onPress={() => openTrip(item)}
+          disabled={isEditMode}
         >
           <Box borderRadius={8} bg="primary.500" padding={4} marginBottom={4}>
             <HStack justifyContent="space-between" alignItems="center">
@@ -123,15 +120,26 @@ const Trips = () => {
                   </Text>
                 )}
               </VStack>
-              <TouchableOpacity onPress={() => removeTrip(item)}>
+              {isEditMode ? (
+                <TouchableOpacity
+                  onPress={async () => {
+                    setRefreshing(true)
+                    await removeTrip(item)
+                    await fetchTrips()
+                    setRefreshing(false)
+                  }}
+                >
+                  <Icon name="close-circle" size={20} color="white" />
+                </TouchableOpacity>
+              ) : (
                 <Icon name="chevron-forward-outline" size={20} color="white" />
-              </TouchableOpacity>
+              )}
             </HStack>
           </Box>
         </TouchableOpacity>
       )
     },
-    [openTrip, removeTrip],
+    [isEditMode, openTrip, removeTrip, fetchTrips],
   )
 
   const onRefresh = useCallback(async () => {
@@ -139,6 +147,14 @@ const Trips = () => {
     await fetchTrips()
     setRefreshing(false)
   }, [fetchTrips, setRefreshing])
+
+  const startEdit = useCallback(() => {
+    setEditMode(true)
+  }, [setEditMode])
+
+  const stopEdit = useCallback(() => {
+    setEditMode(false)
+  }, [setEditMode])
 
   const ongoingTrips = useMemo(
     () =>
@@ -181,12 +197,31 @@ const Trips = () => {
             alignItems="center"
             marginBottom={8}
           >
-            <Text fontSize="3xl" fontWeight={600}>
+            <Text flex={1} fontSize="3xl" fontWeight={600} marginRight={2}>
               Itinerari
             </Text>
-            <TouchableOpacity onPress={addTrip}>
-              <Icon name="add-circle" size={32} color="#14b8a6" />
-            </TouchableOpacity>
+            <HStack>
+              {isEditMode ? (
+                <Box marginRight={2}>
+                  <TouchableOpacity onPress={stopEdit}>
+                    <Icon name="checkmark-circle" size={32} color="#14b8a6" />
+                  </TouchableOpacity>
+                </Box>
+              ) : (
+                <Box marginRight={2}>
+                  <TouchableOpacity onPress={startEdit}>
+                    <Icon name="create" size={32} color="#14b8a6" />
+                  </TouchableOpacity>
+                </Box>
+              )}
+              <TouchableOpacity onPress={addTrip} disabled={isEditMode}>
+                <Icon
+                  name="add-circle"
+                  size={32}
+                  color={isEditMode ? '#a1a1aa' : '#14b8a6'}
+                />
+              </TouchableOpacity>
+            </HStack>
           </HStack>
           {isLoading ? (
             <ActivityIndicator color="primary.500" size="large" />
