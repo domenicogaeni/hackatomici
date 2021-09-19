@@ -9,7 +9,11 @@ const Splash = () => {
   return (
     <View style={[Layout.fill, Layout.colCenter]}>
       <Brand />
-      <ActivityIndicator size={'large'} style={[Gutters.largeVMargin]} />
+      <ActivityIndicator
+        color="primary.500"
+        size={'large'}
+        style={[Gutters.largeVMargin]}
+      />
     </View>
   )
 }

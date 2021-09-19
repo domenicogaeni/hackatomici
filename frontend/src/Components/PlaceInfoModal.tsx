@@ -94,7 +94,7 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
   )
 
   return isLoading ? (
-    <ActivityIndicator />
+    <ActivityIndicator color="primary.500" />
   ) : (
     <>
       <View style={{ padding: 16, alignItems: 'center' }}>
