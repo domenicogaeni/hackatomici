@@ -114,7 +114,7 @@ const Login = () => {
 
             if (registerResponse.status === 200) {
               // User is logged in now
-              const userData = (await meResponse.json()).data as UserModel
+              const userData = (await registerResponse.json()).data as UserModel
               dispatch(
                 SetUser.action({ user: userData, shouldShowOnboarding: true }),
               )
