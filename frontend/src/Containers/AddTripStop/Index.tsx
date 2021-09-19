@@ -156,7 +156,7 @@ const AddTripStop = ({ route }: any) => {
       <HeaderBackButton onPress={goBack} label="Indietro" />
       <Box height="100%" width="100%" bg="white" paddingX={8}>
         <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Aggiungi una tappa!'}
+          Aggiungi una tappa!
         </Text>
         <Box marginBottom={4}>
           <PlacePicker
