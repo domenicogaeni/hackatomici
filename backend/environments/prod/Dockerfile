@@ -21,9 +21,6 @@ RUN cd $APP_HOME
 RUN composer install --ignore-platform-reqs
 COPY backend/environments/prod/.env.example .env
 
-# Run migrations
-RUN php artisan migrate --force
-
 # Clean
 RUN rm -rf .git .github .vscode database environments private tests \
     .gitignore .php_cs.dist artisan captainhook.json composer.json composer.lock Dockerfile docker-compose.yml LICENSE phpunit-printer.yml phpunit.xml psalm.xml README.md fronted
