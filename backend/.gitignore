@@ -5,3 +5,4 @@ Homestead.yaml
 .env
 .phpunit.result.cache
 hackatomici-2021-firebase.json
+.dockerignore
