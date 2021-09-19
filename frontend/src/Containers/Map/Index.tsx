@@ -8,7 +8,7 @@ import {
 } from '@gorhom/bottom-sheet'
 import { Box } from 'native-base'
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import uuid from 'react-native-uuid'
 import PlaceInfoModal from '@/Components/PlaceInfoModal'
@@ -72,6 +72,14 @@ const Map = () => {
 
   const clearPlaceId = useCallback(() => setPlaceId(undefined), [setPlaceId])
 
+  const sheetStyle = useMemo(
+    () => ({
+      ...styles.sheetContainer,
+      shadowColor: '#000',
+    }),
+    [],
+  )
+
   return (
     <BottomSheetModalProvider>
       <View style={[Layout.fill, Layout.colCenter]}>
@@ -100,6 +108,7 @@ const Map = () => {
           onDismiss={clearPlaceId}
           index={1}
           snapPoints={snapPoints}
+          style={sheetStyle}
         >
           <PlaceInfoModal placeId={placeId} />
         </BottomSheetModal>
@@ -107,5 +116,19 @@ const Map = () => {
     </BottomSheetModalProvider>
   )
 }
+
+const styles = StyleSheet.create({
+  sheetContainer: {
+    borderTopStartRadius: 24,
+    borderTopEndRadius: 24,
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 16.0,
+    elevation: 24,
+  },
+})
 
 export default Map

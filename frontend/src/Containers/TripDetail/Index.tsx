@@ -17,7 +17,7 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, StyleSheet } from 'react-native'
 import PlaceInfoModal from '@/Components/PlaceInfoModal'
 
 const TripDetail = ({ route }: any) => {
@@ -102,6 +102,14 @@ const TripDetail = ({ route }: any) => {
     ? moment(trip.to, 'YYYY-MM-DD').format('DD/MM/YYYY')
     : 'Oggi'
 
+  const sheetStyle = useMemo(
+    () => ({
+      ...styles.sheetContainer,
+      shadowColor: '#000',
+    }),
+    [],
+  )
+
   return (
     <BottomSheetModalProvider>
       <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
@@ -163,11 +171,26 @@ const TripDetail = ({ route }: any) => {
         onDismiss={clearPlaceId}
         index={1}
         snapPoints={snapPoints}
+        style={sheetStyle}
       >
         <PlaceInfoModal placeId={placeId} />
       </BottomSheetModal>
     </BottomSheetModalProvider>
   )
 }
+
+const styles = StyleSheet.create({
+  sheetContainer: {
+    borderTopStartRadius: 24,
+    borderTopEndRadius: 24,
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 16.0,
+    elevation: 24,
+  },
+})
 
 export default TripDetail
