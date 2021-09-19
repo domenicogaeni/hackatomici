@@ -16,10 +16,9 @@ ENV DB_PASSWORD=$DB_PASSWORD
 ENV GOOGLE_API_TOKEN=$GOOGLE_API_TOKEN
 
 # Copy source and install dependencies
-COPY backend $APP_HOME
-RUN cd $APP_HOME
-RUN composer install --ignore-platform-reqs
-COPY backend/environments/prod/.env.example .env
+COPY . $APP_HOME
+RUN composer install
+COPY environments/ec2/.env.example .env
 
 # Clean
 RUN rm -rf .git .github .vscode database environments private tests \
@@ -27,8 +26,3 @@ RUN rm -rf .git .github .vscode database environments private tests \
 
 # Change ownership of our applications
 RUN chown -R www-data:www-data $APP_HOME
-
-# Start
-COPY backend/environments/prod/start.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/start.sh
-CMD ["start.sh"]
