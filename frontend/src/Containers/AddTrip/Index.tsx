@@ -101,7 +101,7 @@ const AddTrip = ({ route }: any) => {
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
       <HeaderBackButton onPress={goBack} label="Indietro" />
-      <Box height="100%" width="100%" bg="white" padding={8}>
+      <Box height="100%" width="100%" bg="white" paddingX={8}>
         <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
           {'Crea un nuovo\nitinerario'}
         </Text>

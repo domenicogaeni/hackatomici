@@ -166,7 +166,7 @@ const FavoritePlaces = () => {
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
       <HeaderBackButton onPress={goBack} label="Indietro" />
-      <Box height="100%" width="100%" bg="white" padding={8}>
+      <Box height="100%" width="100%" bg="white" paddingX={8}>
         <HStack
           justifyContent="space-between"
           alignItems="center"
