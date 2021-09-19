@@ -2,13 +2,22 @@ import React, { useCallback, useState } from 'react'
 import { goBack } from '@/Navigators/utils'
 import { Box, Button, Checkbox, HStack, Input, Text, View } from 'native-base'
 import auth from '@react-native-firebase/auth'
-import { Keyboard, Platform } from 'react-native'
+import {
+  Keyboard,
+  Platform,
+  TouchableOpacity as RNTouchableOpacity,
+} from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { HeaderBackButton } from '@react-navigation/stack'
 import moment from 'moment'
 import { Config } from '@/Config'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler'
+
+const Touchable = Platform.select({
+  ios: GHTouchableOpacity,
+  android: RNTouchableOpacity as any,
+})
 
 const AddReport = ({ route }: any) => {
   const { placeId, onReportAdded } = route.params || {}
@@ -158,7 +167,7 @@ const AddReport = ({ route }: any) => {
             />
           )}
           {Platform.OS === 'android' && (
-            <TouchableOpacity
+            <Touchable
               onPress={() => {
                 setShowDatePickerFrom(true)
               }}
@@ -169,7 +178,7 @@ const AddReport = ({ route }: any) => {
                 value={moment(dateFrom).format('DD/MM/YYYY')}
                 editable={false}
               />
-            </TouchableOpacity>
+            </Touchable>
           )}
         </Box>
         <HStack>
@@ -194,21 +203,21 @@ const AddReport = ({ route }: any) => {
               />
             )}
             {Platform.OS === 'android' && (
-              <TouchableOpacity onPress={() => setShowDatePickerTo(true)}>
+              <Touchable onPress={() => setShowDatePickerTo(true)}>
                 <Input
                   marginBottom={4}
                   isFullWidth={true}
                   value={moment(dateTo).format('DD/MM/YYYY')}
                   editable={false}
                 />
-              </TouchableOpacity>
+              </Touchable>
             )}
           </Box>
         )}
         <Text marginBottom={2}>Livello di rischio:</Text>
         <Box marginBottom={8}>
           <HStack>
-            <TouchableOpacity onPress={() => setLevel('white')}>
+            <Touchable onPress={() => setLevel('white')}>
               <View
                 h={12}
                 w={12}
@@ -218,8 +227,8 @@ const AddReport = ({ route }: any) => {
                 borderColor="primary.500"
                 borderWidth={level === 'white' ? 3 : 0}
               />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setLevel('yellow')}>
+            </Touchable>
+            <Touchable onPress={() => setLevel('yellow')}>
               <View
                 h={12}
                 w={12}
@@ -229,8 +238,8 @@ const AddReport = ({ route }: any) => {
                 borderColor="primary.500"
                 borderWidth={level === 'yellow' ? 3 : 0}
               />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setLevel('orange')}>
+            </Touchable>
+            <Touchable onPress={() => setLevel('orange')}>
               <View
                 h={12}
                 w={12}
@@ -240,8 +249,8 @@ const AddReport = ({ route }: any) => {
                 borderColor="primary.500"
                 borderWidth={level === 'orange' ? 3 : 0}
               />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setLevel('red')}>
+            </Touchable>
+            <Touchable onPress={() => setLevel('red')}>
               <View
                 h={12}
                 w={12}
@@ -250,7 +259,7 @@ const AddReport = ({ route }: any) => {
                 borderColor="primary.500"
                 borderWidth={level === 'red' ? 3 : 0}
               />
-            </TouchableOpacity>
+            </Touchable>
           </HStack>
         </Box>
         <Button marginY={4} onPress={addReport}>
