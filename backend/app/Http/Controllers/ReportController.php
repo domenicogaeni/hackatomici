@@ -121,6 +121,12 @@ class ReportController extends BaseController
         $dateFrom = $request->get('from') ?: DateUtils::today();
         $dateTo = $request->get('to') ?: $dateFrom;
 
-        return ReportHelper::getReportsForPlaceId($placeId, $dateFrom, $dateTo);
+        $reports = ReportHelper::getReportsForPlaceId($placeId, $dateFrom, $dateTo);
+
+        usort($reports, function($a, $b) {
+            return Report::LEVEL_MAPPING[$a['level']] < Report::LEVEL_MAPPING[$b['level']] ? 1 : -1;
+        });
+
+        return $reports;
     }
 }
