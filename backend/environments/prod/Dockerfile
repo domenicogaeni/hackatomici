@@ -8,7 +8,6 @@ ARG DB_DATABASE
 ARG DB_USERNAME
 ARG DB_PASSWORD
 ARG GOOGLE_API_TOKEN
-ARG FIREBASE_CREDENTIALS
 
 ENV DB_HOST=$DB_HOST
 ENV DB_DATABASE=$DB_DATABASE
@@ -19,7 +18,6 @@ ENV GOOGLE_API_TOKEN=$GOOGLE_API_TOKEN
 # Copy source and install dependencies
 COPY backend $APP_HOME
 RUN cd $APP_HOME
-RUN echo $FIREBASE_CREDENTIALS > firebaseCredentials.json
 RUN composer install --ignore-platform-reqs
 COPY backend/environments/prod/.env.example .env
 
