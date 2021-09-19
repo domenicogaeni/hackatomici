@@ -29,7 +29,7 @@ jobs:
 
       - name: Copy production Dockerfile
         working-directory: ./backend
-        run: cp environments/prod/Dockerfile Dockerfile
+        run: cp ./backend/environments/prod/Dockerfile Dockerfile
 
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
