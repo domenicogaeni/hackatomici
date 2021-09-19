@@ -99,3 +99,7 @@ DerivedData/
 
 # CUSTOM
 google-services.json
+
+## Environment variables
+.env
+key.properties

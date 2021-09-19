@@ -1,77 +1,205 @@
-import { useTheme } from '@/Theme'
-import { Box, HStack, Image, Pressable, Text, VStack } from 'native-base'
-import React from 'react'
-import { View } from 'react-native'
-import MapView from 'react-native-maps'
+import { ShortTrip } from '@/Models/Trip'
+import { navigate } from '@/Navigators/utils'
+import { Box, HStack, Pressable, Text, VStack } from 'native-base'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import Icon from 'react-native-vector-icons/Ionicons'
+import auth from '@react-native-firebase/auth'
+import { Config } from '@/Config'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { filter, map } from 'lodash'
+import moment from 'moment'
+import { ActivityIndicator } from 'react-native'
 
-const IndexMapContainer = () => {
-  const { Gutters, Layout } = useTheme()
+const Trips = () => {
+  const [trips, setTrips] = useState<ShortTrip[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const fetchTrips = useCallback(async () => {
+    try {
+      const currentUser = await auth().currentUser
+      if (!currentUser) {
+        return
+      }
+
+      const idToken = await currentUser.getIdToken()
+
+      const getTripsResponse = await fetch(Config.API_URL + '/trips', {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + idToken,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (getTripsResponse.status === 200) {
+        setTrips((await getTripsResponse.json()).data)
+      }
+    } catch (readTripError) {}
+  }, [setTrips])
+
+  useEffect(() => {
+    const fetchTripsAsync = async () => {
+      setIsLoading(true)
+      await fetchTrips()
+      setIsLoading(false)
+    }
+
+    fetchTripsAsync()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const addTrip = useCallback(
+    () => navigate('AddTrip', { onTripAdded: fetchTrips }),
+    [fetchTrips],
+  )
+
+  const removeTrip = useCallback(
+    async (trip: ShortTrip) => {
+      try {
+        const currentUser = await auth().currentUser
+        if (!currentUser) {
+          return
+        }
+
+        const idToken = await currentUser.getIdToken()
+
+        await fetch(`${Config.API_URL}/trips/${trip.id}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: 'Bearer ' + idToken,
+            'Content-Type': 'application/json',
+          },
+        })
+      } catch (signInError) {}
+
+      fetchTrips()
+    },
+    [fetchTrips],
+  )
+
+  const openTrip = useCallback(
+    (trip: ShortTrip) => navigate('TripDetail', { tripId: trip.id }),
+    [],
+  )
+
+  const renderItem = useCallback(
+    (item: ShortTrip, index: number) => {
+      const formattedFromDate = item.from
+        ? moment(item.from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+        : 'Oggi'
+      const formattedToDate = item.to
+        ? moment(item.to, 'YYYY-MM-DD').format('DD/MM/YYYY')
+        : 'Oggi'
+
+      return (
+        <Pressable key={`${item.id}_${index}`} onPress={() => openTrip(item)}>
+          <Box borderRadius={8} bg="primary.500" padding={4} marginBottom={4}>
+            <HStack justifyContent="space-between" alignItems="center">
+              <VStack flex={1} marginRight={2}>
+                <Text fontSize="xxs" color="primary.50">
+                  {`${formattedFromDate} -> ${formattedToDate}`}
+                </Text>
+                <Text color="white" marginTop={1}>
+                  {item.name}
+                </Text>
+                {item.description && (
+                  <Text
+                    fontSize="sm"
+                    color="primary.100"
+                    marginTop={1}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {item.description}
+                  </Text>
+                )}
+              </VStack>
+              <Pressable onPress={() => removeTrip(item)}>
+                <Icon name="chevron-forward-outline" size={20} color="white" />
+              </Pressable>
+            </HStack>
+          </Box>
+        </Pressable>
+      )
+    },
+    [openTrip, removeTrip],
+  )
+
+  const ongoingTrips = useMemo(
+    () =>
+      filter(
+        trips,
+        trip =>
+          moment(trip.from, 'YYYY-MM-DD').isSameOrBefore(moment(), 'date') &&
+          moment(trip.to, 'YYYY-MM-DD').isSameOrAfter(moment(), 'date'),
+      ),
+    [trips],
+  )
+
+  const pastTrips = useMemo(
+    () =>
+      filter(trips, trip =>
+        moment(trip.to, 'YYYY-MM-DD').isBefore(moment(), 'date'),
+      ),
+    [trips],
+  )
+
+  const futureTrips = useMemo(
+    () =>
+      filter(trips, trip =>
+        moment(trip.from, 'YYYY-MM-DD').isAfter(moment(), 'date'),
+      ),
+    [trips],
+  )
 
   return (
-    <View style={[Layout.fill, Layout.colCenter]}>
-      <View style={[[Gutters.smallHPadding]]}>
-        <Box
-          bg="primary.600"
-          py={4}
-          px={3}
-          rounded="md"
-          alignSelf="center"
-          width={375}
-          maxWidth="100%"
+    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+      <Box height="100%" flex={1} bg="white" padding={8}>
+        <HStack
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom={8}
         >
-          <HStack justifyContent="space-between">
-            <Box justifyContent="space-between">
-              <VStack space={2}>
-                <Text fontSize="xxs" color="white">
-                  20/03/2022 {'->'} 22/03/2022
+          <Text fontSize="3xl" fontWeight={600}>
+            Itinerari
+          </Text>
+          <Pressable onPress={addTrip}>
+            <Icon name="add-circle" size={32} color="#14b8a6" />
+          </Pressable>
+        </HStack>
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <>
+            {ongoingTrips.length > 0 && (
+              <>
+                <Text color="gray.500" marginBottom={2}>
+                  In corso
                 </Text>
-                <Text color="white" fontSize="lg">
-                  Barcellona
+                {map(ongoingTrips, (trip, index) => renderItem(trip, index))}
+              </>
+            )}
+            {futureTrips.length > 0 && (
+              <>
+                <Text color="gray.500" marginBottom={2}>
+                  Programmati
                 </Text>
-              </VStack>
-              <Pressable
-                rounded="sm"
-                bg="primary.400"
-                alignSelf="flex-start"
-                py={2}
-                px={3}
-              >
-                <Text
-                  textTransform="uppercase"
-                  fontSize={'sm'}
-                  fontWeight="bold"
-                  color="white"
-                >
-                  Visualizza
+                {map(futureTrips, (trip, index) => renderItem(trip, index))}
+              </>
+            )}
+            {pastTrips.length > 0 && (
+              <>
+                <Text color="gray.500" marginBottom={2}>
+                  Passati
                 </Text>
-              </Pressable>
-            </Box>
-            <Image
-              source={{
-                uri:
-                  'https://media.vanityfair.com/photos/5ba12e6d42b9d16f4545aa19/3:2/w_1998,h_1332,c_limit/t-Avatar-The-Last-Airbender-Live-Action.jpg',
-              }}
-              alt="Aang flying and surrounded by clouds"
-              height={100}
-              rounded="full"
-              width={100}
-            />
-          </HStack>
-        </Box>
-      </View>
-      <MapView
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        style={{ flex: 1, width: '100%' }}
-        provider="google"
-        onPress={a => console.log('ao', a.nativeEvent.coordinate)}
-      />
-    </View>
+                {map(pastTrips, (trip, index) => renderItem(trip, index))}
+              </>
+            )}
+          </>
+        )}
+      </Box>
+    </KeyboardAwareScrollView>
   )
 }
 
-export default IndexMapContainer
+export default Trips

@@ -1,77 +1,42 @@
-import { useTheme } from '@/Theme'
-import { Box, HStack, Image, Pressable, Text, VStack } from 'native-base'
-import React from 'react'
-import { View } from 'react-native'
-import MapView from 'react-native-maps'
+import { Box, Button, Text } from 'native-base'
+import React, { useCallback } from 'react'
+import auth from '@react-native-firebase/auth'
+import { useDispatch, useSelector } from 'react-redux'
+import Logout from '@/Store/User/Logout'
+import { UserState } from '@/Store/User'
+import { navigate } from '@/Navigators/utils'
+import ClearDeviceId from '@/Store/DeviceId/ClearDeviceId'
 
-const IndexMapContainer = () => {
-  const { Gutters, Layout } = useTheme()
+const Account = () => {
+  const dispatch = useDispatch()
+
+  const user = useSelector((state: { user: UserState }) => state.user.user)
+
+  const favoritePlaces = useCallback(() => navigate('FavoritePlaces', {}), [])
+
+  const logout = useCallback(() => {
+    auth().signOut()
+    dispatch(Logout.action())
+    dispatch(ClearDeviceId.action())
+  }, [dispatch])
+
+  const displayName = `${user?.name} ${
+    user?.surname ? `${user.surname.charAt(0)}.` : ''
+  }`
 
   return (
-    <View style={[Layout.fill, Layout.colCenter]}>
-      <View style={[[Gutters.smallHPadding]]}>
-        <Box
-          bg="primary.600"
-          py={4}
-          px={3}
-          rounded="md"
-          alignSelf="center"
-          width={375}
-          maxWidth="100%"
-        >
-          <HStack justifyContent="space-between">
-            <Box justifyContent="space-between">
-              <VStack space={2}>
-                <Text fontSize="xxs" color="white">
-                  20/03/2022 {'->'} 22/03/2022
-                </Text>
-                <Text color="white" fontSize="lg">
-                  Barcellona
-                </Text>
-              </VStack>
-              <Pressable
-                rounded="sm"
-                bg="primary.400"
-                alignSelf="flex-start"
-                py={2}
-                px={3}
-              >
-                <Text
-                  textTransform="uppercase"
-                  fontSize={'sm'}
-                  fontWeight="bold"
-                  color="white"
-                >
-                  Visualizza
-                </Text>
-              </Pressable>
-            </Box>
-            <Image
-              source={{
-                uri:
-                  'https://media.vanityfair.com/photos/5ba12e6d42b9d16f4545aa19/3:2/w_1998,h_1332,c_limit/t-Avatar-The-Last-Airbender-Live-Action.jpg',
-              }}
-              alt="Aang flying and surrounded by clouds"
-              height={100}
-              rounded="full"
-              width={100}
-            />
-          </HStack>
-        </Box>
-      </View>
-      <MapView
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        style={{ flex: 1, width: '100%' }}
-        provider="google"
-        onPress={a => console.log('ao', a.nativeEvent.coordinate)}
-      />
-    </View>
+    <Box height="100%" flex={1} bg="white" padding={8}>
+      <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+        {`Ciao ${displayName}`}
+      </Text>
+      <Button onPress={favoritePlaces} marginBottom={8}>
+        Luoghi d'interesse
+      </Button>
+      <Button variant="outline" colorScheme="red" onPress={logout}>
+        Logout
+      </Button>
+    </Box>
   )
 }
 
-export default IndexMapContainer
+export default Account

@@ -13,11 +13,13 @@ import {
 import { configureStore } from '@reduxjs/toolkit'
 
 import startup from './Startup'
+import deviceId from './DeviceId'
 import user from './User'
 import theme from './Theme'
 
 const reducers = combineReducers({
   startup,
+  deviceId,
   user,
   theme,
 })
@@ -25,7 +27,7 @@ const reducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['theme'],
+  whitelist: ['theme', 'deviceId'],
 }
 
 const persistedReducer = persistReducer(persistConfig, reducers)
