@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Config } from '@/Config'
 import { Pressable, Text, VStack } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -15,8 +15,11 @@ interface ScoreProps {
 const Score = ({ score, vote, reportId }: ScoreProps) => {
   const dispatch = useDispatch()
 
+  const [optScore, setOptScore] = useState<number>(score)
+  const [optVote, setOptVote] = useState<'up' | 'down' | null>(vote)
+
   const sendVote = useCallback(
-    async value => {
+    async (value, double?: boolean) => {
       try {
         const currentUser = await auth().currentUser
         if (!currentUser) {
@@ -26,19 +29,30 @@ const Score = ({ score, vote, reportId }: ScoreProps) => {
 
         const idToken = await currentUser.getIdToken()
 
-        await fetch(`${Config.API_URL}/reports/${reportId}/vote`, {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer ' + idToken,
-            'Content-Type': 'application/json',
+        const { status } = await fetch(
+          `${Config.API_URL}/reports/${reportId}/vote`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer ' + idToken,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              vote: value,
+            }),
           },
-          body: JSON.stringify({
-            vote: value,
-          }),
-        })
+        )
+        if (status === 200) {
+          setOptScore(
+            value === 'up'
+              ? optScore + 1 + (double ? 1 : 0)
+              : optScore - 1 - (double ? 1 : 0),
+          )
+          setOptVote(value === 'up' ? 'up' : 'down')
+        }
       } catch (signInError) {}
     },
-    [dispatch, reportId],
+    [dispatch, reportId, optScore],
   )
 
   const removeVote = useCallback(async () => {
@@ -50,15 +64,22 @@ const Score = ({ score, vote, reportId }: ScoreProps) => {
 
       const idToken = await currentUser.getIdToken()
 
-      await fetch(`${Config.API_URL}/reports/${reportId}/vote`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: 'Bearer ' + idToken,
-          'Content-Type': 'application/json',
+      const { status } = await fetch(
+        `${Config.API_URL}/reports/${reportId}/vote`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: 'Bearer ' + idToken,
+            'Content-Type': 'application/json',
+          },
         },
-      })
+      )
+      if (status === 200) {
+        setOptScore(optScore - (optVote === 'up' ? 1 : -1))
+        setOptVote(null)
+      }
     } catch (signInError) {}
-  }, [reportId])
+  }, [reportId, optScore, optVote])
 
   return (
     <VStack
@@ -68,22 +89,26 @@ const Score = ({ score, vote, reportId }: ScoreProps) => {
       bg="rgba(255, 255, 255, 0.2)"
     >
       <Pressable
-        onPress={() => (vote === 'up' ? removeVote() : sendVote('up'))}
+        onPress={() =>
+          optVote === 'up' ? removeVote() : sendVote('up', optVote === 'down')
+        }
       >
         <Icon
           name="caret-up-outline"
           size={22}
-          color={vote === 'up' ? 'black' : 'grey'}
+          color={optVote === 'up' ? 'black' : 'grey'}
         />
       </Pressable>
-      <Text>{score}</Text>
+      <Text>{optScore}</Text>
       <Pressable
-        onPress={() => (vote === 'down' ? removeVote() : sendVote('down'))}
+        onPress={() =>
+          optVote === 'down' ? removeVote() : sendVote('down', optVote === 'up')
+        }
       >
         <Icon
           name="caret-down-outline"
           size={22}
-          color={vote === 'down' ? 'black' : 'grey'}
+          color={optVote === 'down' ? 'black' : 'grey'}
         />
       </Pressable>
     </VStack>

@@ -15,15 +15,31 @@ import uuid from 'react-native-uuid'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
 import { Place } from '@/Models/Place'
-import { Report as ReportModel } from '@/Models/Report'
 import { navigate } from '@/Navigators/utils'
 import Report from '@/Components/Report'
+import { WarningLevel } from '@/Models/Trip'
 
 const initialRegion = {
   latitude: 45.7314,
   longitude: 9.63715,
   latitudeDelta: 0.0922,
   longitudeDelta: 0.0421,
+}
+
+interface Report {
+  id: number
+  user_id: number
+  place_id: string
+  title: string
+  description: string
+  level: WarningLevel
+  type: 'community' | 'verified'
+  from: string
+  to: string | null
+  created_at: string
+  updated_at: string
+  score: number
+  vote: 'down' | 'up' | null
 }
 
 const Map = () => {
@@ -42,11 +58,11 @@ const Map = () => {
   const sessionToken = useMemo(() => uuid.v4() as string, [])
 
   const [currentInfo, setCurrentInfo] = useState<Place>()
-  const [currentReports, setCurrentReports] = useState<ReportModel[]>()
+  const [currentReports, setCurrentReports] = useState<Report[]>()
   const [placeId, setPlaceId] = useState<string>()
 
   const getInfo = useCallback(
-    (placeId: string) => {
+    (placeIdd: string) => {
       const fetchReportsAsync = async () => {
         try {
           const currentUser = await auth().currentUser
@@ -57,7 +73,7 @@ const Map = () => {
           const idToken = await currentUser.getIdToken()
 
           const getReportsResponse = await fetch(
-            Config.API_URL + `/places/${placeId}`,
+            Config.API_URL + `/places/${placeIdd}`,
             {
               method: 'GET',
               headers: {
@@ -79,9 +95,7 @@ const Map = () => {
     [handlePresentModalPress],
   )
 
-  console.log(currentInfo)
-
-  const getReports = useCallback((placeId: string) => {
+  const getReports = useCallback((placeIdd: string) => {
     const fetchReportsAsync = async () => {
       try {
         const currentUser = await auth().currentUser
@@ -92,7 +106,7 @@ const Map = () => {
         const idToken = await currentUser.getIdToken()
 
         const getReportsResponse = await fetch(
-          Config.API_URL + `/reports/places/${placeId}`,
+          Config.API_URL + `/reports/places/${placeIdd}`,
           {
             method: 'GET',
             headers: {
@@ -144,9 +158,14 @@ const Map = () => {
     [setLocation],
   )
 
-  const addReport = useCallback(() => navigate('AddReport', { placeId }), [
-    placeId,
-  ])
+  const addReport = useCallback(
+    () =>
+      navigate('AddReport', {
+        placeId,
+        onReportAdded: () => placeId && getReports(placeId),
+      }),
+    [placeId, getReports],
+  )
 
   return (
     <BottomSheetModalProvider>

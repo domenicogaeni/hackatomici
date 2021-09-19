@@ -10,7 +10,7 @@ import { Config } from '@/Config'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 const AddReport = ({ route }: any) => {
-  const { placeId } = route.params || {}
+  const { placeId, onReportAdded } = route.params || {}
   const [title, setTitle] = useState<string | undefined>()
   const [description, setDescription] = useState<string | undefined>()
   const [dateFrom, setDateFrom] = useState<Date>(moment().toDate())
@@ -62,9 +62,10 @@ const AddReport = ({ route }: any) => {
 
       if (addReportResponse.status === 200) {
         goBack()
+        onReportAdded && onReportAdded()
       }
     } catch (addTripError) {}
-  }, [title, description, dateFrom, dateTo, placeId, level])
+  }, [title, description, dateFrom, dateTo, placeId, level, onReportAdded])
 
   const onChangeTitle = useCallback(
     (text: string) => {
