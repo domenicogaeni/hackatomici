@@ -8,8 +8,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        working-directory: ./backend
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Copy .env
         working-directory: ./backend
@@ -34,8 +33,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        working-directory: ./backend
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Copy production Dockerfile
         working-directory: ./backend
