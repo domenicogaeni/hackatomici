@@ -22,29 +22,30 @@ const initialRegion = {
 
 const Map = () => {
   const { Layout } = useTheme()
+
   const mapRef = useRef<MapView>(null)
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
 
-  const snapPoints = useMemo(() => ['25%', '80%'], [])
-
   const [location, setLocation] = useState<Point>()
-
-  const sessionToken = useMemo(() => uuid.v4() as string, [])
-
   const [placeId, setPlaceId] = useState<string>()
 
-  const nearbySearchAsync = useCallback(async () => {
-    if (location) {
-      const results = await nearbySearch(location, sessionToken)
-      const resultPlaceId =
-        results?.length && results.length > 0 && results[0].place_id
-      resultPlaceId && setPlaceId(resultPlaceId)
-    }
-  }, [location, sessionToken])
+  const snapPoints = useMemo(() => ['25%', '80%'], [])
+  const sessionToken = useMemo(() => uuid.v4() as string, [])
+
+  const nearbySearchAsync = useCallback(
+    async (locationToSearch: Point) => {
+      if (locationToSearch) {
+        const results = await nearbySearch(locationToSearch, sessionToken)
+        const resultPlaceId =
+          results?.length && results.length > 0 && results[0].place_id
+        resultPlaceId && setPlaceId(resultPlaceId)
+      }
+    },
+    [sessionToken, setPlaceId],
+  )
 
   useEffect(() => {
     if (location) {
-      nearbySearchAsync()
       mapRef.current?.animateToRegion({
         latitudeDelta: initialRegion.latitudeDelta,
         longitudeDelta: initialRegion.longitudeDelta,
@@ -52,7 +53,7 @@ const Map = () => {
         longitude: location?.lng as number,
       })
     }
-  }, [location, nearbySearchAsync, mapRef])
+  }, [location, mapRef])
 
   useEffect(() => {
     if (placeId) {
@@ -62,12 +63,22 @@ const Map = () => {
 
   const onMapPress = useCallback(
     event => {
-      setLocation({
+      const point = {
         lat: event.nativeEvent.coordinate.latitude,
         lng: event.nativeEvent.coordinate.longitude,
-      })
+      }
+      nearbySearchAsync(point)
+      setLocation(point)
     },
-    [setLocation],
+    [nearbySearchAsync, setLocation],
+  )
+
+  const onLocationPicked = useCallback(
+    (id: string, latLng: Point) => {
+      setPlaceId(id)
+      setLocation(latLng)
+    },
+    [setPlaceId, setLocation],
   )
 
   const clearPlaceId = useCallback(() => setPlaceId(undefined), [setPlaceId])
@@ -101,7 +112,10 @@ const Map = () => {
           )}
         </MapView>
         <Box w="100%" position="absolute" top="8">
-          <Autocomplete sessionToken={sessionToken} setLocation={setLocation} />
+          <Autocomplete
+            sessionToken={sessionToken}
+            setLocation={onLocationPicked}
+          />
         </Box>
         <BottomSheetModal
           ref={bottomSheetModalRef}
