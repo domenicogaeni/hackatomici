@@ -12,16 +12,24 @@ jobs:
 
       - name: Copy .env
         working-directory: ./backend
-        run: cp environments/prod/.env.example .env
+        run: cp ./backend/environments/prod/.env .env
 
       - name: Install Dependencies
         working-directory: ./backend
-        run: composer install --ignore-platform-reqs      
+        run: composer install --ignore-platform-reqs
+
+      - name: Run Migrations
+        working-directory: ./backend
+        run: php artisan migrate
+        env:
+          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
           
   deploy:
     runs-on: ubuntu-latest
 
     needs: test
+
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -29,7 +37,7 @@ jobs:
 
       - name: Copy production Dockerfile
         working-directory: ./backend
-        run: cp environments/prod/Dockerfile Dockerfile
+        run: cp backend/environments/prod/Dockerfile Dockerfile
 
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
