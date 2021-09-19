@@ -27,8 +27,3 @@ RUN rm -rf .git .github .vscode database environments private tests \
 
 # Change ownership of our applications
 RUN chown -R www-data:www-data $APP_HOME
-
-# Start
-COPY backend/environments/prod/start.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/start.sh
-CMD ["start.sh"]
