@@ -340,7 +340,7 @@ const FavoritePlaces = () => {
             edges={['bottom']}
             style={{ flex: 1, backgroundColor: 'white' }}
           >
-            <PlaceInfoModal placeId={placeId} />
+            <PlaceInfoModal placeId={placeId} canToggleFavourite={false} />
           </SafeAreaView>
         </BottomSheetModal>
       </BottomSheetModalProvider>
