@@ -30,12 +30,19 @@ const FavoritePlaces = () => {
   const [places, setPlaces] = useState<Place[]>([])
   const [error, setError] = useState<string>()
   const [shouldShowPointPicker, setShouldShowPointPicker] = useState(false)
+  const [isEditMode, setEditMode] = useState(false)
   const [isLoading, setLoading] = useState(false)
   const [isRefreshing, setRefreshing] = useState(false)
   const [placeId, setPlaceId] = useState<string>()
 
   const sessionToken = useMemo(() => uuid.v4() as string, [])
   const snapPoints = useMemo(() => ['25%', '80%'], [])
+
+  useEffect(() => {
+    if (!places || places.length === 0) {
+      setEditMode(false)
+    }
+  }, [places, setEditMode])
 
   useEffect(() => {
     if (placeId) {
@@ -110,12 +117,12 @@ const FavoritePlaces = () => {
 
   const removeItem = useCallback(
     async (item: Place) => {
-      setLoading(true)
+      setRefreshing(true)
       await deletePlace(item)
       await fetchFavoritePlaces()
-      setLoading(false)
+      setRefreshing(false)
     },
-    [deletePlace, fetchFavoritePlaces],
+    [setRefreshing, deletePlace, fetchFavoritePlaces],
   )
 
   const addPlace = useCallback(
@@ -158,10 +165,6 @@ const FavoritePlaces = () => {
     [addPlace, fetchFavoritePlaces],
   )
 
-  const showPointPicker = useCallback(() => setShouldShowPointPicker(true), [
-    setShouldShowPointPicker,
-  ])
-
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     await fetchFavoritePlaces()
@@ -172,17 +175,19 @@ const FavoritePlaces = () => {
 
   const renderItem = useCallback(
     (item: Place, index: number) => (
-      <TouchableOpacity onPress={() => setPlaceId(item.place_id)}>
+      <TouchableOpacity
+        disabled={isEditMode}
+        onPress={() => setPlaceId(item.place_id)}
+      >
         <Box
           borderRadius={4}
-          borderWidth={1}
-          borderColor="primary.300"
-          padding={3}
-          marginTop={2}
+          bg="primary.500"
+          padding={4}
+          marginBottom={4}
           key={`${item.place_id}_${index}`}
         >
           <HStack justifyContent="space-between" alignItems="center">
-            <Text flex={1} marginRight={4}>
+            <Text flex={1} marginRight={4} color="white">
               {`${item.name}${
                 item.administrative_area_level_2
                   ? `, ${item.administrative_area_level_2}`
@@ -193,15 +198,36 @@ const FavoritePlaces = () => {
                   : ''
               }${item.country ? `, ${item.country}` : ''}`}
             </Text>
-            <TouchableOpacity onPress={() => removeItem(item)}>
-              <Icon name="close-circle" size={22} color="#ef4444" />
-            </TouchableOpacity>
+            {isEditMode ? (
+              <TouchableOpacity onPress={() => removeItem(item)}>
+                <Icon name="close-circle" size={20} color="white" />
+              </TouchableOpacity>
+            ) : (
+              <Icon name="chevron-forward-outline" size={20} color="white" />
+            )}
           </HStack>
         </Box>
       </TouchableOpacity>
     ),
-    [removeItem],
+    [isEditMode, removeItem],
   )
+
+  const startEdit = useCallback(() => {
+    setEditMode(true)
+    setShouldShowPointPicker(false)
+  }, [setEditMode, setShouldShowPointPicker])
+
+  const stopEdit = useCallback(() => {
+    setEditMode(false)
+  }, [setEditMode])
+
+  const showPointPicker = useCallback(() => setShouldShowPointPicker(true), [
+    setShouldShowPointPicker,
+  ])
+
+  const hidePointPicker = useCallback(() => setShouldShowPointPicker(false), [
+    setShouldShowPointPicker,
+  ])
 
   const sheetStyle = useMemo(
     () => ({
@@ -227,12 +253,55 @@ const FavoritePlaces = () => {
               alignItems="center"
               marginBottom={8}
             >
-              <Text fontSize="3xl" fontWeight={600}>
+              <Text flex={1} fontSize="3xl" fontWeight={600} marginRight={2}>
                 Luoghi d'interesse
               </Text>
-              <TouchableOpacity onPress={showPointPicker}>
-                <Icon name="add-circle" size={32} color="#14b8a6" />
-              </TouchableOpacity>
+              <HStack>
+                {(places?.length || 0) > 0 && (
+                  <>
+                    {isEditMode ? (
+                      <Box marginRight={2}>
+                        <TouchableOpacity onPress={stopEdit}>
+                          <Icon
+                            name="checkmark-circle"
+                            size={32}
+                            color="#14b8a6"
+                          />
+                        </TouchableOpacity>
+                      </Box>
+                    ) : (
+                      <Box marginRight={2}>
+                        <TouchableOpacity onPress={startEdit}>
+                          <Icon name="create" size={32} color="#14b8a6" />
+                        </TouchableOpacity>
+                      </Box>
+                    )}
+                  </>
+                )}
+                {shouldShowPointPicker ? (
+                  <TouchableOpacity
+                    onPress={hidePointPicker}
+                    disabled={isEditMode}
+                  >
+                    <Icon
+                      name="close-circle"
+                      size={32}
+                      color={isEditMode ? '#a1a1aa' : '#14b8a6'}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={showPointPicker}
+                    disabled={isEditMode}
+                  >
+                    <Icon
+                      name="add-circle"
+                      size={32}
+                      color={isEditMode ? '#a1a1aa' : '#14b8a6'}
+                    />
+                  </TouchableOpacity>
+                )}
+              </HStack>
             </HStack>
             {isLoading ? (
               <ActivityIndicator size="large" color="primary.500" />

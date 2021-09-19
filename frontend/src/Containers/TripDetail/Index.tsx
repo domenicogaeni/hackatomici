@@ -121,11 +121,7 @@ const TripDetail = ({ route }: any) => {
           ) : (
             <Box height="100%" width="100%" bg="white" marginY={8}>
               <Box paddingX={8}>
-                <HStack
-                  justifyContent="space-between"
-                  alignItems="center"
-                  marginBottom={1}
-                >
+                <HStack justifyContent="space-between" alignItems="center">
                   <Text fontSize="3xl" fontWeight={600}>
                     {trip.name}
                   </Text>
@@ -134,12 +130,12 @@ const TripDetail = ({ route }: any) => {
                   </TouchableOpacity>
                 </HStack>
                 {trip.description && (
-                  <Text marginBottom={8} color="gray.500">
+                  <Text marginTop={1} color="gray.500">
                     {trip.description}
                   </Text>
                 )}
               </Box>
-              <Box paddingX={4}>
+              <Box marginTop={8} paddingX={4}>
                 <HStack alignItems="center">
                   <TripCircleIcon name="play" />
                   <VStack flex={1}>
