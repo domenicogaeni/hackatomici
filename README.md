@@ -1,6 +1,7 @@
 # Team Hackatomici - Download Innovation Hackaton 2021
+<p align="center"><img src="frontend/src/Assets/Images/icon.png" alt="img-verification" width="100px"></p>
 
-[![CI/CD](https://github.com/domenicogaeni/hackatomici/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/domenicogaeni/hackatomici/actions/workflows/ci-cd.yml)
+> Progetto sviluppato in 48h - Download Hackathon 2021
 
 ![alt text](https://img.shields.io/badge/Language-Italian-infomrmational?style=for-the-badge)
 ![alt text](https://img.shields.io/badge/Version-1.0.0-blue.svg?style=for-the-badge)
