@@ -39,7 +39,7 @@ const RootNavigator = () => {
   }, [dispatch, user])
 
   return (
-    <SafeAreaView style={Layout.fill}>
+    <SafeAreaView style={[Layout.fill, { backgroundColor: 'white' }]}>
       <NavigationContainer ref={navigationRef}>
         <StatusBar barStyle={'dark-content'} />
         <Stack.Navigator headerMode={'none'}>

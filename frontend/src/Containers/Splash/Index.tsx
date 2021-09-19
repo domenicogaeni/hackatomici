@@ -1,16 +1,18 @@
 import React from 'react'
-import { View } from 'react-native'
-import { useTheme } from '@/Theme'
 import { Brand } from '@/Components'
+import { Box } from 'native-base'
 
-const Splash = () => {
-  const { Layout } = useTheme()
-
-  return (
-    <View style={[Layout.fill, Layout.colCenter]}>
-      <Brand />
-    </View>
-  )
-}
+const Splash = () => (
+  <Box
+    justifyContent="center"
+    alignItems="center"
+    height="100%"
+    width="100%"
+    bg="white"
+    padding={8}
+  >
+    <Brand />
+  </Box>
+)
 
 export default Splash
