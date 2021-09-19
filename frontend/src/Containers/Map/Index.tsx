@@ -1,4 +1,5 @@
 import { Autocomplete } from '@/Components'
+import PlaceInfoModal from '@/Components/PlaceInfoModal'
 import { nearbySearch } from '@/Services/GooglePlaces/googlePlacesApi'
 import { Point } from '@/Services/GooglePlaces/googlePlacesTypings'
 import { useTheme } from '@/Theme'
@@ -11,7 +12,6 @@ import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import uuid from 'react-native-uuid'
-import PlaceInfoModal from '@/Components/PlaceInfoModal'
 
 const initialRegion = {
   latitude: 45.7314,
@@ -73,6 +73,18 @@ const Map = () => {
     [nearbySearchAsync, setLocation],
   )
 
+  const onPOIPress = useCallback(
+    event => {
+      const point = {
+        lat: event.nativeEvent.coordinate.latitude,
+        lng: event.nativeEvent.coordinate.longitude,
+      }
+      setLocation(point)
+      setPlaceId(event.nativeEvent.placeId)
+    },
+    [setPlaceId, setLocation],
+  )
+
   const onLocationPicked = useCallback(
     (id: string, latLng: Point) => {
       setPlaceId(id)
@@ -100,7 +112,7 @@ const Map = () => {
           style={{ flex: 1, width: '100%' }}
           provider="google"
           onPress={onMapPress}
-          onPoiClick={onMapPress}
+          onPoiClick={onPOIPress}
         >
           {location && (
             <Marker

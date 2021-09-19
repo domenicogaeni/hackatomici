@@ -1,12 +1,13 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { Button, Text, View as RBView } from 'native-base'
+import { Box, Button, HStack, Text, View as RBView } from 'native-base'
 import React, { useCallback, useEffect, useState } from 'react'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
 import Report from './Report'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
 import { Place } from '@/Models/Place'
 import { Report as ReportModel } from '@/Models/Report'
+import Icon from 'react-native-vector-icons/Ionicons'
 import { navigate } from '@/Navigators/utils'
 
 interface IPlaceInfoModalProps {
@@ -17,7 +18,8 @@ interface IPlaceInfoModalProps {
 const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
   const [currentInfo, setCurrentInfo] = useState<Place>()
   const [currentReports, setCurrentReports] = useState<ReportModel[]>()
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setLoading] = useState(true)
+  const [isTogglingFavourite, setTogglingFavourite] = useState(false)
 
   const fetchPlaceInfo = useCallback(async () => {
     try {
@@ -28,7 +30,7 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
 
       const idToken = await currentUser.getIdToken()
 
-      const getReportsResponse = await fetch(
+      const getInfoResponse = await fetch(
         `${Config.API_URL}/places/${placeId}`,
         {
           method: 'GET',
@@ -39,10 +41,10 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
         },
       )
 
-      if (getReportsResponse.status === 200) {
-        setCurrentInfo((await getReportsResponse.json()).data)
+      if (getInfoResponse.status === 200) {
+        setCurrentInfo((await getInfoResponse.json()).data)
       }
-    } catch (signInError) {}
+    } catch (getInfoError) {}
   }, [placeId, setCurrentInfo])
 
   const fetchReports = useCallback(async () => {
@@ -74,15 +76,15 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
   useEffect(() => {
     if (placeId) {
       const fetchDataAsync = async () => {
-        setIsLoading(true)
+        setLoading(true)
         await fetchPlaceInfo()
         await fetchReports()
-        setIsLoading(false)
+        setLoading(false)
       }
 
       fetchDataAsync()
     }
-  }, [setIsLoading, fetchPlaceInfo, fetchReports, placeId])
+  }, [setLoading, fetchPlaceInfo, fetchReports, placeId])
 
   const addReport = useCallback(
     () =>
@@ -93,15 +95,75 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
     [placeId, fetchReports],
   )
 
+  const toggleFavourite = useCallback(async () => {
+    if (currentInfo) {
+      setTogglingFavourite(true)
+
+      try {
+        const currentUser = await auth().currentUser
+        if (!currentUser) {
+          return
+        }
+
+        const idToken = await currentUser.getIdToken()
+
+        // Remove favourite
+        const result = await (currentInfo.favourite
+          ? fetch(
+              `${Config.API_URL}/users/favourite_places/${currentInfo.place_id}`,
+              {
+                method: 'DELETE',
+                headers: {
+                  Authorization: 'Bearer ' + idToken,
+                  'Content-Type': 'application/json',
+                },
+              },
+            )
+          : fetch(`${Config.API_URL}/users/favourite_places`, {
+              method: 'POST',
+              headers: {
+                Authorization: 'Bearer ' + idToken,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                places_ids: [currentInfo.place_id],
+              }),
+            }))
+
+        if (result.status === 200) {
+          await fetchPlaceInfo()
+        }
+      } catch (deletePlaceError) {}
+      setTogglingFavourite(false)
+    }
+  }, [currentInfo, fetchPlaceInfo, setTogglingFavourite])
+
   return isLoading ? (
-    <ActivityIndicator />
+    <ActivityIndicator size="large" color="primary.500" style={{ flex: 1 }} />
   ) : (
     <>
-      <View style={{ padding: 16, alignItems: 'center' }}>
-        <Text fontSize="3xl" marginBottom={4} fontWeight={600}>
-          {currentInfo?.name}
-        </Text>
-        <Text color="gray.600">
+      <Box padding={4}>
+        <HStack
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom={1}
+        >
+          <Text flex={1} fontSize="3xl" fontWeight={600} marginRight={2}>
+            {currentInfo?.name}
+          </Text>
+          {isTogglingFavourite ? (
+            <ActivityIndicator color="primary.500" />
+          ) : (
+            <TouchableOpacity onPress={toggleFavourite}>
+              <Icon
+                name={currentInfo?.favourite ? 'heart' : 'heart-outline'}
+                size={24}
+                color="#14b8a6"
+              />
+            </TouchableOpacity>
+          )}
+        </HStack>
+        <Text color="gray.600" marginBottom={4}>
           {currentInfo
             ? `${
                 currentInfo.administrative_area_level_2
@@ -114,7 +176,7 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
               }${currentInfo.country}`
             : ''}
         </Text>
-      </View>
+      </Box>
       <BottomSheetScrollView>
         <View style={{ padding: 16 }}>
           {currentReports?.map((content, index) => (

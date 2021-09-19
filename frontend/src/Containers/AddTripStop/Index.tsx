@@ -9,10 +9,20 @@ import { filter, map, some } from 'lodash'
 import moment from 'moment'
 import { Box, Button, HStack, Input, Text } from 'native-base'
 import React, { useCallback, useMemo, useState } from 'react'
-import { Keyboard, Platform, TouchableOpacity } from 'react-native'
+import {
+  Keyboard,
+  Platform,
+  TouchableOpacity as RNTouchableOpacity,
+} from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import uuid from 'react-native-uuid'
 import Icon from 'react-native-vector-icons/Ionicons'
+import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler'
+
+const Touchable = Platform.select({
+  ios: GHTouchableOpacity,
+  android: RNTouchableOpacity as any,
+})
 
 const AddTripStop = ({ route }: any) => {
   const { tripId, onTripStopAdded, minimumDate, maximumDate } =
@@ -147,9 +157,9 @@ const AddTripStop = ({ route }: any) => {
           <Text flex={1} marginRight={2}>
             {item.description}
           </Text>
-          <TouchableOpacity onPress={() => removePoint(item)}>
+          <Touchable onPress={() => removePoint(item)}>
             <Icon name="close-circle" size={22} color="#ef4444" />
-          </TouchableOpacity>
+          </Touchable>
         </HStack>
       </Box>
     ),
@@ -184,7 +194,7 @@ const AddTripStop = ({ route }: any) => {
             />
           )}
           {Platform.OS === 'android' && (
-            <TouchableOpacity
+            <Touchable
               onPress={() => {
                 setShowDatePickerFrom(true)
               }}
@@ -195,7 +205,7 @@ const AddTripStop = ({ route }: any) => {
                 value={moment(dateFrom).format('DD/MM/YYYY')}
                 editable={false}
               />
-            </TouchableOpacity>
+            </Touchable>
           )}
         </Box>
         <Text marginBottom={2}>Data di fine:</Text>
@@ -212,14 +222,14 @@ const AddTripStop = ({ route }: any) => {
             />
           )}
           {Platform.OS === 'android' && (
-            <TouchableOpacity onPress={() => setShowDatePickerTo(true)}>
+            <Touchable onPress={() => setShowDatePickerTo(true)}>
               <Input
                 marginBottom={4}
                 isFullWidth={true}
                 value={moment(dateTo).format('DD/MM/YYYY')}
                 editable={false}
               />
-            </TouchableOpacity>
+            </Touchable>
           )}
         </Box>
         <HStack
@@ -230,9 +240,9 @@ const AddTripStop = ({ route }: any) => {
           <Text fontSize="2xl" fontWeight={600}>
             Sottotappe
           </Text>
-          <TouchableOpacity onPress={showPointPicker}>
+          <Touchable onPress={showPointPicker}>
             <Icon name="add-circle" size={32} color="#14b8a6" />
-          </TouchableOpacity>
+          </Touchable>
         </HStack>
         {shouldShowPointPicker && (
           <Box marginBottom={4}>

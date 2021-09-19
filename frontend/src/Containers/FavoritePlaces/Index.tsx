@@ -163,7 +163,15 @@ const FavoritePlaces = () => {
       >
         <HStack justifyContent="space-between" alignItems="center">
           <Text flex={1} marginRight={2}>
-            {item.name}
+            {`${item.name}${
+              item.administrative_area_level_2
+                ? `, ${item.administrative_area_level_2}`
+                : ''
+            }${
+              item.administrative_area_level_1
+                ? `, ${item.administrative_area_level_1}`
+                : ''
+            }${item.country ? `, ${item.country}` : ''}`}
           </Text>
           <TouchableOpacity onPress={() => removeItem(item)}>
             <Icon name="close-circle" size={22} color="#ef4444" />
@@ -196,7 +204,7 @@ const FavoritePlaces = () => {
           </TouchableOpacity>
         </HStack>
         {isLoading ? (
-          <ActivityIndicator />
+          <ActivityIndicator size="large" color="primary.500" />
         ) : (
           <>
             {shouldShowPointPicker && (

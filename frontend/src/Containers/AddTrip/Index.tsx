@@ -2,13 +2,22 @@ import React, { useCallback, useState } from 'react'
 import { goBack } from '@/Navigators/utils'
 import { Box, Button, Input, Text } from 'native-base'
 import auth from '@react-native-firebase/auth'
-import { Keyboard, Platform } from 'react-native'
+import {
+  Keyboard,
+  Platform,
+  TouchableOpacity as RNTouchableOpacity,
+} from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { HeaderBackButton } from '@react-navigation/stack'
 import moment from 'moment'
 import { Config } from '@/Config'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler'
+
+const Touchable = Platform.select({
+  ios: GHTouchableOpacity,
+  android: RNTouchableOpacity as any,
+})
 
 const AddTrip = ({ route }: any) => {
   const { onTripAdded } = route.params || {}
@@ -141,7 +150,7 @@ const AddTrip = ({ route }: any) => {
             />
           )}
           {Platform.OS === 'android' && (
-            <TouchableOpacity
+            <Touchable
               onPress={() => {
                 setShowDatePickerFrom(true)
               }}
@@ -152,7 +161,7 @@ const AddTrip = ({ route }: any) => {
                 value={moment(dateFrom).format('DD/MM/YYYY')}
                 editable={false}
               />
-            </TouchableOpacity>
+            </Touchable>
           )}
         </Box>
         <Text marginBottom={2}>Data di fine:</Text>
@@ -168,14 +177,14 @@ const AddTrip = ({ route }: any) => {
             />
           )}
           {Platform.OS === 'android' && (
-            <TouchableOpacity onPress={() => setShowDatePickerTo(true)}>
+            <Touchable onPress={() => setShowDatePickerTo(true)}>
               <Input
                 marginBottom={4}
                 isFullWidth={true}
                 value={moment(dateTo).format('DD/MM/YYYY')}
                 editable={false}
               />
-            </TouchableOpacity>
+            </Touchable>
           )}
         </Box>
         <Button marginBottom={4} onPress={addTrip}>

@@ -1,5 +1,4 @@
 import {
-  buildAsyncState,
   buildAsyncActions,
   buildAsyncReducers,
 } from '@thecodingmachine/redux-toolkit-wrapper'
@@ -9,7 +8,7 @@ import SetUser from '../User/SetUser'
 import { User } from '@/Models/User'
 
 export default {
-  initialState: buildAsyncState(),
+  initialState: { error: null, loading: true },
   action: buildAsyncActions('startup/init', async (args, { dispatch }) => {
     const currentUser = auth().currentUser
 
