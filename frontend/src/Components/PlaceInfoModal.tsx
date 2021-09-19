@@ -139,7 +139,7 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
   }, [currentInfo, fetchPlaceInfo, setTogglingFavourite])
 
   return isLoading ? (
-    <ActivityIndicator />
+    <ActivityIndicator color="primary.500" />
   ) : (
     <>
       <Box padding={4}>

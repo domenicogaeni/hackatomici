@@ -187,7 +187,7 @@ const Trips = () => {
           </TouchableOpacity>
         </HStack>
         {isLoading ? (
-          <ActivityIndicator />
+          <ActivityIndicator color="primary.500" />
         ) : (
           <>
             {ongoingTrips.length > 0 && (

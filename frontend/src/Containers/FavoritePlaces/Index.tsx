@@ -204,7 +204,7 @@ const FavoritePlaces = () => {
           </TouchableOpacity>
         </HStack>
         {isLoading ? (
-          <ActivityIndicator />
+          <ActivityIndicator color="primary.500" />
         ) : (
           <>
             {shouldShowPointPicker && (

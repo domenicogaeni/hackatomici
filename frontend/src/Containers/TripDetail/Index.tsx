@@ -115,7 +115,7 @@ const TripDetail = ({ route }: any) => {
       <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
         <HeaderBackButton onPress={goBack} label="Indietro" />
         {isLoading || !trip ? (
-          <ActivityIndicator />
+          <ActivityIndicator color="primary.500" />
         ) : (
           <Box height="100%" width="100%" bg="white" marginBottom={8}>
             <Box paddingX={8}>
