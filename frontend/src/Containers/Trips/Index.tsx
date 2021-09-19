@@ -55,6 +55,12 @@ const Trips = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (!trips || trips.length === 0) {
+      setEditMode(false)
+    }
+  }, [trips, setEditMode])
+
   const addTrip = useCallback(
     () => navigate('AddTrip', { onTripAdded: fetchTrips }),
     [fetchTrips],
@@ -201,18 +207,26 @@ const Trips = () => {
               Itinerari
             </Text>
             <HStack>
-              {isEditMode ? (
-                <Box marginRight={2}>
-                  <TouchableOpacity onPress={stopEdit}>
-                    <Icon name="checkmark-circle" size={32} color="#14b8a6" />
-                  </TouchableOpacity>
-                </Box>
-              ) : (
-                <Box marginRight={2}>
-                  <TouchableOpacity onPress={startEdit}>
-                    <Icon name="create" size={32} color="#14b8a6" />
-                  </TouchableOpacity>
-                </Box>
+              {(trips?.length || 0) > 0 && (
+                <>
+                  {isEditMode ? (
+                    <Box marginRight={2}>
+                      <TouchableOpacity onPress={stopEdit}>
+                        <Icon
+                          name="checkmark-circle"
+                          size={32}
+                          color="#14b8a6"
+                        />
+                      </TouchableOpacity>
+                    </Box>
+                  ) : (
+                    <Box marginRight={2}>
+                      <TouchableOpacity onPress={startEdit}>
+                        <Icon name="create" size={32} color="#14b8a6" />
+                      </TouchableOpacity>
+                    </Box>
+                  )}
+                </>
               )}
               <TouchableOpacity onPress={addTrip} disabled={isEditMode}>
                 <Icon
