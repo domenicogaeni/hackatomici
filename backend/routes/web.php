@@ -5,8 +5,8 @@
 use App\Http\Controllers\FavouritePlaceController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\TripController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
