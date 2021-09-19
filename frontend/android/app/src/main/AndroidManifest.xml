@@ -24,7 +24,7 @@
       </activity>
       <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="***REMOVED***"/>
+        android:value="AIzaSyBp3g9mK-rvsyX5C1WcJRi92cjCQteSKWI"/>
       <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>
 </manifest>
