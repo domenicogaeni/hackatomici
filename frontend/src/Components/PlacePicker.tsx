@@ -2,7 +2,7 @@ import { autocomplete } from '@/Services/GooglePlaces/googlePlacesApi'
 import { LocationPickerItem } from '@/Services/GooglePlaces/googlePlacesTypings'
 import { Box, Divider, Input, Text } from 'native-base'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Keyboard, Pressable } from 'react-native'
+import { Keyboard, TouchableOpacity } from 'react-native'
 import { debounce } from 'lodash'
 
 interface Props {
@@ -92,7 +92,7 @@ interface SuggestedElementProps {
 
 const SuggestedElement = ({ element, onPress }: SuggestedElementProps) => {
   return (
-    <Pressable onPress={onPress}>
+    <TouchableOpacity onPress={onPress}>
       <Box
         bg="white"
         py={4}
@@ -104,7 +104,7 @@ const SuggestedElement = ({ element, onPress }: SuggestedElementProps) => {
         <Text>{element.description}</Text>
       </Box>
       <Divider />
-    </Pressable>
+    </TouchableOpacity>
   )
 }
 

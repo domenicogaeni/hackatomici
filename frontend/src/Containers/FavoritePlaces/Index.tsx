@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Box, Button, HStack, Pressable, Text } from 'native-base'
+import { Box, Button, HStack, Text } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import PlacePicker from '@/Components/PlacePicker'
 import uuid from 'react-native-uuid'
@@ -13,11 +13,13 @@ import { Config } from '@/Config'
 import { Place } from '@/Models/Place'
 import { HeaderBackButton } from '@react-navigation/stack'
 import { goBack } from '@/Navigators/utils'
+import { TouchableOpacity } from 'react-native'
 
 const FavoritePlaces = () => {
   const dispatch = useDispatch()
 
-  const [interestPoints, setInterestPoints] = useState<(LocationPickerItem | Place)[]
+  const [interestPoints, setInterestPoints] = useState<
+    (LocationPickerItem | Place)[]
   >([])
   const [dirty, setDirty] = useState<boolean>(false)
   const [error, setError] = useState<string>()
@@ -123,9 +125,9 @@ const FavoritePlaces = () => {
           <Text flex={1} marginRight={2}>
             {(item as LocationPickerItem).description || (item as Place).name}
           </Text>
-          <Pressable onPress={() => removeItem(item)}>
+          <TouchableOpacity onPress={() => removeItem(item)}>
             <Icon name="close-circle" size={22} color="#ef4444" />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
       </Box>
     ),

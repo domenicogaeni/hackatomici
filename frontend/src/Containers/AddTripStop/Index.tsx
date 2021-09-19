@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { goBack } from '@/Navigators/utils'
-import { Box, Button, HStack, Pressable, Text } from 'native-base'
+import { Box, Button, HStack, Text } from 'native-base'
 import auth from '@react-native-firebase/auth'
-import { Keyboard } from 'react-native'
+import { Keyboard, TouchableOpacity } from 'react-native'
 import uuid from 'react-native-uuid'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -142,9 +142,9 @@ const AddTripStop = ({ route }: any) => {
           <Text flex={1} marginRight={2}>
             {item.description}
           </Text>
-          <Pressable onPress={() => removePoint(item)}>
+          <TouchableOpacity onPress={() => removePoint(item)}>
             <Icon name="close-circle" size={22} color="#ef4444" />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
       </Box>
     ),
@@ -197,9 +197,9 @@ const AddTripStop = ({ route }: any) => {
           <Text fontSize="2xl" fontWeight={600}>
             Sottotappe
           </Text>
-          <Pressable onPress={showPointPicker}>
+          <TouchableOpacity onPress={showPointPicker}>
             <Icon name="add-circle" size={32} color="#14b8a6" />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
         {shouldShowPointPicker && (
           <Box marginBottom={4}>

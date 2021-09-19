@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from 'react'
 import { Config } from '@/Config'
-import { Pressable, Text, VStack } from 'native-base'
+import { Text, VStack } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useDispatch } from 'react-redux'
 import auth from '@react-native-firebase/auth'
 import SetUser from '@/Store/User/SetUser'
+import { TouchableOpacity } from 'react-native'
 
 interface ScoreProps {
   score: number
@@ -89,7 +90,7 @@ const Score = ({ score, vote, reportId }: ScoreProps) => {
       ml="1"
       bg="rgba(255, 255, 255, 0.2)"
     >
-      <Pressable
+      <TouchableOpacity
         onPress={() =>
           optVote === 'up' ? removeVote() : sendVote('up', optVote === 'down')
         }
@@ -99,9 +100,9 @@ const Score = ({ score, vote, reportId }: ScoreProps) => {
           size={22}
           color={optVote === 'up' ? 'black' : 'grey'}
         />
-      </Pressable>
+      </TouchableOpacity>
       <Text>{optScore}</Text>
-      <Pressable
+      <TouchableOpacity
         onPress={() =>
           optVote === 'down' ? removeVote() : sendVote('down', optVote === 'up')
         }
@@ -111,7 +112,7 @@ const Score = ({ score, vote, reportId }: ScoreProps) => {
           size={22}
           color={optVote === 'down' ? 'black' : 'grey'}
         />
-      </Pressable>
+      </TouchableOpacity>
     </VStack>
   )
 }

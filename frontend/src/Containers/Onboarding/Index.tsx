@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { Box, Button, HStack, Pressable, Text } from 'native-base'
+import { Box, Button, HStack, Text } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import PlacePicker from '@/Components/PlacePicker'
 import uuid from 'react-native-uuid'
@@ -10,6 +10,7 @@ import SetUser from '@/Store/User/SetUser'
 import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
+import { TouchableOpacity } from 'react-native'
 
 const Onboarding = () => {
   const dispatch = useDispatch()
@@ -47,9 +48,9 @@ const Onboarding = () => {
           <Text flex={1} marginRight={2}>
             {item.description}
           </Text>
-          <Pressable onPress={() => removeItem(item)}>
+          <TouchableOpacity onPress={() => removeItem(item)}>
             <Icon name="close-circle" size={22} color="#ef4444" />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
       </Box>
     ),

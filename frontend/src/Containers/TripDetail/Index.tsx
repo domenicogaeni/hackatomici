@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { goBack, navigate } from '@/Navigators/utils'
-import { Box, HStack, Pressable, Text, VStack } from 'native-base'
+import { Box, HStack, Text, VStack } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { HeaderBackButton } from '@react-navigation/stack'
@@ -17,7 +17,7 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet'
-import { ActivityIndicator, StyleSheet } from 'react-native'
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native'
 import PlaceInfoModal from '@/Components/PlaceInfoModal'
 
 const TripDetail = ({ route }: any) => {
@@ -127,9 +127,9 @@ const TripDetail = ({ route }: any) => {
                 <Text fontSize="3xl" fontWeight={600}>
                   {trip.name}
                 </Text>
-                <Pressable onPress={addTripStop}>
+                <TouchableOpacity onPress={addTripStop}>
                   <Icon name="add-circle" size={32} color="#14b8a6" />
-                </Pressable>
+                </TouchableOpacity>
               </HStack>
               {trip.description && (
                 <Text marginBottom={8} color="gray.500">

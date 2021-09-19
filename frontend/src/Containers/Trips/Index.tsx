@@ -1,6 +1,6 @@
 import { ShortTrip } from '@/Models/Trip'
 import { navigate } from '@/Navigators/utils'
-import { Box, HStack, Pressable, Text, VStack } from 'native-base'
+import { Box, HStack, Text, VStack } from 'native-base'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
@@ -8,7 +8,7 @@ import { Config } from '@/Config'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { filter, map } from 'lodash'
 import moment from 'moment'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, TouchableOpacity } from 'react-native'
 
 const Trips = () => {
   const [trips, setTrips] = useState<ShortTrip[]>([])
@@ -92,7 +92,7 @@ const Trips = () => {
         : 'Oggi'
 
       return (
-        <Pressable key={`${item.id}_${index}`} onPress={() => openTrip(item)}>
+        <TouchableOpacity key={`${item.id}_${index}`} onPress={() => openTrip(item)}>
           <Box borderRadius={8} bg="primary.500" padding={4} marginBottom={4}>
             <HStack justifyContent="space-between" alignItems="center">
               <VStack flex={1} marginRight={2}>
@@ -114,12 +114,12 @@ const Trips = () => {
                   </Text>
                 )}
               </VStack>
-              <Pressable onPress={() => removeTrip(item)}>
+              <TouchableOpacity onPress={() => removeTrip(item)}>
                 <Icon name="chevron-forward-outline" size={20} color="white" />
-              </Pressable>
+              </TouchableOpacity>
             </HStack>
           </Box>
-        </Pressable>
+        </TouchableOpacity>
       )
     },
     [openTrip, removeTrip],
@@ -163,9 +163,9 @@ const Trips = () => {
           <Text fontSize="3xl" fontWeight={600}>
             Itinerari
           </Text>
-          <Pressable onPress={addTrip}>
+          <TouchableOpacity onPress={addTrip}>
             <Icon name="add-circle" size={32} color="#14b8a6" />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
         {isLoading ? (
           <ActivityIndicator />

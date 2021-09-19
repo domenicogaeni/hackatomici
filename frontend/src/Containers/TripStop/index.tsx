@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { Box, HStack, Pressable, Text, VStack } from 'native-base'
+import { Box, HStack, Text, VStack } from 'native-base'
 import { Stop, WarningLevel } from '@/Models/Trip'
 import Icon from 'react-native-vector-icons/Ionicons'
 import TripStopConnector from '../TripStopConnector'
@@ -7,6 +7,7 @@ import TripCircleIcon from '../TripCircleIcon'
 import moment from 'moment'
 import { map } from 'lodash'
 import TripPoint from '../TripPoint'
+import { TouchableOpacity } from 'react-native'
 
 interface ITripStopProps {
   stop: Stop
@@ -111,34 +112,36 @@ const TripStop = ({ stop, openPlaceDetail }: ITripStopProps) => {
       <>
         <TripStopConnector />
         <Box>
-          <Box
-            width="100%"
-            marginTop={6}
-            borderRadius={8}
-            padding={4}
-            paddingTop={8}
-            backgroundColor={softBackgroundColor}
-            borderWidth={2}
-            borderColor={borderColor}
-            borderStyle="dashed"
-          >
-            <Text fontSize="xs" color={secondaryTextColor}>
-              {`${formattedFromDate} -> ${formattedToDate}`}
-            </Text>
-            <Text fontSize="xl" color={textColor} marginTop={1}>
-              {stop.name}
-            </Text>
-            <Box marginTop={4}>
-              {map(stop.points, (point, index) => (
-                <TripPoint
-                  key={`${point.id}_${index}`}
-                  isFirst={index === 0}
-                  openPlaceDetail={openPlaceDetail}
-                  point={point}
-                />
-              ))}
+          <TouchableOpacity onPress={open}>
+            <Box
+              width="100%"
+              marginTop={6}
+              borderRadius={8}
+              padding={4}
+              paddingTop={8}
+              backgroundColor={softBackgroundColor}
+              borderWidth={2}
+              borderColor={borderColor}
+              borderStyle="dashed"
+            >
+              <Text fontSize="xs" color="gray.500">
+                {`${formattedFromDate} -> ${formattedToDate}`}
+              </Text>
+              <Text fontSize="xl" color="#3f3f46" marginTop={1}>
+                {stop.name}
+              </Text>
+              <Box marginTop={4}>
+                {map(stop.points, (point, index) => (
+                  <TripPoint
+                    key={`${point.id}_${index}`}
+                    isFirst={index === 0}
+                    openPlaceDetail={openPlaceDetail}
+                    point={point}
+                  />
+                ))}
+              </Box>
             </Box>
-          </Box>
+          </TouchableOpacity>
           <Box position="absolute">
             <TripCircleIcon
               name="flag"
@@ -153,7 +156,7 @@ const TripStop = ({ stop, openPlaceDetail }: ITripStopProps) => {
       <>
         <TripStopConnector />
         <Box>
-          <Pressable onPress={open}>
+          <TouchableOpacity onPress={open}>
             <Box
               width="100%"
               marginTop={6}
@@ -184,7 +187,7 @@ const TripStop = ({ stop, openPlaceDetail }: ITripStopProps) => {
                 />
               </HStack>
             </Box>
-          </Pressable>
+          </TouchableOpacity>
           <Box position="absolute">
             <TripCircleIcon
               name="flag"
