@@ -12,9 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Generate Firebase credentials file
+        run: echo ${{secrets.FIREBASE_CREDENTIALS}} > hackatomici-2021-firebase.json
+
       - name: Copy production Dockerfile
         run: cp ./backend/environments/prod/Dockerfile Dockerfile
-
+            
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
