@@ -46,11 +46,10 @@ function getBorderColor(level: WarningLevel) {
     case 'white':
       return '#14b8a6'
     case 'yellow':
-      return '#fde047'
+      return '#3f3f46'
     case 'orange':
-      return '#fb923c'
     case 'red':
-      return '#f87171'
+      return 'white'
   }
 }
 

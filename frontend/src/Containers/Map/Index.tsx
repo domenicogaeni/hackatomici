@@ -124,7 +124,7 @@ const Map = () => {
             />
           )}
         </MapView>
-        <Box w="100%" position="absolute" top="8">
+        <Box w="100%" position="absolute" top="4">
           <SafeAreaView edges={['top']}>
             <Autocomplete
               sessionToken={sessionToken}
