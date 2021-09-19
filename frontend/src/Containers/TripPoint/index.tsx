@@ -27,7 +27,7 @@ function getBackgroundColor(level: WarningLevel) {
 function getBorderWidth(level: WarningLevel) {
   switch (level) {
     case 'white':
-      return 2
+      return 1
     case 'yellow':
     case 'orange':
     case 'red':

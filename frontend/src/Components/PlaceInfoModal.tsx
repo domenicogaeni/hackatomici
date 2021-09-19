@@ -184,7 +184,7 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
               key={index}
               title={content.title}
               description={content.description}
-              color={content.level}
+              level={content.level}
               dateFrom={content.from}
               dateTo={content.to}
               score={content.score}
