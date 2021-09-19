@@ -8,7 +8,7 @@ import SetUser from '../User/SetUser'
 import { User } from '@/Models/User'
 
 export default {
-  initialState: { loading: true, error: undefined },
+  initialState: { error: null, loading: true },
   action: buildAsyncActions('startup/init', async (args, { dispatch }) => {
     const currentUser = auth().currentUser
 
