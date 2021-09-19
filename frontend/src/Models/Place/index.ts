@@ -13,4 +13,5 @@ export type Place = {
   latitude: number
   longitude: number
   locality: string | null
+  favourite: boolean
 }
