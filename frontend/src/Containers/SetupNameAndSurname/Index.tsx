@@ -9,6 +9,7 @@ import { goBack } from '@/Navigators/utils'
 import { Keyboard } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { FirebaseAuthTypes } from '@react-native-firebase/auth'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const SetupNameAndSurname = ({ route }: any) => {
   const { user } = route.params || {}
@@ -73,40 +74,42 @@ const SetupNameAndSurname = ({ route }: any) => {
   }, [])
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <Box height="100%" width="100%" bg="white" padding={8}>
-        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Dicci di più su di te!'}
-        </Text>
-        <Text marginBottom={2}>Nome:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="Pinco"
-          isFullWidth={true}
-          value={name}
-          onChangeText={onChangeName}
-        />
-        <Text marginBottom={2}>Cognome:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="Pallino"
-          isFullWidth={true}
-          value={surname}
-          onChangeText={onChangeSurname}
-        />
-        <Button marginBottom={4} onPress={registration}>
-          Continua
-        </Button>
-        {error && (
-          <Text color="red.500" marginBottom={4}>
-            {error}
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+        <Box height="100%" width="100%" bg="white" padding={8}>
+          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+            {'Dicci di più su di te!'}
           </Text>
-        )}
-        <Button variant="link" onPress={back}>
-          Indietro
-        </Button>
-      </Box>
-    </KeyboardAwareScrollView>
+          <Text marginBottom={2}>Nome:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="Pinco"
+            isFullWidth={true}
+            value={name}
+            onChangeText={onChangeName}
+          />
+          <Text marginBottom={2}>Cognome:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="Pallino"
+            isFullWidth={true}
+            value={surname}
+            onChangeText={onChangeSurname}
+          />
+          <Button marginBottom={4} onPress={registration}>
+            Continua
+          </Button>
+          {error && (
+            <Text color="red.500" marginBottom={4}>
+              {error}
+            </Text>
+          )}
+          <Button variant="link" onPress={back}>
+            Indietro
+          </Button>
+        </Box>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   )
 }
 

@@ -13,6 +13,7 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Trips = () => {
   const [trips, setTrips] = useState<ShortTrip[]>([])
@@ -167,57 +168,59 @@ const Trips = () => {
   )
 
   return (
-    <KeyboardAwareScrollView
-      refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-      }
-      style={{ backgroundColor: 'white' }}
-    >
-      <Box height="100%" flex={1} bg="white" padding={8}>
-        <HStack
-          justifyContent="space-between"
-          alignItems="center"
-          marginBottom={8}
-        >
-          <Text fontSize="3xl" fontWeight={600}>
-            Itinerari
-          </Text>
-          <TouchableOpacity onPress={addTrip}>
-            <Icon name="add-circle" size={32} color="#14b8a6" />
-          </TouchableOpacity>
-        </HStack>
-        {isLoading ? (
-          <ActivityIndicator color="primary.500" size="large" />
-        ) : (
-          <>
-            {ongoingTrips.length > 0 && (
-              <>
-                <Text color="gray.500" marginBottom={2}>
-                  In corso
-                </Text>
-                {map(ongoingTrips, (trip, index) => renderItem(trip, index))}
-              </>
-            )}
-            {futureTrips.length > 0 && (
-              <>
-                <Text color="gray.500" marginBottom={2}>
-                  Programmati
-                </Text>
-                {map(futureTrips, (trip, index) => renderItem(trip, index))}
-              </>
-            )}
-            {pastTrips.length > 0 && (
-              <>
-                <Text color="gray.500" marginBottom={2}>
-                  Passati
-                </Text>
-                {map(pastTrips, (trip, index) => renderItem(trip, index))}
-              </>
-            )}
-          </>
-        )}
-      </Box>
-    </KeyboardAwareScrollView>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: 'white' }}>
+      <KeyboardAwareScrollView
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
+        style={{ backgroundColor: 'white' }}
+      >
+        <Box height="100%" flex={1} bg="white" padding={8}>
+          <HStack
+            justifyContent="space-between"
+            alignItems="center"
+            marginBottom={8}
+          >
+            <Text fontSize="3xl" fontWeight={600}>
+              Itinerari
+            </Text>
+            <TouchableOpacity onPress={addTrip}>
+              <Icon name="add-circle" size={32} color="#14b8a6" />
+            </TouchableOpacity>
+          </HStack>
+          {isLoading ? (
+            <ActivityIndicator color="primary.500" size="large" />
+          ) : (
+            <>
+              {ongoingTrips.length > 0 && (
+                <>
+                  <Text color="gray.500" marginBottom={2}>
+                    In corso
+                  </Text>
+                  {map(ongoingTrips, (trip, index) => renderItem(trip, index))}
+                </>
+              )}
+              {futureTrips.length > 0 && (
+                <>
+                  <Text color="gray.500" marginBottom={2}>
+                    Programmati
+                  </Text>
+                  {map(futureTrips, (trip, index) => renderItem(trip, index))}
+                </>
+              )}
+              {pastTrips.length > 0 && (
+                <>
+                  <Text color="gray.500" marginBottom={2}>
+                    Passati
+                  </Text>
+                  {map(pastTrips, (trip, index) => renderItem(trip, index))}
+                </>
+              )}
+            </>
+          )}
+        </Box>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   )
 }
 

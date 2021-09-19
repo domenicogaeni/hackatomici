@@ -12,6 +12,7 @@ import { User as UserModel } from '@/Models/User'
 import auth from '@react-native-firebase/auth'
 import { Keyboard } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Login = () => {
   const dispatch = useDispatch()
@@ -152,51 +153,53 @@ const Login = () => {
   )
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <Box height="100%" width="100%" bg="white" padding={8}>
-        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Benvenuto su\nSafeTravel!'}
-        </Text>
-        <Text marginBottom={2}>Email:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="bestemailever@example.com"
-          autoCapitalize="none"
-          isFullWidth={true}
-          value={email}
-          onChangeText={onChangeEmail}
-        />
-        <Text marginBottom={2}>Password:</Text>
-        <Input
-          marginBottom={8}
-          secureTextEntry={true}
-          placeholder="Password123!"
-          isFullWidth={true}
-          value={password}
-          onChangeText={onChangePassword}
-        />
-        <Button marginBottom={4} onPress={login}>
-          Accedi
-        </Button>
-        {error && (
-          <Text color="red.500" marginBottom={4}>
-            {error}
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+        <Box height="100%" width="100%" bg="white" padding={8}>
+          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+            {'Benvenuto su\nSafeTravel!'}
           </Text>
-        )}
-        <Button variant="link" onPress={registration}>
-          Registrati
-        </Button>
-        <Box justifyContent="center" alignItems="center" marginTop={4}>
-          <GoogleSigninButton
-            style={{ width: 192, height: 48 }}
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Dark}
-            onPress={googleSignIn}
-            disabled={isSigningIn}
+          <Text marginBottom={2}>Email:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="bestemailever@example.com"
+            autoCapitalize="none"
+            isFullWidth={true}
+            value={email}
+            onChangeText={onChangeEmail}
           />
+          <Text marginBottom={2}>Password:</Text>
+          <Input
+            marginBottom={8}
+            secureTextEntry={true}
+            placeholder="Password123!"
+            isFullWidth={true}
+            value={password}
+            onChangeText={onChangePassword}
+          />
+          <Button marginBottom={4} onPress={login}>
+            Accedi
+          </Button>
+          {error && (
+            <Text color="red.500" marginBottom={4}>
+              {error}
+            </Text>
+          )}
+          <Button variant="link" onPress={registration}>
+            Registrati
+          </Button>
+          <Box justifyContent="center" alignItems="center" marginTop={4}>
+            <GoogleSigninButton
+              style={{ width: 192, height: 48 }}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Dark}
+              onPress={googleSignIn}
+              disabled={isSigningIn}
+            />
+          </Box>
         </Box>
-      </Box>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   )
 }
 

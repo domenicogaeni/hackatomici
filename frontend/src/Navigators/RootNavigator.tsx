@@ -3,8 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { Onboarding, Splash } from '@/Containers'
 import { NavigationContainer } from '@react-navigation/native'
 import { navigationRef } from '@/Navigators/utils'
-import { SafeAreaView, StatusBar } from 'react-native'
-import { useTheme } from '@/Theme'
+import { StatusBar } from 'react-native'
 import LoginNavigator from './LoginNavigator'
 import { useDispatch, useSelector } from 'react-redux'
 import { StartupState } from '@/Store/Startup'
@@ -17,7 +16,6 @@ const Stack = createStackNavigator()
 
 // @refresh reset
 const RootNavigator = () => {
-  const { Layout } = useTheme()
   const dispatch = useDispatch()
 
   const user = useSelector((state: { user: UserState }) => state.user.user)
@@ -39,22 +37,20 @@ const RootNavigator = () => {
   }, [dispatch, user])
 
   return (
-    <SafeAreaView style={[Layout.fill, { backgroundColor: 'white' }]}>
-      <NavigationContainer ref={navigationRef}>
-        <StatusBar barStyle={'dark-content'} />
-        <Stack.Navigator headerMode={'none'}>
-          {applicationIsLoading ? (
-            <Stack.Screen name="Splash" component={Splash} />
-          ) : !user ? (
-            <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
-          ) : shouldShowOnboarding ? (
-            <Stack.Screen name="Onboarding" component={Onboarding} />
-          ) : (
-            <Stack.Screen name="HomeNavigator" component={HomeNavigator} />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+    <NavigationContainer ref={navigationRef}>
+      <StatusBar barStyle={'dark-content'} />
+      <Stack.Navigator headerMode={'none'}>
+        {applicationIsLoading ? (
+          <Stack.Screen name="Splash" component={Splash} />
+        ) : !user ? (
+          <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
+        ) : shouldShowOnboarding ? (
+          <Stack.Screen name="Onboarding" component={Onboarding} />
+        ) : (
+          <Stack.Screen name="HomeNavigator" component={HomeNavigator} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
 

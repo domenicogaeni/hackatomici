@@ -22,6 +22,7 @@ import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet'
 import PlaceInfoModal from '@/Components/PlaceInfoModal'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const FavoritePlaces = () => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
@@ -65,7 +66,7 @@ const FavoritePlaces = () => {
       if (getFavoritePlacesResponse.status === 200) {
         setPlaces((await getFavoritePlacesResponse.json()).data)
       }
-    } catch (getPlacesError) {}
+    } catch (getPlacesError) { }
   }, [setPlaces])
 
   useEffect(() => {
@@ -102,7 +103,7 @@ const FavoritePlaces = () => {
         if (result.status !== 200) {
           setError("Errore durante l'eliminazione di un luogo di interesse")
         }
-      } catch (deletePlaceError) {}
+      } catch (deletePlaceError) { }
     },
     [setError],
   )
@@ -141,7 +142,7 @@ const FavoritePlaces = () => {
         if (result.status !== 200) {
           setError('Errore durante il salvataggio dei luoghi di interesse')
         }
-      } catch (addPlaceError) {}
+      } catch (addPlaceError) { }
     },
     [setError],
   )
@@ -182,15 +183,13 @@ const FavoritePlaces = () => {
         >
           <HStack justifyContent="space-between" alignItems="center">
             <Text flex={1} marginRight={4}>
-              {`${item.name}${
-                item.administrative_area_level_2
+              {`${item.name}${item.administrative_area_level_2
                   ? `, ${item.administrative_area_level_2}`
                   : ''
-              }${
-                item.administrative_area_level_1
+                }${item.administrative_area_level_1
                   ? `, ${item.administrative_area_level_1}`
                   : ''
-              }${item.country ? `, ${item.country}` : ''}`}
+                }${item.country ? `, ${item.country}` : ''}`}
             </Text>
             <TouchableOpacity onPress={() => removeItem(item)}>
               <Icon name="close-circle" size={22} color="#ef4444" />
@@ -211,63 +210,70 @@ const FavoritePlaces = () => {
   )
 
   return (
-    <BottomSheetModalProvider>
-      <KeyboardAwareScrollView
-        refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-        }
-        style={{ backgroundColor: 'white' }}
-      >
-        <HeaderBackButton onPress={goBack} label="Indietro" />
-        <Box height="100%" width="100%" bg="white" paddingX={8}>
-          <HStack
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom={8}
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <BottomSheetModalProvider>
+        <KeyboardAwareScrollView
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
+          style={{ backgroundColor: 'white' }}
+        >
+          <HeaderBackButton onPress={goBack} label="Indietro" />
+          <Box height="100%" width="100%" bg="white" padding={8}>
+            <HStack
+              justifyContent="space-between"
+              alignItems="center"
+              marginBottom={8}
+            >
+              <Text fontSize="3xl" fontWeight={600}>
+                Luoghi d'interesse
+              </Text>
+              <TouchableOpacity onPress={showPointPicker}>
+                <Icon name="add-circle" size={32} color="#14b8a6" />
+              </TouchableOpacity>
+            </HStack>
+            {isLoading ? (
+              <ActivityIndicator size="large" color="primary.500" />
+            ) : (
+              <>
+                {shouldShowPointPicker && (
+                  <Box marginBottom={4}>
+                    <PlacePicker
+                      sessionToken={sessionToken}
+                      onPlacePicked={onPlacePicked}
+                    />
+                  </Box>
+                )}
+                {error && (
+                  <Text color="red.500" marginBottom={4}>
+                    {error}
+                  </Text>
+                )}
+                {(places?.length || 0) > 0 && (
+                  <Box marginBottom={8}>
+                    {map(places, (place, index) => renderItem(place, index))}
+                  </Box>
+                )}
+              </>
+            )}
+          </Box>
+        </KeyboardAwareScrollView>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          onDismiss={clearPlaceId}
+          index={1}
+          snapPoints={snapPoints}
+          style={sheetStyle}
+        >
+          <SafeAreaView
+            edges={['bottom']}
+            style={{ flex: 1, backgroundColor: 'white' }}
           >
-            <Text fontSize="3xl" fontWeight={600}>
-              Luoghi d'interesse
-            </Text>
-            <TouchableOpacity onPress={showPointPicker}>
-              <Icon name="add-circle" size={32} color="#14b8a6" />
-            </TouchableOpacity>
-          </HStack>
-          {isLoading ? (
-            <ActivityIndicator size="large" color="primary.500" />
-          ) : (
-            <>
-              {shouldShowPointPicker && (
-                <Box marginBottom={4}>
-                  <PlacePicker
-                    sessionToken={sessionToken}
-                    onPlacePicked={onPlacePicked}
-                  />
-                </Box>
-              )}
-              {error && (
-                <Text color="red.500" marginBottom={4}>
-                  {error}
-                </Text>
-              )}
-              {(places?.length || 0) > 0 && (
-                <Box marginBottom={8}>
-                  {map(places, (place, index) => renderItem(place, index))}
-                </Box>
-              )}
-            </>
-          )}
-        </Box>
-      </KeyboardAwareScrollView>
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        onDismiss={clearPlaceId}
-        index={1}
-        snapPoints={snapPoints}
-        style={sheetStyle}
-      >
-        <PlaceInfoModal placeId={placeId} />
-      </BottomSheetModal>
-    </BottomSheetModalProvider>
+            <PlaceInfoModal placeId={placeId} />
+          </SafeAreaView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
+    </SafeAreaView>
   )
 }
 

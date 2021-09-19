@@ -13,6 +13,7 @@ import moment from 'moment'
 import { Config } from '@/Config'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Touchable = Platform.select({
   ios: GHTouchableOpacity,
@@ -131,147 +132,149 @@ const AddReport = ({ route }: any) => {
   )
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <HeaderBackButton onPress={goBack} label="Indietro" />
-      <Box height="100%" width="100%" bg="white" padding={8}>
-        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Crea una nuova\nsegnalazione'}
-        </Text>
-        <Text marginBottom={2}>Titolo:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="Mascherina obbligatoria"
-          isFullWidth={true}
-          value={title}
-          onChangeText={onChangeTitle}
-        />
-        <Text marginBottom={2}>Descrizione:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="L'utilizzo della mascherina protettiva è obbligatorio..."
-          isFullWidth={true}
-          value={description}
-          onChangeText={onChangeDescription}
-          multiline
-        />
-        <Text marginBottom={2}>Data di inizio:</Text>
-        <Box marginBottom={4}>
-          {(showDatePickerFrom || Platform.OS === 'ios') && (
-            <DateTimePicker
-              value={dateFrom}
-              mode="date"
-              display="default"
-              onChange={onChangeDateFrom}
-              maximumDate={dateToPicked ? (dateTo as Date) : undefined}
-              style={{ flex: 1 }}
-            />
-          )}
-          {Platform.OS === 'android' && (
-            <Touchable
-              onPress={() => {
-                setShowDatePickerFrom(true)
-              }}
-            >
-              <Input
-                marginBottom={4}
-                isFullWidth={true}
-                value={moment(dateFrom).format('DD/MM/YYYY')}
-                editable={false}
-              />
-            </Touchable>
-          )}
-        </Box>
-        <HStack>
-          <Checkbox
-            marginRight={2}
-            isChecked={useDateTo}
-            value="boh"
-            onChange={onChangeUseDateTo}
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+        <HeaderBackButton onPress={goBack} label="Indietro" />
+        <Box height="100%" width="100%" bg="white" padding={8}>
+          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+            {'Crea una nuova\nsegnalazione'}
+          </Text>
+          <Text marginBottom={2}>Titolo:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="Mascherina obbligatoria"
+            isFullWidth={true}
+            value={title}
+            onChangeText={onChangeTitle}
           />
-          <Text marginBottom={useDateTo ? 2 : 4}>Data di fine:</Text>
-        </HStack>
-        {useDateTo && (
+          <Text marginBottom={2}>Descrizione:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="L'utilizzo della mascherina protettiva è obbligatorio..."
+            isFullWidth={true}
+            value={description}
+            onChangeText={onChangeDescription}
+            multiline
+          />
+          <Text marginBottom={2}>Data di inizio:</Text>
           <Box marginBottom={4}>
-            {(showDatePickerTo || Platform.OS === 'ios') && (
+            {(showDatePickerFrom || Platform.OS === 'ios') && (
               <DateTimePicker
-                value={dateTo as Date}
+                value={dateFrom}
                 mode="date"
                 display="default"
-                onChange={onChangeDateTo}
-                minimumDate={dateFromPicked ? dateFrom : undefined}
+                onChange={onChangeDateFrom}
+                maximumDate={dateToPicked ? (dateTo as Date) : undefined}
                 style={{ flex: 1 }}
               />
             )}
             {Platform.OS === 'android' && (
-              <Touchable onPress={() => setShowDatePickerTo(true)}>
+              <Touchable
+                onPress={() => {
+                  setShowDatePickerFrom(true)
+                }}
+              >
                 <Input
                   marginBottom={4}
                   isFullWidth={true}
-                  value={moment(dateTo).format('DD/MM/YYYY')}
+                  value={moment(dateFrom).format('DD/MM/YYYY')}
                   editable={false}
                 />
               </Touchable>
             )}
           </Box>
-        )}
-        <Text marginBottom={2}>Livello di rischio:</Text>
-        <Box marginBottom={8}>
           <HStack>
-            <Touchable onPress={() => setLevel('white')}>
-              <View
-                h={12}
-                w={12}
-                mr={2}
-                borderRadius={100}
-                bg="gray.100"
-                borderColor="primary.500"
-                borderWidth={level === 'white' ? 3 : 0}
-              />
-            </Touchable>
-            <Touchable onPress={() => setLevel('yellow')}>
-              <View
-                h={12}
-                w={12}
-                mr={2}
-                borderRadius={100}
-                bg="yellow.300"
-                borderColor="primary.500"
-                borderWidth={level === 'yellow' ? 3 : 0}
-              />
-            </Touchable>
-            <Touchable onPress={() => setLevel('orange')}>
-              <View
-                h={12}
-                w={12}
-                mr={2}
-                borderRadius={100}
-                bg="orange.300"
-                borderColor="primary.500"
-                borderWidth={level === 'orange' ? 3 : 0}
-              />
-            </Touchable>
-            <Touchable onPress={() => setLevel('red')}>
-              <View
-                h={12}
-                w={12}
-                borderRadius={100}
-                bg="red.300"
-                borderColor="primary.500"
-                borderWidth={level === 'red' ? 3 : 0}
-              />
-            </Touchable>
+            <Checkbox
+              marginRight={2}
+              isChecked={useDateTo}
+              value="boh"
+              onChange={onChangeUseDateTo}
+            />
+            <Text marginBottom={useDateTo ? 2 : 4}>Data di fine:</Text>
           </HStack>
+          {useDateTo && (
+            <Box marginBottom={4}>
+              {(showDatePickerTo || Platform.OS === 'ios') && (
+                <DateTimePicker
+                  value={dateTo as Date}
+                  mode="date"
+                  display="default"
+                  onChange={onChangeDateTo}
+                  minimumDate={dateFromPicked ? dateFrom : undefined}
+                  style={{ flex: 1 }}
+                />
+              )}
+              {Platform.OS === 'android' && (
+                <Touchable onPress={() => setShowDatePickerTo(true)}>
+                  <Input
+                    marginBottom={4}
+                    isFullWidth={true}
+                    value={moment(dateTo).format('DD/MM/YYYY')}
+                    editable={false}
+                  />
+                </Touchable>
+              )}
+            </Box>
+          )}
+          <Text marginBottom={2}>Livello di rischio:</Text>
+          <Box marginBottom={8}>
+            <HStack>
+              <Touchable onPress={() => setLevel('white')}>
+                <View
+                  h={12}
+                  w={12}
+                  mr={2}
+                  borderRadius={100}
+                  bg="gray.100"
+                  borderColor="primary.500"
+                  borderWidth={level === 'white' ? 3 : 0}
+                />
+              </Touchable>
+              <Touchable onPress={() => setLevel('yellow')}>
+                <View
+                  h={12}
+                  w={12}
+                  mr={2}
+                  borderRadius={100}
+                  bg="yellow.300"
+                  borderColor="primary.500"
+                  borderWidth={level === 'yellow' ? 3 : 0}
+                />
+              </Touchable>
+              <Touchable onPress={() => setLevel('orange')}>
+                <View
+                  h={12}
+                  w={12}
+                  mr={2}
+                  borderRadius={100}
+                  bg="orange.300"
+                  borderColor="primary.500"
+                  borderWidth={level === 'orange' ? 3 : 0}
+                />
+              </Touchable>
+              <Touchable onPress={() => setLevel('red')}>
+                <View
+                  h={12}
+                  w={12}
+                  borderRadius={100}
+                  bg="red.300"
+                  borderColor="primary.500"
+                  borderWidth={level === 'red' ? 3 : 0}
+                />
+              </Touchable>
+            </HStack>
+          </Box>
+          <Button marginY={4} onPress={addReport}>
+            Crea segnalazione
+          </Button>
+          {error && (
+            <Text color="red.500" marginBottom={4}>
+              {error}
+            </Text>
+          )}
         </Box>
-        <Button marginY={4} onPress={addReport}>
-          Crea segnalazione
-        </Button>
-        {error && (
-          <Text color="red.500" marginBottom={4}>
-            {error}
-          </Text>
-        )}
-      </Box>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   )
 }
 

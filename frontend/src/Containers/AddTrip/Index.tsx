@@ -13,6 +13,7 @@ import moment from 'moment'
 import { Config } from '@/Config'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Touchable = Platform.select({
   ios: GHTouchableOpacity,
@@ -114,89 +115,91 @@ const AddTrip = ({ route }: any) => {
   )
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <HeaderBackButton onPress={goBack} label="Indietro" />
-      <Box height="100%" width="100%" bg="white" paddingX={8}>
-        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Crea un nuovo\nitinerario'}
-        </Text>
-        <Text marginBottom={2}>Nome:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="A spasso con Mario"
-          isFullWidth={true}
-          value={name}
-          onChangeText={onChangeName}
-        />
-        <Text marginBottom={2}>Descrizione:</Text>
-        <Input
-          marginBottom={4}
-          placeholder="Io che vado a fare un giretto con il cane"
-          isFullWidth={true}
-          value={description}
-          onChangeText={onChangeDescription}
-          multiline
-        />
-        <Text marginBottom={2}>Data di inizio:</Text>
-        <Box marginBottom={4}>
-          {(showDatePickerFrom || Platform.OS === 'ios') && (
-            <DateTimePicker
-              value={dateFrom}
-              mode="date"
-              display="default"
-              onChange={onChangeDateFrom}
-              maximumDate={dateToPicked ? dateTo : undefined}
-              style={{ flex: 1 }}
-            />
-          )}
-          {Platform.OS === 'android' && (
-            <Touchable
-              onPress={() => {
-                setShowDatePickerFrom(true)
-              }}
-            >
-              <Input
-                marginBottom={4}
-                isFullWidth={true}
-                value={moment(dateFrom).format('DD/MM/YYYY')}
-                editable={false}
-              />
-            </Touchable>
-          )}
-        </Box>
-        <Text marginBottom={2}>Data di fine:</Text>
-        <Box marginBottom={8}>
-          {(showDatePickerTo || Platform.OS === 'ios') && (
-            <DateTimePicker
-              value={dateTo}
-              mode="date"
-              display="default"
-              onChange={onChangeDateTo}
-              minimumDate={dateFromPicked ? dateFrom : undefined}
-              style={{ flex: 1 }}
-            />
-          )}
-          {Platform.OS === 'android' && (
-            <Touchable onPress={() => setShowDatePickerTo(true)}>
-              <Input
-                marginBottom={4}
-                isFullWidth={true}
-                value={moment(dateTo).format('DD/MM/YYYY')}
-                editable={false}
-              />
-            </Touchable>
-          )}
-        </Box>
-        <Button marginBottom={4} onPress={addTrip}>
-          Crea itinerario
-        </Button>
-        {error && (
-          <Text color="red.500" marginBottom={4}>
-            {error}
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+        <HeaderBackButton onPress={goBack} label="Indietro" />
+        <Box height="100%" width="100%" bg="white" padding={8}>
+          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+            {'Crea un nuovo\nitinerario'}
           </Text>
-        )}
-      </Box>
-    </KeyboardAwareScrollView>
+          <Text marginBottom={2}>Nome:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="A spasso con Mario"
+            isFullWidth={true}
+            value={name}
+            onChangeText={onChangeName}
+          />
+          <Text marginBottom={2}>Descrizione:</Text>
+          <Input
+            marginBottom={4}
+            placeholder="Io che vado a fare un giretto con il cane"
+            isFullWidth={true}
+            value={description}
+            onChangeText={onChangeDescription}
+            multiline
+          />
+          <Text marginBottom={2}>Data di inizio:</Text>
+          <Box marginBottom={4}>
+            {(showDatePickerFrom || Platform.OS === 'ios') && (
+              <DateTimePicker
+                value={dateFrom}
+                mode="date"
+                display="default"
+                onChange={onChangeDateFrom}
+                maximumDate={dateToPicked ? dateTo : undefined}
+                style={{ flex: 1 }}
+              />
+            )}
+            {Platform.OS === 'android' && (
+              <Touchable
+                onPress={() => {
+                  setShowDatePickerFrom(true)
+                }}
+              >
+                <Input
+                  marginBottom={4}
+                  isFullWidth={true}
+                  value={moment(dateFrom).format('DD/MM/YYYY')}
+                  editable={false}
+                />
+              </Touchable>
+            )}
+          </Box>
+          <Text marginBottom={2}>Data di fine:</Text>
+          <Box marginBottom={8}>
+            {(showDatePickerTo || Platform.OS === 'ios') && (
+              <DateTimePicker
+                value={dateTo}
+                mode="date"
+                display="default"
+                onChange={onChangeDateTo}
+                minimumDate={dateFromPicked ? dateFrom : undefined}
+                style={{ flex: 1 }}
+              />
+            )}
+            {Platform.OS === 'android' && (
+              <Touchable onPress={() => setShowDatePickerTo(true)}>
+                <Input
+                  marginBottom={4}
+                  isFullWidth={true}
+                  value={moment(dateTo).format('DD/MM/YYYY')}
+                  editable={false}
+                />
+              </Touchable>
+            )}
+          </Box>
+          <Button marginBottom={4} onPress={addTrip}>
+            Crea itinerario
+          </Button>
+          {error && (
+            <Text color="red.500" marginBottom={4}>
+              {error}
+            </Text>
+          )}
+        </Box>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   )
 }
 
