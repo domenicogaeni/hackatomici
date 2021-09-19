@@ -8,11 +8,16 @@ import { Config } from '@/Config'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { filter, map } from 'lodash'
 import moment from 'moment'
-import { ActivityIndicator, TouchableOpacity } from 'react-native'
+import {
+  ActivityIndicator,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native'
 
 const Trips = () => {
   const [trips, setTrips] = useState<ShortTrip[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setLoading] = useState(true)
+  const [isRefreshing, setRefreshing] = useState(false)
 
   const fetchTrips = useCallback(async () => {
     try {
@@ -39,9 +44,9 @@ const Trips = () => {
 
   useEffect(() => {
     const fetchTripsAsync = async () => {
-      setIsLoading(true)
+      setLoading(true)
       await fetchTrips()
-      setIsLoading(false)
+      setLoading(false)
     }
 
     fetchTripsAsync()
@@ -128,6 +133,12 @@ const Trips = () => {
     [openTrip, removeTrip],
   )
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await fetchTrips()
+    setRefreshing(false)
+  }, [fetchTrips, setRefreshing])
+
   const ongoingTrips = useMemo(
     () =>
       filter(
@@ -156,7 +167,12 @@ const Trips = () => {
   )
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+    <KeyboardAwareScrollView
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+      }
+      style={{ backgroundColor: 'white' }}
+    >
       <Box height="100%" flex={1} bg="white" padding={8}>
         <HStack
           justifyContent="space-between"
