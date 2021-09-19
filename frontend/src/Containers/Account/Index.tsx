@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import Logout from '@/Store/User/Logout'
 import { UserState } from '@/Store/User'
 import { navigate } from '@/Navigators/utils'
-import ClearDeviceId from '@/Store/DeviceId/ClearDeviceId'
 
 const Account = () => {
   const dispatch = useDispatch()
@@ -17,7 +16,6 @@ const Account = () => {
   const logout = useCallback(() => {
     auth().signOut()
     dispatch(Logout.action())
-    dispatch(ClearDeviceId.action())
   }, [dispatch])
 
   const displayName = `${user?.name} ${
