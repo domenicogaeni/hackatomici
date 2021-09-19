@@ -58,7 +58,12 @@ const TripDetail = ({ route }: any) => {
 
   const addTripStop = useCallback(() => {
     if (trip) {
-      navigate('AddTripStop', { tripId: trip.id, onTripStopAdded: fetchTrip })
+      navigate('AddTripStop', {
+        tripId: trip.id,
+        onTripStopAdded: fetchTrip,
+        minimumDate: moment(trip?.from).toDate(),
+        maximumDate: moment(trip?.to).toDate(),
+      })
     }
   }, [fetchTrip, trip])
 
