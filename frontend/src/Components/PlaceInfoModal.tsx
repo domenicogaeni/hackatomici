@@ -13,9 +13,14 @@ import { navigate } from '@/Navigators/utils'
 interface IPlaceInfoModalProps {
   // eslint-disable-next-line react/require-default-props
   placeId?: string
+  // eslint-disable-next-line react/require-default-props
+  canToggleFavourite?: boolean
 }
 
-const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
+const PlaceInfoModal = ({
+  placeId,
+  canToggleFavourite,
+}: IPlaceInfoModalProps) => {
   const [currentInfo, setCurrentInfo] = useState<Place>()
   const [currentReports, setCurrentReports] = useState<ReportModel[]>()
   const [isLoading, setLoading] = useState(true)
@@ -151,16 +156,20 @@ const PlaceInfoModal = ({ placeId }: IPlaceInfoModalProps) => {
           <Text flex={1} fontSize="3xl" fontWeight={600} marginRight={2}>
             {currentInfo?.name}
           </Text>
-          {isTogglingFavourite ? (
-            <ActivityIndicator color="primary.500" />
-          ) : (
-            <TouchableOpacity onPress={toggleFavourite}>
-              <Icon
-                name={currentInfo?.favourite ? 'heart' : 'heart-outline'}
-                size={24}
-                color="#14b8a6"
-              />
-            </TouchableOpacity>
+          {canToggleFavourite && (
+            <>
+              {isTogglingFavourite ? (
+                <ActivityIndicator color="primary.500" />
+              ) : (
+                <TouchableOpacity onPress={toggleFavourite}>
+                  <Icon
+                    name={currentInfo?.favourite ? 'heart' : 'heart-outline'}
+                    size={24}
+                    color="#14b8a6"
+                  />
+                </TouchableOpacity>
+              )}
+            </>
           )}
         </HStack>
         <Text color="gray.600" marginBottom={4}>

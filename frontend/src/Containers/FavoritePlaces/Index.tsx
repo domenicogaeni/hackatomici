@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Box, HStack, Text } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import PlacePicker from '@/Components/PlacePicker'
@@ -14,17 +14,33 @@ import { goBack } from '@/Navigators/utils'
 import {
   ActivityIndicator,
   RefreshControl,
+  StyleSheet,
   TouchableOpacity,
 } from 'react-native'
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet'
+import PlaceInfoModal from '@/Components/PlaceInfoModal'
 
 const FavoritePlaces = () => {
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+
   const [places, setPlaces] = useState<Place[]>([])
   const [error, setError] = useState<string>()
   const [shouldShowPointPicker, setShouldShowPointPicker] = useState(false)
   const [isLoading, setLoading] = useState(false)
   const [isRefreshing, setRefreshing] = useState(false)
+  const [placeId, setPlaceId] = useState<string>()
 
   const sessionToken = useMemo(() => uuid.v4() as string, [])
+  const snapPoints = useMemo(() => ['25%', '80%'], [])
+
+  useEffect(() => {
+    if (placeId) {
+      bottomSheetModalRef.current?.present()
+    }
+  }, [placeId, bottomSheetModalRef])
 
   const fetchFavoritePlaces = useCallback(async () => {
     try {
@@ -151,85 +167,122 @@ const FavoritePlaces = () => {
     setRefreshing(false)
   }, [fetchFavoritePlaces, setRefreshing])
 
+  const clearPlaceId = useCallback(() => setPlaceId(undefined), [setPlaceId])
+
   const renderItem = useCallback(
     (item: Place, index: number) => (
-      <Box
-        borderRadius={4}
-        borderWidth={1}
-        borderColor="primary.300"
-        padding={3}
-        marginTop={2}
-        key={`${item.place_id}_${index}`}
-      >
-        <HStack justifyContent="space-between" alignItems="center">
-          <Text flex={1} marginRight={2}>
-            {`${item.name}${
-              item.administrative_area_level_2
-                ? `, ${item.administrative_area_level_2}`
-                : ''
-            }${
-              item.administrative_area_level_1
-                ? `, ${item.administrative_area_level_1}`
-                : ''
-            }${item.country ? `, ${item.country}` : ''}`}
-          </Text>
-          <TouchableOpacity onPress={() => removeItem(item)}>
-            <Icon name="close-circle" size={22} color="#ef4444" />
-          </TouchableOpacity>
-        </HStack>
-      </Box>
+      <TouchableOpacity onPress={() => setPlaceId(item.place_id)}>
+        <Box
+          borderRadius={4}
+          borderWidth={1}
+          borderColor="primary.300"
+          padding={3}
+          marginTop={2}
+          key={`${item.place_id}_${index}`}
+        >
+          <HStack justifyContent="space-between" alignItems="center">
+            <Text flex={1} marginRight={4}>
+              {`${item.name}${
+                item.administrative_area_level_2
+                  ? `, ${item.administrative_area_level_2}`
+                  : ''
+              }${
+                item.administrative_area_level_1
+                  ? `, ${item.administrative_area_level_1}`
+                  : ''
+              }${item.country ? `, ${item.country}` : ''}`}
+            </Text>
+            <TouchableOpacity onPress={() => removeItem(item)}>
+              <Icon name="close-circle" size={22} color="#ef4444" />
+            </TouchableOpacity>
+          </HStack>
+        </Box>
+      </TouchableOpacity>
     ),
     [removeItem],
   )
 
+  const sheetStyle = useMemo(
+    () => ({
+      ...styles.sheetContainer,
+      shadowColor: '#000',
+    }),
+    [],
+  )
+
   return (
-    <KeyboardAwareScrollView
-      refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-      }
-      style={{ backgroundColor: 'white' }}
-    >
-      <HeaderBackButton onPress={goBack} label="Indietro" />
-      <Box height="100%" width="100%" bg="white" paddingX={8}>
-        <HStack
-          justifyContent="space-between"
-          alignItems="center"
-          marginBottom={8}
-        >
-          <Text fontSize="3xl" fontWeight={600}>
-            Luoghi d'interesse
-          </Text>
-          <TouchableOpacity onPress={showPointPicker}>
-            <Icon name="add-circle" size={32} color="#14b8a6" />
-          </TouchableOpacity>
-        </HStack>
-        {isLoading ? (
-          <ActivityIndicator size="large" color="primary.500" />
-        ) : (
-          <>
-            {shouldShowPointPicker && (
-              <Box marginBottom={4}>
-                <PlacePicker
-                  sessionToken={sessionToken}
-                  onPlacePicked={onPlacePicked}
-                />
-              </Box>
-            )}
-            {error && (
-              <Text color="red.500" marginBottom={4}>
-                {error}
-              </Text>
-            )}
-            {(places?.length || 0) > 0 && (
-              <Box marginBottom={8}>
-                {map(places, (place, index) => renderItem(place, index))}
-              </Box>
-            )}
-          </>
-        )}
-      </Box>
-    </KeyboardAwareScrollView>
+    <BottomSheetModalProvider>
+      <KeyboardAwareScrollView
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
+        style={{ backgroundColor: 'white' }}
+      >
+        <HeaderBackButton onPress={goBack} label="Indietro" />
+        <Box height="100%" width="100%" bg="white" paddingX={8}>
+          <HStack
+            justifyContent="space-between"
+            alignItems="center"
+            marginBottom={8}
+          >
+            <Text fontSize="3xl" fontWeight={600}>
+              Luoghi d'interesse
+            </Text>
+            <TouchableOpacity onPress={showPointPicker}>
+              <Icon name="add-circle" size={32} color="#14b8a6" />
+            </TouchableOpacity>
+          </HStack>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="primary.500" />
+          ) : (
+            <>
+              {shouldShowPointPicker && (
+                <Box marginBottom={4}>
+                  <PlacePicker
+                    sessionToken={sessionToken}
+                    onPlacePicked={onPlacePicked}
+                  />
+                </Box>
+              )}
+              {error && (
+                <Text color="red.500" marginBottom={4}>
+                  {error}
+                </Text>
+              )}
+              {(places?.length || 0) > 0 && (
+                <Box marginBottom={8}>
+                  {map(places, (place, index) => renderItem(place, index))}
+                </Box>
+              )}
+            </>
+          )}
+        </Box>
+      </KeyboardAwareScrollView>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        onDismiss={clearPlaceId}
+        index={1}
+        snapPoints={snapPoints}
+        style={sheetStyle}
+      >
+        <PlaceInfoModal placeId={placeId} />
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
   )
 }
+
+const styles = StyleSheet.create({
+  sheetContainer: {
+    borderTopStartRadius: 24,
+    borderTopEndRadius: 24,
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 16.0,
+    elevation: 24,
+  },
+})
 
 export default FavoritePlaces
