@@ -6,14 +6,14 @@ import {
   LocationPickerItem,
   Point,
 } from '@/Services/GooglePlaces/googlePlacesTypings'
-import { Box, Divider, Input, Text } from 'native-base'
+import { Box, Divider, Input, Pressable, Text } from 'native-base'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Keyboard, Pressable } from 'react-native'
+import { Keyboard } from 'react-native'
 import { debounce } from 'lodash'
 
 interface Props {
   sessionToken: string
-  setLocation: (location: Point) => void
+  setLocation: (placeId: string, location: Point) => void
 }
 
 const Autocomplete = ({ sessionToken, setLocation }: Props) => {
@@ -53,7 +53,7 @@ const Autocomplete = ({ sessionToken, setLocation }: Props) => {
     async (placeId: string) => {
       const placeDetail = await placeDetails(placeId, sessionToken)
       if (placeDetail) {
-        setLocation({
+        setLocation(placeId, {
           lat: placeDetail.geometry?.location.lat as number,
           lng: placeDetail.geometry?.location.lng as number,
         })

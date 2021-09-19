@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { goBack, navigate } from '@/Navigators/utils'
-import { Box, HStack, Pressable, Text, VStack } from 'native-base'
+import { Box, HStack, Text, VStack } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { HeaderBackButton } from '@react-navigation/stack'
@@ -13,13 +13,22 @@ import moment from 'moment'
 import TripStopPlaceHolder from '../TripStopPlaceHolder'
 import TripStopConnector from '../TripStopConnector'
 import TripCircleIcon from '../TripCircleIcon'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import { ActivityIndicator } from 'react-native'
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet'
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native'
+import PlaceInfoModal from '@/Components/PlaceInfoModal'
 
 const TripDetail = ({ route }: any) => {
   const { tripId } = route.params || {}
 
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+
+  const snapPoints = useMemo(() => ['25%', '80%'], [])
+
   const [trip, setTrip] = useState<Trip>()
+  const [placeId, setPlaceId] = useState<string>()
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchTrip = useCallback(async () => {
@@ -56,6 +65,12 @@ const TripDetail = ({ route }: any) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (placeId) {
+      bottomSheetModalRef.current?.present()
+    }
+  }, [placeId, bottomSheetModalRef])
+
   const addTripStop = useCallback(() => {
     if (trip) {
       navigate('AddTripStop', {
@@ -67,21 +82,18 @@ const TripDetail = ({ route }: any) => {
     }
   }, [fetchTrip, trip])
 
-  const openPlaceDetail = useCallback((placeId: string) => {
-    // TODO: open place detail
-    console.log(placeId)
-  }, [])
-
   const renderStop = useCallback(
     (stop: Stop, index: number) => (
       <TripStop
         key={`${stop.id}_${index}`}
         stop={stop}
-        openPlaceDetail={openPlaceDetail}
+        openPlaceDetail={setPlaceId}
       />
     ),
-    [openPlaceDetail],
+    [setPlaceId],
   )
+
+  const clearPlaceId = useCallback(() => setPlaceId(undefined), [setPlaceId])
 
   const formattedFromDate = trip?.from
     ? moment(trip.from, 'YYYY-MM-DD').format('DD/MM/YYYY')
@@ -89,6 +101,14 @@ const TripDetail = ({ route }: any) => {
   const formattedToDate = trip?.to
     ? moment(trip.to, 'YYYY-MM-DD').format('DD/MM/YYYY')
     : 'Oggi'
+
+  const sheetStyle = useMemo(
+    () => ({
+      ...styles.sheetContainer,
+      shadowColor: '#000',
+    }),
+    [],
+  )
 
   return (
     <BottomSheetModalProvider>
@@ -107,9 +127,9 @@ const TripDetail = ({ route }: any) => {
                 <Text fontSize="3xl" fontWeight={600}>
                   {trip.name}
                 </Text>
-                <Pressable onPress={addTripStop}>
+                <TouchableOpacity onPress={addTripStop}>
                   <Icon name="add-circle" size={32} color="#14b8a6" />
-                </Pressable>
+                </TouchableOpacity>
               </HStack>
               {trip.description && (
                 <Text marginBottom={8} color="gray.500">
@@ -146,8 +166,31 @@ const TripDetail = ({ route }: any) => {
           </Box>
         )}
       </KeyboardAwareScrollView>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        onDismiss={clearPlaceId}
+        index={1}
+        snapPoints={snapPoints}
+        style={sheetStyle}
+      >
+        <PlaceInfoModal placeId={placeId} />
+      </BottomSheetModal>
     </BottomSheetModalProvider>
   )
 }
+
+const styles = StyleSheet.create({
+  sheetContainer: {
+    borderTopStartRadius: 24,
+    borderTopEndRadius: 24,
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 16.0,
+    elevation: 24,
+  },
+})
 
 export default TripDetail

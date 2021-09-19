@@ -48,7 +48,7 @@ const Report = ({
                 color !== 'white' && color !== 'yellow' ? 'white' : 'gray.600'
               }
             >
-              {dateFrom || ''} {'->'} {dateTo || 'Adesso'}
+              {dateFrom || ''} {'->'} {dateTo || 'In vigore'}
             </Text>
             <Text
               color={

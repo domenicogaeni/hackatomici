@@ -1,31 +1,69 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Box, Button, HStack, Pressable, Text } from 'native-base'
+import { Box, HStack, Text } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import PlacePicker from '@/Components/PlacePicker'
 import uuid from 'react-native-uuid'
 import { LocationPickerItem } from '@/Services/GooglePlaces/googlePlacesTypings'
-import { filter, map, some } from 'lodash'
-import { useDispatch } from 'react-redux'
-import SetUser from '@/Store/User/SetUser'
+import { map } from 'lodash'
 import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
 import { Place } from '@/Models/Place'
 import { HeaderBackButton } from '@react-navigation/stack'
 import { goBack } from '@/Navigators/utils'
+import {
+  ActivityIndicator,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native'
 
 const FavoritePlaces = () => {
-  const dispatch = useDispatch()
-
-  const [interestPoints, setInterestPoints] = useState<(LocationPickerItem | Place)[]
-  >([])
-  const [dirty, setDirty] = useState<boolean>(false)
+  const [places, setPlaces] = useState<Place[]>([])
   const [error, setError] = useState<string>()
+  const [shouldShowPointPicker, setShouldShowPointPicker] = useState(false)
+  const [isLoading, setLoading] = useState(false)
+  const [isRefreshing, setRefreshing] = useState(false)
 
   const sessionToken = useMemo(() => uuid.v4() as string, [])
 
+  const fetchFavoritePlaces = useCallback(async () => {
+    try {
+      const currentUser = await auth().currentUser
+      if (!currentUser) {
+        return
+      }
+
+      const idToken = await currentUser.getIdToken()
+
+      const getFavoritePlacesResponse = await fetch(
+        `${Config.API_URL}/users/favourite_places`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer ' + idToken,
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+
+      if (getFavoritePlacesResponse.status === 200) {
+        setPlaces((await getFavoritePlacesResponse.json()).data)
+      }
+    } catch (getPlacesError) {}
+  }, [setPlaces])
+
   useEffect(() => {
     const fetchFavoritePlacesAsync = async () => {
+      setLoading(true)
+      await fetchFavoritePlaces()
+      setLoading(false)
+    }
+
+    fetchFavoritePlacesAsync()
+  }, [fetchFavoritePlaces])
+
+  const deletePlace = useCallback(
+    async (place: Place) => {
       try {
         const currentUser = await auth().currentUser
         if (!currentUser) {
@@ -34,10 +72,10 @@ const FavoritePlaces = () => {
 
         const idToken = await currentUser.getIdToken()
 
-        const getFavoritePlacesResponse = await fetch(
-          Config.API_URL + '/users/favourite_places',
+        const result = await fetch(
+          `${Config.API_URL}/users/favourite_places/${place.place_id}`,
           {
-            method: 'GET',
+            method: 'DELETE',
             headers: {
               Authorization: 'Bearer ' + idToken,
               'Content-Type': 'application/json',
@@ -45,72 +83,76 @@ const FavoritePlaces = () => {
           },
         )
 
-        if (getFavoritePlacesResponse.status === 200) {
-          setInterestPoints((await getFavoritePlacesResponse.json()).data)
+        if (result.status !== 200) {
+          setError("Errore durante l'eliminazione di un luogo di interesse")
         }
-      } catch (signInError) {}
-    }
-
-    fetchFavoritePlacesAsync()
-  }, [])
-
-  const save = useCallback(async () => {
-    try {
-      const currentUser = await auth().currentUser
-      if (!currentUser) {
-        dispatch(SetUser.action({ shouldShowOnboarding: false }))
-        return
-      }
-
-      const idToken = await currentUser.getIdToken()
-
-      const result = await fetch(Config.API_URL + '/users/favourite_places', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + idToken,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          places_ids: map(interestPoints, 'place_id'),
-        }),
-      })
-
-      if (result.status !== 200) {
-        setError('Errore durante il salvataggio dei luoghi di interesse')
-      }
-    } catch (signInError) {}
-
-    dispatch(SetUser.action({ shouldShowOnboarding: false }))
-    setDirty(false)
-  }, [dispatch, interestPoints, setError])
-
-  const onPlacePicked = useCallback(
-    (place: LocationPickerItem | Place) => {
-      setInterestPoints(prev =>
-        some(prev, p => p.place_id === place.place_id)
-          ? prev
-          : [...prev, place],
-      )
-      setDirty(true)
+      } catch (deletePlaceError) {}
     },
-    [setInterestPoints, setDirty],
+    [setError],
   )
 
   const removeItem = useCallback(
-    (item: LocationPickerItem | Place) => {
-      setInterestPoints(prev =>
-        filter(
-          prev,
-          (i: LocationPickerItem | Place) => i.place_id !== item.place_id,
-        ),
-      )
-      setDirty(true)
+    async (item: Place) => {
+      setLoading(true)
+      await deletePlace(item)
+      await fetchFavoritePlaces()
+      setLoading(false)
     },
-    [setInterestPoints, setDirty],
+    [deletePlace, fetchFavoritePlaces],
   )
 
+  const addPlace = useCallback(
+    async (place: LocationPickerItem) => {
+      try {
+        const currentUser = await auth().currentUser
+        if (!currentUser) {
+          return
+        }
+
+        const idToken = await currentUser.getIdToken()
+
+        const result = await fetch(`${Config.API_URL}/users/favourite_places`, {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + idToken,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            places_ids: [place.place_id],
+          }),
+        })
+
+        if (result.status !== 200) {
+          setError('Errore durante il salvataggio dei luoghi di interesse')
+        }
+      } catch (addPlaceError) {}
+    },
+    [setError],
+  )
+
+  const onPlacePicked = useCallback(
+    async (place: LocationPickerItem) => {
+      setLoading(true)
+      setShouldShowPointPicker(false)
+      await addPlace(place)
+      await fetchFavoritePlaces()
+      setLoading(false)
+    },
+    [addPlace, fetchFavoritePlaces],
+  )
+
+  const showPointPicker = useCallback(() => setShouldShowPointPicker(true), [
+    setShouldShowPointPicker,
+  ])
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await fetchFavoritePlaces()
+    setRefreshing(false)
+  }, [fetchFavoritePlaces, setRefreshing])
+
   const renderItem = useCallback(
-    (item: LocationPickerItem | Place, index: number) => (
+    (item: Place, index: number) => (
       <Box
         borderRadius={4}
         borderWidth={1}
@@ -121,11 +163,11 @@ const FavoritePlaces = () => {
       >
         <HStack justifyContent="space-between" alignItems="center">
           <Text flex={1} marginRight={2}>
-            {(item as LocationPickerItem).description || (item as Place).name}
+            {item.name}
           </Text>
-          <Pressable onPress={() => removeItem(item)}>
+          <TouchableOpacity onPress={() => removeItem(item)}>
             <Icon name="close-circle" size={22} color="#ef4444" />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
       </Box>
     ),
@@ -133,26 +175,49 @@ const FavoritePlaces = () => {
   )
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+    <KeyboardAwareScrollView
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+      }
+      style={{ backgroundColor: 'white' }}
+    >
       <HeaderBackButton onPress={goBack} label="Indietro" />
-      <Box height="100%" width="100%" bg="white" padding={8}>
-        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {"Luoghi d'interesse"}
-        </Text>
-        <PlacePicker
-          sessionToken={sessionToken}
-          onPlacePicked={onPlacePicked}
-        />
-        {map(interestPoints, (interestPoint, index) =>
-          renderItem(interestPoint, index),
-        )}
-        <Button marginTop={8} onPress={save} disabled={!dirty}>
-          Salva
-        </Button>
-        {error && (
-          <Text color="red.500" marginBottom={4}>
-            {error}
+      <Box height="100%" width="100%" bg="white" paddingX={8}>
+        <HStack
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom={8}
+        >
+          <Text fontSize="3xl" fontWeight={600}>
+            Luoghi d'interesse
           </Text>
+          <TouchableOpacity onPress={showPointPicker}>
+            <Icon name="add-circle" size={32} color="#14b8a6" />
+          </TouchableOpacity>
+        </HStack>
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <>
+            {shouldShowPointPicker && (
+              <Box marginBottom={4}>
+                <PlacePicker
+                  sessionToken={sessionToken}
+                  onPlacePicked={onPlacePicked}
+                />
+              </Box>
+            )}
+            {error && (
+              <Text color="red.500" marginBottom={4}>
+                {error}
+              </Text>
+            )}
+            {(places?.length || 0) > 0 && (
+              <Box marginBottom={8}>
+                {map(places, (place, index) => renderItem(place, index))}
+              </Box>
+            )}
+          </>
         )}
       </Box>
     </KeyboardAwareScrollView>

@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react'
-import { Box, HStack, Pressable, Text } from 'native-base'
+import { Box, HStack, Text } from 'native-base'
 import { Point, WarningLevel } from '@/Models/Trip'
 import Icon from 'react-native-vector-icons/Ionicons'
 import TripStopConnector from '../TripStopConnector'
+import { TouchableOpacity } from 'react-native'
 
 interface ITripPointProps {
   point: Point
@@ -72,7 +73,7 @@ const TripPoint = ({ point, isFirst, openPlaceDetail }: ITripPointProps) => {
   return (
     <>
       {!isFirst && <TripStopConnector />}
-      <Pressable onPress={open}>
+      <TouchableOpacity onPress={open}>
         <Box
           width="100%"
           borderRadius={8}
@@ -88,7 +89,7 @@ const TripPoint = ({ point, isFirst, openPlaceDetail }: ITripPointProps) => {
             <Icon name="chevron-forward-outline" size={20} color={textColor} />
           </HStack>
         </Box>
-      </Pressable>
+      </TouchableOpacity>
     </>
   )
 }

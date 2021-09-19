@@ -1,19 +1,18 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import PlacePicker from '@/Components/PlacePicker'
+import { Config } from '@/Config'
 import { goBack } from '@/Navigators/utils'
-import { Box, Button, HStack, Input, Pressable, Text } from 'native-base'
+import { LocationPickerItem } from '@/Services/GooglePlaces/googlePlacesTypings'
+import DateTimePicker from '@react-native-community/datetimepicker'
 import auth from '@react-native-firebase/auth'
-import { Keyboard, Platform } from 'react-native'
+import { HeaderBackButton } from '@react-navigation/stack'
+import { filter, map, some } from 'lodash'
+import moment from 'moment'
+import { Box, Button, HStack, Input, Text } from 'native-base'
+import React, { useCallback, useMemo, useState } from 'react'
+import { Keyboard, Platform, TouchableOpacity } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import uuid from 'react-native-uuid'
 import Icon from 'react-native-vector-icons/Ionicons'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { HeaderBackButton } from '@react-navigation/stack'
-import moment from 'moment'
-import { Config } from '@/Config'
-import DateTimePicker from '@react-native-community/datetimepicker'
-import { LocationPickerItem } from '@/Services/GooglePlaces/googlePlacesTypings'
-import { filter, map, some } from 'lodash'
-import PlacePicker from '@/Components/PlacePicker'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const AddTripStop = ({ route }: any) => {
   const { tripId, onTripStopAdded, minimumDate, maximumDate } =
@@ -148,9 +147,9 @@ const AddTripStop = ({ route }: any) => {
           <Text flex={1} marginRight={2}>
             {item.description}
           </Text>
-          <Pressable onPress={() => removePoint(item)}>
+          <TouchableOpacity onPress={() => removePoint(item)}>
             <Icon name="close-circle" size={22} color="#ef4444" />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
       </Box>
     ),
@@ -162,7 +161,7 @@ const AddTripStop = ({ route }: any) => {
       <HeaderBackButton onPress={goBack} label="Indietro" />
       <Box height="100%" width="100%" bg="white" paddingX={8}>
         <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Aggiungi una tappa!'}
+          Aggiungi una tappa!
         </Text>
         <Box marginBottom={4}>
           <PlacePicker
@@ -231,9 +230,9 @@ const AddTripStop = ({ route }: any) => {
           <Text fontSize="2xl" fontWeight={600}>
             Sottotappe
           </Text>
-          <Pressable onPress={showPointPicker}>
+          <TouchableOpacity onPress={showPointPicker}>
             <Icon name="add-circle" size={32} color="#14b8a6" />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
         {shouldShowPointPicker && (
           <Box marginBottom={4}>
