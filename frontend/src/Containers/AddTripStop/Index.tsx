@@ -15,11 +15,12 @@ import { filter, map, some } from 'lodash'
 import PlacePicker from '@/Components/PlacePicker'
 
 const AddTripStop = ({ route }: any) => {
-  const { tripId, onTripStopAdded } = route.params || {}
+  const { tripId, onTripStopAdded, minimumDate, maximumDate } =
+    route.params || {}
 
   const [place, setPlace] = useState<LocationPickerItem>()
-  const [dateFrom, setDateFrom] = useState<Date>(moment().toDate())
-  const [dateTo, setDateTo] = useState<Date>(moment().toDate())
+  const [dateFrom, setDateFrom] = useState<Date>(minimumDate)
+  const [dateTo, setDateTo] = useState<Date>(minimumDate)
   const [points, setPoints] = useState<LocationPickerItem[]>([])
   const [error, setError] = useState<string | undefined>()
   const [shouldShowPointPicker, setShouldShowPointPicker] = useState(false)
@@ -171,7 +172,8 @@ const AddTripStop = ({ route }: any) => {
             mode="date"
             display="default"
             onChange={onChangeDateFrom}
-            maximumDate={dateToPicked ? dateTo : undefined}
+            minimumDate={minimumDate}
+            maximumDate={dateToPicked ? dateTo : maximumDate}
             style={{ flex: 1 }}
           />
         </Box>
@@ -182,7 +184,8 @@ const AddTripStop = ({ route }: any) => {
             mode="date"
             display="default"
             onChange={onChangeDateTo}
-            minimumDate={dateFromPicked ? dateFrom : undefined}
+            minimumDate={dateFromPicked ? dateFrom : minimumDate}
+            maximumDate={maximumDate}
             style={{ flex: 1 }}
           />
         </Box>
