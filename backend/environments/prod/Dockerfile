@@ -29,6 +29,6 @@ RUN rm -rf .git .github .vscode database environments private tests \
 RUN chown -R www-data:www-data $APP_HOME
 
 # Start
-COPY environments/production/start.sh /usr/local/bin/
+COPY backend/environments/production/start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
 CMD ["start.sh"]
