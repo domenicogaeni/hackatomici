@@ -18,6 +18,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import uuid from 'react-native-uuid'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Touchable = Platform.select({
   ios: GHTouchableOpacity,
@@ -167,102 +168,104 @@ const AddTripStop = ({ route }: any) => {
   )
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <HeaderBackButton onPress={goBack} label="Indietro" />
-      <Box height="100%" width="100%" bg="white" paddingX={8}>
-        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          Aggiungi una tappa!
-        </Text>
-        <Box marginBottom={4}>
-          <PlacePicker
-            sessionToken={sessionToken}
-            onPlacePicked={onChangePlace}
-            autoClean={false}
-          />
-        </Box>
-        <Text marginBottom={2}>Data di inizio:</Text>
-        <Box marginBottom={4}>
-          {(showDatePickerFrom || Platform.OS === 'ios') && (
-            <DateTimePicker
-              value={dateFrom}
-              mode="date"
-              display="default"
-              onChange={onChangeDateFrom}
-              minimumDate={minimumDate}
-              maximumDate={dateToPicked ? dateTo : maximumDate}
-              style={{ flex: 1 }}
-            />
-          )}
-          {Platform.OS === 'android' && (
-            <Touchable
-              onPress={() => {
-                setShowDatePickerFrom(true)
-              }}
-            >
-              <Input
-                marginBottom={4}
-                isFullWidth={true}
-                value={moment(dateFrom).format('DD/MM/YYYY')}
-                editable={false}
-              />
-            </Touchable>
-          )}
-        </Box>
-        <Text marginBottom={2}>Data di fine:</Text>
-        <Box marginBottom={8}>
-          {(showDatePickerTo || Platform.OS === 'ios') && (
-            <DateTimePicker
-              value={dateTo}
-              mode="date"
-              display="default"
-              onChange={onChangeDateTo}
-              minimumDate={dateFromPicked ? dateFrom : minimumDate}
-              maximumDate={maximumDate}
-              style={{ flex: 1 }}
-            />
-          )}
-          {Platform.OS === 'android' && (
-            <Touchable onPress={() => setShowDatePickerTo(true)}>
-              <Input
-                marginBottom={4}
-                isFullWidth={true}
-                value={moment(dateTo).format('DD/MM/YYYY')}
-                editable={false}
-              />
-            </Touchable>
-          )}
-        </Box>
-        <HStack
-          justifyContent="space-between"
-          alignItems="center"
-          marginBottom={4}
-        >
-          <Text fontSize="2xl" fontWeight={600}>
-            Sottotappe
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+        <HeaderBackButton onPress={goBack} label="Indietro" />
+        <Box height="100%" width="100%" bg="white" padding={8}>
+          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+            Aggiungi una tappa!
           </Text>
-          <Touchable onPress={showPointPicker}>
-            <Icon name="add-circle" size={32} color="#14b8a6" />
-          </Touchable>
-        </HStack>
-        {shouldShowPointPicker && (
           <Box marginBottom={4}>
             <PlacePicker
               sessionToken={sessionToken}
-              onPlacePicked={onPointPicked}
+              onPlacePicked={onChangePlace}
+              autoClean={false}
             />
           </Box>
-        )}
-        {map(points, (point, index) => renderPoint(point, index))}
-        <Button marginBottom={4} onPress={addStop}>
-          Aggiungi
-        </Button>
-        {error && (
-          <Text color="red.500" marginBottom={4}>
-            {error}
-          </Text>
-        )}
-      </Box>
-    </KeyboardAwareScrollView>
+          <Text marginBottom={2}>Data di inizio:</Text>
+          <Box marginBottom={4}>
+            {(showDatePickerFrom || Platform.OS === 'ios') && (
+              <DateTimePicker
+                value={dateFrom}
+                mode="date"
+                display="default"
+                onChange={onChangeDateFrom}
+                minimumDate={minimumDate}
+                maximumDate={dateToPicked ? dateTo : maximumDate}
+                style={{ flex: 1 }}
+              />
+            )}
+            {Platform.OS === 'android' && (
+              <Touchable
+                onPress={() => {
+                  setShowDatePickerFrom(true)
+                }}
+              >
+                <Input
+                  marginBottom={4}
+                  isFullWidth={true}
+                  value={moment(dateFrom).format('DD/MM/YYYY')}
+                  editable={false}
+                />
+              </Touchable>
+            )}
+          </Box>
+          <Text marginBottom={2}>Data di fine:</Text>
+          <Box marginBottom={8}>
+            {(showDatePickerTo || Platform.OS === 'ios') && (
+              <DateTimePicker
+                value={dateTo}
+                mode="date"
+                display="default"
+                onChange={onChangeDateTo}
+                minimumDate={dateFromPicked ? dateFrom : minimumDate}
+                maximumDate={maximumDate}
+                style={{ flex: 1 }}
+              />
+            )}
+            {Platform.OS === 'android' && (
+              <Touchable onPress={() => setShowDatePickerTo(true)}>
+                <Input
+                  marginBottom={4}
+                  isFullWidth={true}
+                  value={moment(dateTo).format('DD/MM/YYYY')}
+                  editable={false}
+                />
+              </Touchable>
+            )}
+          </Box>
+          <HStack
+            justifyContent="space-between"
+            alignItems="center"
+            marginBottom={4}
+          >
+            <Text fontSize="2xl" fontWeight={600}>
+              Sottotappe
+            </Text>
+            <Touchable onPress={showPointPicker}>
+              <Icon name="add-circle" size={32} color="#14b8a6" />
+            </Touchable>
+          </HStack>
+          {shouldShowPointPicker && (
+            <Box marginBottom={4}>
+              <PlacePicker
+                sessionToken={sessionToken}
+                onPlacePicked={onPointPicked}
+              />
+            </Box>
+          )}
+          {map(points, (point, index) => renderPoint(point, index))}
+          <Button marginBottom={4} onPress={addStop}>
+            Aggiungi
+          </Button>
+          {error && (
+            <Text color="red.500" marginBottom={4}>
+              {error}
+            </Text>
+          )}
+        </Box>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   )
 }
 

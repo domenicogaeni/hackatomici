@@ -19,6 +19,7 @@ import {
 } from '@gorhom/bottom-sheet'
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native'
 import PlaceInfoModal from '@/Components/PlaceInfoModal'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const TripDetail = ({ route }: any) => {
   const { tripId } = route.params || {}
@@ -111,71 +112,78 @@ const TripDetail = ({ route }: any) => {
   )
 
   return (
-    <BottomSheetModalProvider>
-      <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-        <HeaderBackButton onPress={goBack} label="Indietro" />
-        {isLoading || !trip ? (
-          <ActivityIndicator color="primary.500" size="large" />
-        ) : (
-          <Box height="100%" width="100%" bg="white" marginBottom={8}>
-            <Box paddingX={8}>
-              <HStack
-                justifyContent="space-between"
-                alignItems="center"
-                marginBottom={1}
-              >
-                <Text fontSize="3xl" fontWeight={600}>
-                  {trip.name}
-                </Text>
-                <TouchableOpacity onPress={addTripStop}>
-                  <Icon name="add-circle" size={32} color="#14b8a6" />
-                </TouchableOpacity>
-              </HStack>
-              {trip.description && (
-                <Text marginBottom={8} color="gray.500">
-                  {trip.description}
-                </Text>
-              )}
-            </Box>
-            <Box paddingX={4}>
-              <HStack alignItems="center">
-                <TripCircleIcon name="play" />
-                <VStack flex={1}>
-                  <Text fontSize="xs" color="gray.400">
-                    {formattedFromDate}
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <BottomSheetModalProvider>
+        <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+          <HeaderBackButton onPress={goBack} label="Indietro" />
+          {isLoading || !trip ? (
+            <ActivityIndicator color="primary.500" size="large" />
+          ) : (
+            <Box height="100%" width="100%" bg="white" marginY={8}>
+              <Box paddingX={8}>
+                <HStack
+                  justifyContent="space-between"
+                  alignItems="center"
+                  marginBottom={1}
+                >
+                  <Text fontSize="3xl" fontWeight={600}>
+                    {trip.name}
                   </Text>
-                  <Text>Inizio itinerario</Text>
-                </VStack>
-              </HStack>
-              {(trip.stops?.length || 0) > 0 ? (
-                map(trip.stops, (stop, index) => renderStop(stop, index))
-              ) : (
-                <TripStopPlaceHolder onAddStop={addTripStop} />
-              )}
-              <TripStopConnector />
-              <HStack alignItems="center">
-                <TripCircleIcon name="stop" />
-                <VStack flex={1}>
-                  <Text fontSize="xs" color="gray.400">
-                    {formattedToDate}
+                  <TouchableOpacity onPress={addTripStop}>
+                    <Icon name="add-circle" size={32} color="#14b8a6" />
+                  </TouchableOpacity>
+                </HStack>
+                {trip.description && (
+                  <Text marginBottom={8} color="gray.500">
+                    {trip.description}
                   </Text>
-                  <Text>Fine itinerario</Text>
-                </VStack>
-              </HStack>
+                )}
+              </Box>
+              <Box paddingX={4}>
+                <HStack alignItems="center">
+                  <TripCircleIcon name="play" />
+                  <VStack flex={1}>
+                    <Text fontSize="xs" color="gray.400">
+                      {formattedFromDate}
+                    </Text>
+                    <Text>Inizio itinerario</Text>
+                  </VStack>
+                </HStack>
+                {(trip.stops?.length || 0) > 0 ? (
+                  map(trip.stops, (stop, index) => renderStop(stop, index))
+                ) : (
+                  <TripStopPlaceHolder onAddStop={addTripStop} />
+                )}
+                <TripStopConnector />
+                <HStack alignItems="center">
+                  <TripCircleIcon name="stop" />
+                  <VStack flex={1}>
+                    <Text fontSize="xs" color="gray.400">
+                      {formattedToDate}
+                    </Text>
+                    <Text>Fine itinerario</Text>
+                  </VStack>
+                </HStack>
+              </Box>
             </Box>
-          </Box>
-        )}
-      </KeyboardAwareScrollView>
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        onDismiss={clearPlaceId}
-        index={1}
-        snapPoints={snapPoints}
-        style={sheetStyle}
-      >
-        <PlaceInfoModal placeId={placeId} />
-      </BottomSheetModal>
-    </BottomSheetModalProvider>
+          )}
+        </KeyboardAwareScrollView>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          onDismiss={clearPlaceId}
+          index={1}
+          snapPoints={snapPoints}
+          style={sheetStyle}
+        >
+          <SafeAreaView
+            edges={['bottom']}
+            style={{ flex: 1, backgroundColor: 'white' }}
+          >
+            <PlaceInfoModal placeId={placeId} />
+          </SafeAreaView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
+    </SafeAreaView>
   )
 }
 

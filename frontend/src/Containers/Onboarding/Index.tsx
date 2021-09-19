@@ -11,6 +11,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
 import { TouchableOpacity } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Onboarding = () => {
   const dispatch = useDispatch()
@@ -67,14 +68,14 @@ const Onboarding = () => {
 
       const idToken = await currentUser.getIdToken()
 
-      await fetch(Config.API_URL + '/users/favourite_places', {
+      await fetch(`${Config.API_URL}/users/favourite_places`, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer ' + idToken,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          place_ids: map(interestPoints, 'place_id'),
+          places_ids: map(interestPoints, 'place_id'),
         }),
       })
     } catch (signInError) {}
@@ -87,30 +88,32 @@ const Onboarding = () => {
   }, [dispatch])
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
-      <Box height="100%" width="100%" bg="white" padding={8}>
-        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-          {'Imposta i tuoi\nluoghi di interesse!'}
-        </Text>
-        <PlacePicker
-          sessionToken={sessionToken}
-          onPlacePicked={onPlacePicked}
-        />
-        {map(interestPoints, (interestPoint, index) =>
-          renderItem(interestPoint, index),
-        )}
-        <Button
-          marginTop={8}
-          onPress={save}
-          disabled={interestPoints.length === 0}
-        >
-          Salva
-        </Button>
-        <Button variant="link" marginTop={4} onPress={continueWithoutPOIs}>
-          Continua senza punti di interesse
-        </Button>
-      </Box>
-    </KeyboardAwareScrollView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <KeyboardAwareScrollView style={{ backgroundColor: 'white' }}>
+        <Box height="100%" width="100%" bg="white" padding={8}>
+          <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+            {'Imposta i tuoi\nluoghi di interesse!'}
+          </Text>
+          <PlacePicker
+            sessionToken={sessionToken}
+            onPlacePicked={onPlacePicked}
+          />
+          {map(interestPoints, (interestPoint, index) =>
+            renderItem(interestPoint, index),
+          )}
+          <Button
+            marginTop={8}
+            onPress={save}
+            disabled={interestPoints.length === 0}
+          >
+            Salva
+          </Button>
+          <Button variant="link" marginTop={4} onPress={continueWithoutPOIs}>
+            Continua senza punti di interesse
+          </Button>
+        </Box>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   )
 }
 

@@ -11,6 +11,7 @@ import { Box } from 'native-base'
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import uuid from 'react-native-uuid'
 
 const initialRegion = {
@@ -124,10 +125,12 @@ const Map = () => {
           )}
         </MapView>
         <Box w="100%" position="absolute" top="8">
-          <Autocomplete
-            sessionToken={sessionToken}
-            setLocation={onLocationPicked}
-          />
+          <SafeAreaView edges={['top']}>
+            <Autocomplete
+              sessionToken={sessionToken}
+              setLocation={onLocationPicked}
+            />
+          </SafeAreaView>
         </Box>
         <BottomSheetModal
           ref={bottomSheetModalRef}

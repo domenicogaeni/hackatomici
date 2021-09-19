@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Logout from '@/Store/User/Logout'
 import { UserState } from '@/Store/User'
 import { navigate } from '@/Navigators/utils'
-import ClearDeviceId from '@/Store/DeviceId/ClearDeviceId'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Account = () => {
   const dispatch = useDispatch()
@@ -17,7 +17,6 @@ const Account = () => {
   const logout = useCallback(() => {
     auth().signOut()
     dispatch(Logout.action())
-    dispatch(ClearDeviceId.action())
   }, [dispatch])
 
   const displayName = `${user?.name} ${
@@ -25,17 +24,19 @@ const Account = () => {
   }`
 
   return (
-    <Box height="100%" flex={1} bg="white" padding={8}>
-      <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
-        {`Ciao ${displayName}`}
-      </Text>
-      <Button onPress={favoritePlaces} marginBottom={8}>
-        Luoghi d'interesse
-      </Button>
-      <Button variant="outline" colorScheme="red" onPress={logout}>
-        Logout
-      </Button>
-    </Box>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: 'white' }}>
+      <Box height="100%" flex={1} bg="white" padding={8}>
+        <Text fontSize="3xl" marginBottom={8} fontWeight={600}>
+          {`Ciao ${displayName}`}
+        </Text>
+        <Button onPress={favoritePlaces} marginBottom={8}>
+          Luoghi d'interesse
+        </Button>
+        <Button variant="outline" colorScheme="red" onPress={logout}>
+          Logout
+        </Button>
+      </Box>
+    </SafeAreaView>
   )
 }
 
