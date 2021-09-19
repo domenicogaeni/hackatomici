@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { goBack, navigate } from '@/Navigators/utils'
 import { Box, HStack, Pressable, Text, VStack } from 'native-base'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -13,13 +13,22 @@ import moment from 'moment'
 import TripStopPlaceHolder from '../TripStopPlaceHolder'
 import TripStopConnector from '../TripStopConnector'
 import TripCircleIcon from '../TripCircleIcon'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet'
 import { ActivityIndicator } from 'react-native'
+import PlaceInfoModal from '@/Components/PlaceInfoModal'
 
 const TripDetail = ({ route }: any) => {
   const { tripId } = route.params || {}
 
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+
+  const snapPoints = useMemo(() => ['25%', '80%'], [])
+
   const [trip, setTrip] = useState<Trip>()
+  const [placeId, setPlaceId] = useState<string>()
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchTrip = useCallback(async () => {
@@ -56,6 +65,12 @@ const TripDetail = ({ route }: any) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (placeId) {
+      bottomSheetModalRef.current?.present()
+    }
+  }, [placeId, bottomSheetModalRef])
+
   const addTripStop = useCallback(() => {
     if (trip) {
       navigate('AddTripStop', {
@@ -67,21 +82,18 @@ const TripDetail = ({ route }: any) => {
     }
   }, [fetchTrip, trip])
 
-  const openPlaceDetail = useCallback((placeId: string) => {
-    // TODO: open place detail
-    console.log(placeId)
-  }, [])
-
   const renderStop = useCallback(
     (stop: Stop, index: number) => (
       <TripStop
         key={`${stop.id}_${index}`}
         stop={stop}
-        openPlaceDetail={openPlaceDetail}
+        openPlaceDetail={setPlaceId}
       />
     ),
-    [openPlaceDetail],
+    [setPlaceId],
   )
+
+  const clearPlaceId = useCallback(() => setPlaceId(undefined), [setPlaceId])
 
   const formattedFromDate = trip?.from
     ? moment(trip.from, 'YYYY-MM-DD').format('DD/MM/YYYY')
@@ -146,6 +158,14 @@ const TripDetail = ({ route }: any) => {
           </Box>
         )}
       </KeyboardAwareScrollView>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        onDismiss={clearPlaceId}
+        index={1}
+        snapPoints={snapPoints}
+      >
+        <PlaceInfoModal placeId={placeId} />
+      </BottomSheetModal>
     </BottomSheetModalProvider>
   )
 }

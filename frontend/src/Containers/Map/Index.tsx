@@ -70,6 +70,8 @@ const Map = () => {
     [setLocation],
   )
 
+  const clearPlaceId = useCallback(() => setPlaceId(undefined), [setPlaceId])
+
   return (
     <BottomSheetModalProvider>
       <View style={[Layout.fill, Layout.colCenter]}>
@@ -95,6 +97,7 @@ const Map = () => {
         </Box>
         <BottomSheetModal
           ref={bottomSheetModalRef}
+          onDismiss={clearPlaceId}
           index={1}
           snapPoints={snapPoints}
         >
