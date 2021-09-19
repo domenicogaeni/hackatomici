@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { Box, HStack, Text } from 'native-base'
 import { Point, WarningLevel } from '@/Models/Trip'
 import Icon from 'react-native-vector-icons/Ionicons'
-import TripStopConnector from '../TripStopConnector'
+import TripStopConnector from './TripStopConnector'
 import { TouchableOpacity } from 'react-native'
 
 interface ITripPointProps {

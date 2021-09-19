@@ -8,11 +8,11 @@ import { map } from 'lodash'
 import auth from '@react-native-firebase/auth'
 import { Config } from '@/Config'
 import { Stop, Trip } from '@/Models/Trip'
-import TripStop from '../TripStop'
+import TripStop from '../../Components/TripStop'
 import moment from 'moment'
-import TripStopPlaceHolder from '../TripStopPlaceHolder'
-import TripStopConnector from '../TripStopConnector'
-import TripCircleIcon from '../TripCircleIcon'
+import TripStopPlaceHolder from '../../Components/TripStopPlaceHolder'
+import TripStopConnector from '../../Components/TripStopConnector'
+import TripCircleIcon from '../../Components/TripCircleIcon'
 import {
   BottomSheetModal,
   BottomSheetModalProvider,

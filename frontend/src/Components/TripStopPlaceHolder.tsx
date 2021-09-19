@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, HStack, Text } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
-import TripStopConnector from '../TripStopConnector'
+import TripStopConnector from './TripStopConnector'
 import { TouchableOpacity } from 'react-native'
 
 interface ITripStopPlaceHolderProps {
