@@ -66,7 +66,7 @@ const FavoritePlaces = () => {
       if (getFavoritePlacesResponse.status === 200) {
         setPlaces((await getFavoritePlacesResponse.json()).data)
       }
-    } catch (getPlacesError) { }
+    } catch (getPlacesError) {}
   }, [setPlaces])
 
   useEffect(() => {
@@ -103,7 +103,7 @@ const FavoritePlaces = () => {
         if (result.status !== 200) {
           setError("Errore durante l'eliminazione di un luogo di interesse")
         }
-      } catch (deletePlaceError) { }
+      } catch (deletePlaceError) {}
     },
     [setError],
   )
@@ -142,7 +142,7 @@ const FavoritePlaces = () => {
         if (result.status !== 200) {
           setError('Errore durante il salvataggio dei luoghi di interesse')
         }
-      } catch (addPlaceError) { }
+      } catch (addPlaceError) {}
     },
     [setError],
   )
@@ -183,13 +183,15 @@ const FavoritePlaces = () => {
         >
           <HStack justifyContent="space-between" alignItems="center">
             <Text flex={1} marginRight={4}>
-              {`${item.name}${item.administrative_area_level_2
+              {`${item.name}${
+                item.administrative_area_level_2
                   ? `, ${item.administrative_area_level_2}`
                   : ''
-                }${item.administrative_area_level_1
+              }${
+                item.administrative_area_level_1
                   ? `, ${item.administrative_area_level_1}`
                   : ''
-                }${item.country ? `, ${item.country}` : ''}`}
+              }${item.country ? `, ${item.country}` : ''}`}
             </Text>
             <TouchableOpacity onPress={() => removeItem(item)}>
               <Icon name="close-circle" size={22} color="#ef4444" />
