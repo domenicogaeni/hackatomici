@@ -86,6 +86,7 @@ const Score = ({ score, vote, reportId }: ScoreProps) => {
       justifyContent="center"
       alignItems="center"
       paddingX="1"
+      ml="1"
       bg="rgba(255, 255, 255, 0.2)"
     >
       <Pressable
