@@ -12,7 +12,7 @@ jobs:
 
       - name: Copy .env
         working-directory: ./backend
-        run: cp environments/prod/.env .env
+        run: cp environments/prod/.env.example .env
 
       - name: Install Dependencies
         working-directory: ./backend
