@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NotificationHelper;
 use App\Helpers\PlaceApiHelper;
 use App\Helpers\ReportHelper;
 use App\Models\Report;
 use App\Models\UserVote;
 use App\Utils\DateUtils;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -57,11 +58,24 @@ class ReportController extends BaseController
         $report->save();
 
         if ($report->type == Report::VERIFIED) {
-            // TODO: Notifiche alle persone che hanno questo place nei preferiti
+            // device_id degli user che sono iscritti alle notifiche per questo luogo
+            $deviceIds = DB::table('users')
+                ->whereIn('id', function (Builder $query) use ($placeId) {
+                    $query->select('user_id')
+                        ->from('notifications_subscriptions')
+                        ->where('place_id', $placeId)
+                        ->distinct();
+                })->distinct()->pluck('device_id');
 
-            // TODO: Notifiche alle persone che hanno i sotto-luoghi di questo place nei preferiti
+            $place = PlaceApiHelper::placeDetails($placeId);
 
+            // Mando tutte le notifiche
+            foreach ($deviceIds as $deviceId) {
+                NotificationHelper::send("Nuova segnalazione per {$place->name}", $report->title, $deviceId);
+            }
         }
+
+        return [];
     }
 
     public function voteReport(Request $request, $reportId)
@@ -84,6 +98,8 @@ class ReportController extends BaseController
         $vote->vote = $request->input('vote');
 
         $vote->save();
+
+        return [];
     }
 
     public function deleteVote($reportId)
@@ -96,6 +112,8 @@ class ReportController extends BaseController
         }
 
         $vote->delete();
+
+        return [];
     }
 
     public function getForPlace(Request $request, $placeId)
