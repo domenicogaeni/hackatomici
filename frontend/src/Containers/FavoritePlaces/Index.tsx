@@ -254,7 +254,7 @@ const FavoritePlaces = () => {
               marginBottom={8}
             >
               <Text flex={1} fontSize="3xl" fontWeight={600} marginRight={2}>
-                Luoghi d'interesse
+                {"Luoghi\nd'interesse"}
               </Text>
               <HStack>
                 {(places?.length || 0) > 0 && (
