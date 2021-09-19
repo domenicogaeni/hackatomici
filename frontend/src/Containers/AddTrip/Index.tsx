@@ -2,12 +2,13 @@ import React, { useCallback, useState } from 'react'
 import { goBack } from '@/Navigators/utils'
 import { Box, Button, Input, Text } from 'native-base'
 import auth from '@react-native-firebase/auth'
-import { Keyboard } from 'react-native'
+import { Keyboard, Platform } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { HeaderBackButton } from '@react-navigation/stack'
 import moment from 'moment'
 import { Config } from '@/Config'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const AddTrip = ({ route }: any) => {
   const { onTripAdded } = route.params || {}
@@ -19,6 +20,9 @@ const AddTrip = ({ route }: any) => {
   const [error, setError] = useState<string | undefined>()
   const [dateFromPicked, setDateFromPicked] = useState(false)
   const [dateToPicked, setDateToPicked] = useState(false)
+
+  const [showDatePickerFrom, setShowDatePickerFrom] = useState(false)
+  const [showDatePickerTo, setShowDatePickerTo] = useState(false)
 
   const addTrip = useCallback(async () => {
     Keyboard.dismiss()
@@ -84,6 +88,7 @@ const AddTrip = ({ route }: any) => {
         setDateFrom(date)
         setDateFromPicked(true)
       }
+      setShowDatePickerFrom(Platform.OS === 'ios')
     },
     [setDateFrom, setDateFromPicked],
   )
@@ -94,6 +99,7 @@ const AddTrip = ({ route }: any) => {
         setDateTo(date)
         setDateToPicked(true)
       }
+      setShowDatePickerTo(Platform.OS === 'ios')
     },
     [setDateTo, setDateToPicked],
   )
@@ -108,7 +114,7 @@ const AddTrip = ({ route }: any) => {
         <Text marginBottom={2}>Nome:</Text>
         <Input
           marginBottom={4}
-          placeholder="A spasso con Lolli"
+          placeholder="A spasso con Mario"
           isFullWidth={true}
           value={name}
           onChangeText={onChangeName}
@@ -120,28 +126,57 @@ const AddTrip = ({ route }: any) => {
           isFullWidth={true}
           value={description}
           onChangeText={onChangeDescription}
+          multiline
         />
         <Text marginBottom={2}>Data di inizio:</Text>
         <Box marginBottom={4}>
-          <DateTimePicker
-            value={dateFrom}
-            mode="date"
-            display="default"
-            onChange={onChangeDateFrom}
-            maximumDate={dateToPicked ? dateTo : undefined}
-            style={{ flex: 1 }}
-          />
+          {(showDatePickerFrom || Platform.OS === 'ios') && (
+            <DateTimePicker
+              value={dateFrom}
+              mode="date"
+              display="default"
+              onChange={onChangeDateFrom}
+              maximumDate={dateToPicked ? dateTo : undefined}
+              style={{ flex: 1 }}
+            />
+          )}
+          {Platform.OS === 'android' && (
+            <TouchableOpacity
+              onPress={() => {
+                setShowDatePickerFrom(true)
+              }}
+            >
+              <Input
+                marginBottom={4}
+                isFullWidth={true}
+                value={moment(dateFrom).format('DD/MM/YYYY')}
+                editable={false}
+              />
+            </TouchableOpacity>
+          )}
         </Box>
         <Text marginBottom={2}>Data di fine:</Text>
         <Box marginBottom={8}>
-          <DateTimePicker
-            value={dateTo}
-            mode="date"
-            display="default"
-            onChange={onChangeDateTo}
-            minimumDate={dateFromPicked ? dateFrom : undefined}
-            style={{ flex: 1 }}
-          />
+          {(showDatePickerTo || Platform.OS === 'ios') && (
+            <DateTimePicker
+              value={dateTo}
+              mode="date"
+              display="default"
+              onChange={onChangeDateTo}
+              minimumDate={dateFromPicked ? dateFrom : undefined}
+              style={{ flex: 1 }}
+            />
+          )}
+          {Platform.OS === 'android' && (
+            <TouchableOpacity onPress={() => setShowDatePickerTo(true)}>
+              <Input
+                marginBottom={4}
+                isFullWidth={true}
+                value={moment(dateTo).format('DD/MM/YYYY')}
+                editable={false}
+              />
+            </TouchableOpacity>
+          )}
         </Box>
         <Button marginBottom={4} onPress={addTrip}>
           Crea itinerario

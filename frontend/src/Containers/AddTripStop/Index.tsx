@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { goBack } from '@/Navigators/utils'
-import { Box, Button, HStack, Pressable, Text } from 'native-base'
+import { Box, Button, HStack, Input, Pressable, Text } from 'native-base'
 import auth from '@react-native-firebase/auth'
-import { Keyboard } from 'react-native'
+import { Keyboard, Platform } from 'react-native'
 import uuid from 'react-native-uuid'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -13,6 +13,7 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import { LocationPickerItem } from '@/Services/GooglePlaces/googlePlacesTypings'
 import { filter, map, some } from 'lodash'
 import PlacePicker from '@/Components/PlacePicker'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const AddTripStop = ({ route }: any) => {
   const { tripId, onTripStopAdded, minimumDate, maximumDate } =
@@ -26,6 +27,9 @@ const AddTripStop = ({ route }: any) => {
   const [shouldShowPointPicker, setShouldShowPointPicker] = useState(false)
   const [dateFromPicked, setDateFromPicked] = useState(false)
   const [dateToPicked, setDateToPicked] = useState(false)
+
+  const [showDatePickerFrom, setShowDatePickerFrom] = useState(false)
+  const [showDatePickerTo, setShowDatePickerTo] = useState(false)
 
   const sessionToken = useMemo(() => uuid.v4() as string, [])
 
@@ -88,6 +92,7 @@ const AddTripStop = ({ route }: any) => {
         setDateFrom(date)
         setDateFromPicked(true)
       }
+      setShowDatePickerFrom(Platform.OS === 'ios')
     },
     [setDateFrom, setDateFromPicked],
   )
@@ -98,6 +103,7 @@ const AddTripStop = ({ route }: any) => {
         setDateTo(date)
         setDateToPicked(true)
       }
+      setShowDatePickerTo(Platform.OS === 'ios')
     },
     [setDateTo, setDateToPicked],
   )
@@ -167,27 +173,55 @@ const AddTripStop = ({ route }: any) => {
         </Box>
         <Text marginBottom={2}>Data di inizio:</Text>
         <Box marginBottom={4}>
-          <DateTimePicker
-            value={dateFrom}
-            mode="date"
-            display="default"
-            onChange={onChangeDateFrom}
-            minimumDate={minimumDate}
-            maximumDate={dateToPicked ? dateTo : maximumDate}
-            style={{ flex: 1 }}
-          />
+          {(showDatePickerFrom || Platform.OS === 'ios') && (
+            <DateTimePicker
+              value={dateFrom}
+              mode="date"
+              display="default"
+              onChange={onChangeDateFrom}
+              minimumDate={minimumDate}
+              maximumDate={dateToPicked ? dateTo : maximumDate}
+              style={{ flex: 1 }}
+            />
+          )}
+          {Platform.OS === 'android' && (
+            <TouchableOpacity
+              onPress={() => {
+                setShowDatePickerFrom(true)
+              }}
+            >
+              <Input
+                marginBottom={4}
+                isFullWidth={true}
+                value={moment(dateFrom).format('DD/MM/YYYY')}
+                editable={false}
+              />
+            </TouchableOpacity>
+          )}
         </Box>
         <Text marginBottom={2}>Data di fine:</Text>
         <Box marginBottom={8}>
-          <DateTimePicker
-            value={dateTo}
-            mode="date"
-            display="default"
-            onChange={onChangeDateTo}
-            minimumDate={dateFromPicked ? dateFrom : minimumDate}
-            maximumDate={maximumDate}
-            style={{ flex: 1 }}
-          />
+          {(showDatePickerTo || Platform.OS === 'ios') && (
+            <DateTimePicker
+              value={dateTo}
+              mode="date"
+              display="default"
+              onChange={onChangeDateTo}
+              minimumDate={dateFromPicked ? dateFrom : minimumDate}
+              maximumDate={maximumDate}
+              style={{ flex: 1 }}
+            />
+          )}
+          {Platform.OS === 'android' && (
+            <TouchableOpacity onPress={() => setShowDatePickerTo(true)}>
+              <Input
+                marginBottom={4}
+                isFullWidth={true}
+                value={moment(dateTo).format('DD/MM/YYYY')}
+                editable={false}
+              />
+            </TouchableOpacity>
+          )}
         </Box>
         <HStack
           justifyContent="space-between"

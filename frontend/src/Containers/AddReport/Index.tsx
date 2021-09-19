@@ -2,12 +2,13 @@ import React, { useCallback, useState } from 'react'
 import { goBack } from '@/Navigators/utils'
 import { Box, Button, Checkbox, HStack, Input, Text, View } from 'native-base'
 import auth from '@react-native-firebase/auth'
-import { Keyboard, TouchableOpacity } from 'react-native'
+import { Keyboard, Platform } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { HeaderBackButton } from '@react-navigation/stack'
 import moment from 'moment'
 import { Config } from '@/Config'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const AddReport = ({ route }: any) => {
   const { placeId, onReportAdded } = route.params || {}
@@ -20,6 +21,9 @@ const AddReport = ({ route }: any) => {
   const [error, setError] = useState<string | undefined>()
   const [dateFromPicked, setDateFromPicked] = useState(false)
   const [dateToPicked, setDateToPicked] = useState(false)
+
+  const [showDatePickerFrom, setShowDatePickerFrom] = useState(false)
+  const [showDatePickerTo, setShowDatePickerTo] = useState(false)
 
   const addReport = useCallback(async () => {
     Keyboard.dismiss()
@@ -89,6 +93,7 @@ const AddReport = ({ route }: any) => {
         setDateFrom(date)
         setDateFromPicked(true)
       }
+      setShowDatePickerFrom(Platform.OS === 'ios')
     },
     [setDateFrom, setDateFromPicked],
   )
@@ -99,6 +104,7 @@ const AddReport = ({ route }: any) => {
         setDateTo(date)
         setDateToPicked(true)
       }
+      setShowDatePickerTo(Platform.OS === 'ios')
     },
     [setDateTo, setDateToPicked],
   )
@@ -137,17 +143,34 @@ const AddReport = ({ route }: any) => {
           isFullWidth={true}
           value={description}
           onChangeText={onChangeDescription}
+          multiline
         />
         <Text marginBottom={2}>Data di inizio:</Text>
         <Box marginBottom={4}>
-          <DateTimePicker
-            value={dateFrom}
-            mode="date"
-            display="default"
-            onChange={onChangeDateFrom}
-            maximumDate={dateToPicked ? (dateTo as Date) : undefined}
-            style={{ flex: 1 }}
-          />
+          {(showDatePickerFrom || Platform.OS === 'ios') && (
+            <DateTimePicker
+              value={dateFrom}
+              mode="date"
+              display="default"
+              onChange={onChangeDateFrom}
+              maximumDate={dateToPicked ? (dateTo as Date) : undefined}
+              style={{ flex: 1 }}
+            />
+          )}
+          {Platform.OS === 'android' && (
+            <TouchableOpacity
+              onPress={() => {
+                setShowDatePickerFrom(true)
+              }}
+            >
+              <Input
+                marginBottom={4}
+                isFullWidth={true}
+                value={moment(dateFrom).format('DD/MM/YYYY')}
+                editable={false}
+              />
+            </TouchableOpacity>
+          )}
         </Box>
         <HStack>
           <Checkbox
@@ -160,14 +183,26 @@ const AddReport = ({ route }: any) => {
         </HStack>
         {useDateTo && (
           <Box marginBottom={4}>
-            <DateTimePicker
-              value={dateTo as Date}
-              mode="date"
-              display="default"
-              onChange={onChangeDateTo}
-              minimumDate={dateFromPicked ? dateFrom : undefined}
-              style={{ flex: 1 }}
-            />
+            {(showDatePickerTo || Platform.OS === 'ios') && (
+              <DateTimePicker
+                value={dateTo as Date}
+                mode="date"
+                display="default"
+                onChange={onChangeDateTo}
+                minimumDate={dateFromPicked ? dateFrom : undefined}
+                style={{ flex: 1 }}
+              />
+            )}
+            {Platform.OS === 'android' && (
+              <TouchableOpacity onPress={() => setShowDatePickerTo(true)}>
+                <Input
+                  marginBottom={4}
+                  isFullWidth={true}
+                  value={moment(dateTo).format('DD/MM/YYYY')}
+                  editable={false}
+                />
+              </TouchableOpacity>
+            )}
           </Box>
         )}
         <Text marginBottom={2}>Livello di rischio:</Text>
